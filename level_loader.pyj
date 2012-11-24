@@ -8,6 +8,7 @@ def ord(x):
         return x.charCodeAt(0)
     raise TypeError("Expected string of length 1")
 
+
 class Level:
     def __init__(self, layerOne, layerTwo, lvlInfo):
         self.layerOne = layerOne

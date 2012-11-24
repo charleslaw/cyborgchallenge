@@ -1,0 +1,774 @@
+
+class GameObject:
+    """
+    Basis for all objects in the game
+    """
+    def __init__(self):
+        pass
+
+    def draw(self, ctx, dispx, dispy):
+        if self.bg_img:
+            ctx.drawImage(self.bg_img, dispx, dispy)
+        ctx.drawImage(self.img, dispx, dispy)
+        
+    
+
+class MapObject(GameObject):
+    """
+    Base for objects drawn on the map
+    """
+    def __init__(self):
+        pass
+        
+    def leavable(self, start_x, start_y, dx, dy, map, items, game_engine):
+        """
+        in charge of determinging if a player can move
+        """
+        new_x = start_x + dx
+        new_y = start_y + dy
+        creature = items[start_x][start_y]
+        return map[new_x][new_y].enterable(dx, dy, items, creature, game_engine)
+        
+    def enterable(self, dx, dy, items, creature, game_engine):
+        return True
+
+    def enter(self, game_engine, pos_x, pos_y, creature):
+        return
+     
+
+class StaticMapObject(MapObject):
+    """
+    These are objects that never change on a map
+    These include:
+    #0    Empty Tile (Space)                   0    1
+    #1    Wall                                 0    1
+    #4    Fire                                 0    0
+    #5    Hidden Wall (wont appear)            0    0
+    #6    Blocked North                        0    0
+    #7    Blocked West                         0    0
+    #8    Blocked South                        0    0
+    #9    Blocked East                         0    0
+    #12    Ice                                 0    0
+    #13    Force South (S)                     0    1
+    #14    Cloning Block North (N)             0    0
+    #15    Cloning Block West (W)              0    0
+    #16    Cloning Block South (S)             0    0
+    #17    Cloning Block East (E)              0    0
+    #18    Force North (N)                     0    1
+    #19    Force East (E)                      0    1
+    #20    Force West (W)                      0    1
+    #21    Exit                                0    1
+    #26    South« East Ice Slide               0    0
+    #27    South« West Ice Slide               0    0
+    #28    North« West Ice Slide               0    0
+    #29    North« East Ice Slide               0    0
+    #33    Thief                               0    0
+    #35    Green Button - doors                0    0
+    #36    Red Button - cloning                0    0
+    #39    Brown Button - Traps                0    0
+    #40    Blue Button - Tanks                 0    0
+    #41    Teleport                            0    0
+    #43    Trap                                0    0
+    #45    Gravel                              0    0
+    #47    Hint                                0    0
+    #48    Blocked South - East                0    0
+    #49    Cloning Machine                     0    0
+    #50    Force All Direction                 0    0
+    #58    Exit - end game                     0    0
+    #59    Exit - end game                     0    0
+    """
+    def __init__(self):
+        pass
+        
+class Tile(MapObject):
+    def __init__(self, img, bg_img):
+        self.bg_img = bg_img
+        self.img = img
+
+class Wall(MapObject):
+    def __init__(self, img, bg_img):
+        self.bg_img = bg_img
+        self.img = img
+
+    def enterable(self, dx, dy, items, creature, game_engine):
+        #cannot enter this object
+        return False
+
+class Fire(MapObject):
+    def __init__(self, img, bg_img):
+        self.bg_img = bg_img
+        self.img = img
+        
+    def enter(self, game_engine, pos_x, pos_y, creature):
+        creature.burn(game_engine, pos_x, pos_y)
+
+class HiddenWall(MapObject):
+    def __init__(self, img, bg_img):
+        self.bg_img = bg_img
+        self.img = img
+
+class BlockedNorth(MapObject):
+    def __init__(self, img, bg_img):
+        self.bg_img = bg_img
+        self.img = img
+
+class BlockedWest(MapObject):
+    def __init__(self, img, bg_img):
+        self.bg_img = bg_img
+        self.img = img
+
+class BlockedSouth(MapObject):
+    def __init__(self, img, bg_img):
+        self.bg_img = bg_img
+        self.img = img
+
+class BlockedEast(MapObject):
+    def __init__(self, img, bg_img):
+        self.bg_img = bg_img
+        self.img = img
+
+class Ice(MapObject):
+    def __init__(self, img, bg_img):
+        self.bg_img = bg_img
+        self.img = img
+
+class ForceSouth(MapObject):
+    def __init__(self, img, bg_img):
+        self.bg_img = bg_img
+        self.img = img
+
+class CloneNorth(MapObject):
+    def __init__(self, img, bg_img):
+        self.bg_img = bg_img
+        self.img = img
+
+class CloneWest(MapObject):
+    def __init__(self, img, bg_img):
+        self.bg_img = bg_img
+        self.img = img
+
+class CloneSouth(MapObject):
+    def __init__(self, img, bg_img):
+        self.bg_img = bg_img
+        self.img = img
+
+class CloneEast(MapObject):
+    def __init__(self, img, bg_img):
+        self.bg_img = bg_img
+        self.img = img
+
+class ForceNorth(MapObject):
+    def __init__(self, img, bg_img):
+        self.bg_img = bg_img
+        self.img = img
+
+class ForceEast(MapObject):
+    def __init__(self, img, bg_img):
+        self.bg_img = bg_img
+        self.img = img
+
+class ForstWest(MapObject):
+    def __init__(self, img, bg_img):
+        self.bg_img = bg_img
+        self.img = img
+
+class IceSE(MapObject):
+    def __init__(self, img, bg_img):
+        self.bg_img = bg_img
+        self.img = img
+
+class IceSW(MapObject):
+    def __init__(self, img, bg_img):
+        self.bg_img = bg_img
+        self.img = img
+
+class IceNW(MapObject):
+    def __init__(self, img, bg_img):
+        self.bg_img = bg_img
+        self.img = img
+
+class IceNE(MapObject):
+    def __init__(self, img, bg_img):
+        self.bg_img = bg_img
+        self.img = img
+
+class Theif(MapObject):
+    def __init__(self, img, bg_img):
+        self.bg_img = bg_img
+        self.img = img
+
+class ButtonGreen(MapObject):
+    def __init__(self, img, bg_img):
+        self.bg_img = bg_img
+        self.img = img
+
+class ButtonRed(MapObject):
+    def __init__(self, img, bg_img):
+        self.bg_img = bg_img
+        self.img = img
+
+class ButtonBrown(MapObject):
+    def __init__(self, img, bg_img):
+        self.bg_img = bg_img
+        self.img = img
+
+class ButtonBlue(MapObject):
+    def __init__(self, img, bg_img):
+        self.bg_img = bg_img
+        self.img = img
+
+class Teleport(MapObject):
+    def __init__(self, img, bg_img):
+        self.bg_img = bg_img
+        self.img = img
+
+class Trap(MapObject):
+    def __init__(self, img, bg_img):
+        self.bg_img = bg_img
+        self.img = img
+
+class Gravel(MapObject):
+    def __init__(self, img, bg_img):
+        self.bg_img = bg_img
+        self.img = img
+
+class Hint(MapObject):
+    def __init__(self, img, bg_img):
+        self.bg_img = bg_img
+        self.img = img
+
+class BlockedSE(MapObject):
+    def __init__(self, img, bg_img):
+        self.bg_img = bg_img
+        self.img = img
+
+class Cloner(MapObject):
+    def __init__(self, img, bg_img):
+        self.bg_img = bg_img
+        self.img = img
+
+class ForceAll(MapObject):
+    def __init__(self, img, bg_img):
+        self.bg_img = bg_img
+        self.img = img
+
+
+
+class Exit(MapObject):
+    def __init__(self, img, bg_img):
+        self.bg_img = bg_img
+        self.img = img
+    
+    def enter(self, game_engine, pos_x, pos_y, creature):
+        game_engine.game_state = FINISHED
+
+
+class DynamicMapObject(MapObject):
+    """
+    #2    Computer Chip                        0    1 - consume
+    #100    Blue Key                           0    1 - consume
+    #101    Red Key                            0    1 - consume
+    #102    Green Key                          0    1 - consume
+    #103    Yellow Key                         0    1 - consume
+    #104    Flippers                           0    0 - consume
+    #105    Fire Boots                         0    0 - consume
+    #106    Ice Skates                         0    0 - consume
+    #107    Suction Boots                      0    0 - consume
+    
+    #3    Water                                0    0 - to dirt
+    #11    Dirt                                0    0 - to tile
+    #22    Blue Door                           0    1 - to tile
+    #23    Red Door                            0    1 - to tile
+    #24    Green Door                          0    1 - to tile
+    #25    Yellow Door                         0    1 - to tile
+    #30    Blue Block, becomes Tile            0    0 - draw tile
+    #31    Blue Block, becomes Wall            0    0 - draw wall
+    #34    Socket                              0    1 - consume
+    #37    Switch Block, Closed                0    0 - draw open
+    #38    Switch Block, Open                  0    0 - draw close
+    #42    Bomb                                0    0 - explode
+    #44    Invisible Wall (Will appear)        0    0 - become wall
+    #46    Pass Wall                           0    0 - become wall
+    """
+    def __init__(self):
+        pass
+
+
+class Consumeable(MapObject):
+    def enter(self, game_engine, pos_x, pos_y, creature):
+        #replace the chip with a tile
+        new_obj = object_generator(0, game_engine.images)
+        game_engine.map[pos_x][pos_y] = new_obj
+        creature.add_inventory(self.item_name)
+
+class Chip(Consumeable):
+    def __init__(self, img, bg_img):
+        self.bg_img = bg_img
+        self.img = img
+        self.item_name = 'CHIP'
+    
+    def enter(self, game_engine, pos_x, pos_y, creature):
+        game_engine.get_chip()
+        Consumeable.enter(self, game_engine, pos_x, pos_y, creature)
+
+class KeyBlue(Consumeable):
+    def __init__(self, img, bg_img):
+        self.bg_img = bg_img
+        self.img = img
+        self.item_name = 'KEY_BLUE'
+
+class KeyRed(Consumeable):
+    def __init__(self, img, bg_img):
+        self.bg_img = bg_img
+        self.img = img
+        self.item_name = 'KEY_RED'
+
+class KeyGreen(Consumeable):
+    def __init__(self, img, bg_img):
+        self.bg_img = bg_img
+        self.img = img
+        self.item_name = 'KEY_GREEN'
+
+class KeyYellow(Consumeable):
+    def __init__(self, img, bg_img):
+        self.bg_img = bg_img
+        self.img = img
+        self.item_name = 'KEY_YELLOW'
+
+class Flippers(Consumeable):
+    def __init__(self, img, bg_img):
+        self.bg_img = bg_img
+        self.img = img
+        self.item_name = 'INV_FLIPPERS'
+
+class FireBoots(Consumeable):
+    def __init__(self, img, bg_img):
+        self.bg_img = bg_img
+        self.img = img
+        self.item_name = 'INV_FIREBOOTS'
+
+class Skates(Consumeable):
+    def __init__(self, img, bg_img):
+        self.bg_img = bg_img
+        self.img = img
+        self.item_name = 'INV_SKATES'
+
+class SuctionBoots(Consumeable):
+    def __init__(self, img, bg_img):
+        self.bg_img = bg_img
+        self.img = img
+        self.item_name = 'INV_SUCTIONBOOTS'
+
+
+class Door(MapObject):
+    def __init__(self):
+        pass
+        
+    def enterable(self, dx, dy, items, creature, game_engine):
+        return creature.check_inventory(self.key, self.count)
+    
+    def enter(self, game_engine, pos_x, pos_y, creature):
+        #use the inventory:
+        if self.use_item:
+            creature.use_item(self.key)
+        
+        #replace the chip with a tile
+        new_obj = object_generator(0, game_engine.images)
+        game_engine.map[pos_x][pos_y] = new_obj
+
+
+class DoorBlue(Door):
+    def __init__(self, img, bg_img):
+        self.bg_img = bg_img
+        self.img = img
+        self.key = 'KEY_BLUE'
+        self.use_item = True
+        self.count = 1
+
+class DoorRed(Door):
+    def __init__(self, img, bg_img):
+        self.bg_img = bg_img
+        self.img = img
+        self.key = 'KEY_RED'
+        self.use_item = True
+        self.count = 1
+
+class DoorGreen(Door):
+    def __init__(self, img, bg_img):
+        self.bg_img = bg_img
+        self.img = img
+        self.key = 'KEY_GREEN'
+        self.use_item = False #this key is special
+        self.count = 1
+
+class DoorYellow(Door):
+    def __init__(self, img, bg_img):
+        self.bg_img = bg_img
+        self.img = img
+        self.key = 'KEY_YELLOW'
+        self.use_item = True
+        self.count = 1
+
+
+
+class ClerableMap(MapObject):
+    def __init__(self):
+        pass
+    
+    def enter(self, game_engine, pos_x, pos_y, creature):
+        #replace this item with a tile
+        new_obj = object_generator(0, game_engine.images)
+        game_engine.map[pos_x][pos_y] = new_obj
+
+    
+
+class Socket(ClerableMap):
+    def __init__(self, img, bg_img):
+        self.bg_img = bg_img
+        self.img = img
+    
+    def enterable(self, dx, dy, items, creature, game_engine):
+        if game_engine.have_all_chips():
+            return True
+        else:
+            return False
+
+class Dirt(ClerableMap):
+    def __init__(self, img, bg_img):
+        self.bg_img = bg_img
+        self.img = img
+
+
+
+
+class Water(MapObject):
+    def __init__(self, img, bg_img):
+        self.bg_img = bg_img
+        self.img = img
+
+    def enter(self, game_engine, pos_x, pos_y, creature):
+        creature.drown(game_engine, pos_x, pos_y)
+        
+
+class BlueNone(MapObject):
+    def __init__(self, img, bg_img):
+        self.bg_img = bg_img
+        self.img = img
+
+class BlueWall(MapObject):
+    def __init__(self, img, bg_img):
+        self.bg_img = bg_img
+        self.img = img
+
+class SwitchedWall(MapObject):
+    def __init__(self, img, bg_img):
+        self.bg_img = bg_img
+        self.img = img
+
+class SwitchedNone(MapObject):
+    def __init__(self, img, bg_img):
+        self.bg_img = bg_img
+        self.img = img
+
+class Bomb(MapObject):
+    def __init__(self, img, bg_img):
+        self.bg_img = bg_img
+        self.img = img
+        
+class SemiHiddenWall(MapObject):
+    def __init__(self, img, bg_img):
+        self.bg_img = bg_img
+        self.img = img
+
+class PassWall(MapObject):
+    def __init__(self, img, bg_img):
+        self.bg_img = bg_img
+        self.img = img
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+class Item(GameObject):
+    def __init__(self):
+        self.collision_list = []
+        self.items = {}
+        self.immunities = []
+
+    def check_map_bound(self, new_x, new_y):
+        #check if the new position is in a map
+        if new_x > (LEVELSIZE-1):
+            return False
+        elif new_x < 0:
+            return False
+        if new_y > (LEVELSIZE-1):
+            return False
+        elif new_y < 0:
+            return False
+
+        return True
+        
+    def valid_move(self, start_x, start_y, dx, dy, map, items, game_engine):
+        """
+        Move an item from start_x, start_y by dx, dy 
+        """
+        #Check the change is in bounds
+        new_x = start_x + dx
+        new_y = start_y + dy
+
+        valid_move = self.check_map_bound(new_x, new_y)
+        if not valid_move:
+            return False, start_x, start_y
+        
+        #see what direction the map wants the player to move
+        # leavable checks if the new position is enterable
+        curr_floor = map[start_x][start_y]
+        valid_move = curr_floor.leavable(start_x, start_y, dx, dy,
+                                         map, items, game_engine)
+        
+        if not valid_move:
+            return False, start_x, start_y
+        
+        neighbors_ok = self.move_neighbors(new_x, new_y, dx, dy, map, items, game_engine)
+        if neighbors_ok:
+            items[new_x][new_y] = self
+            items[start_x][start_y] = None
+            map[new_x][new_y].enter(game_engine, new_x, new_y, self)
+            return True, new_x, new_y
+        else:
+            return False, start_x, start_y
+
+
+    def move_neighbors(self, new_x, new_y, dx, dy, map, items, game_engine):
+        #if there are no item in the way, the move is allowed
+        if not items[new_x][new_y]:
+            return True
+        
+        #see if the items can collide
+        dest_item = items[new_x][new_y]
+        collidable = False
+        for collision_class in self.collision_list:
+            if isinstance(dest_item, collision_class):
+                collidable = True
+                break
+        
+        if not collidable:
+            return False
+        
+        valid_move = dest_item.valid_move(new_x, new_y, dx, dy, map, items, game_engine)[0]
+        return valid_move
+
+    def add_inventory(self, item_name):
+        console.log('Not Implemented')
+        return
+    
+    def check_inventory(self, item_name, count):
+        console.log('Not Implemented')
+        return False
+    
+    def use_item(self, item_name):
+        console.log('Not Implemented')
+        return
+    
+    def is_safe(type, item):
+        console.log('Not Implemented')
+        return False
+    
+    def burn(self, game_engine, pos_x, pos_y):
+        console.log('Not Implemented')
+        return
+            
+    def drown(self, game_engine, pos_x, pos_y):
+        console.log('Not Implemented')
+        return
+
+
+
+class Block(Item):
+    def __init__(self, img, bg_img):
+        self.bg_img = bg_img
+        self.img = img
+    
+    def burn(self, game_engine, pos_x, pos_y):
+        #do nothing blocks are not affected by fire
+        return
+    
+    def drown(self, game_engine, pos_x, pos_y):
+        #this drowns the block - makes dirt
+        game_engine.map[pos_x][pos_y] = object_generator(11, game_engine.images)
+        game_engine.items[pos_x][pos_y] = None
+
+
+class Creature(Item):
+    def __init__(self):
+        pass
+    
+    def add_inventory(self, item_name):
+        item_count = self.items[item_name]
+        if type(item_count) is "undefined":
+            self.items[item_name] = 0
+        
+        self.items[item_name] += 1
+    
+    def check_inventory(self, item_name, count):
+        item_count = self.items[item_name]
+        has_items = False
+        if type(item_count) is not "undefined" and \
+                self.items[item_name] >= count:
+            has_items = True
+        return has_items
+    
+    def use_item(self, item_name):
+        self.items[item_name] -= 1
+    
+    def is_safe(self, dmg_type, item):
+        if self.immunities.indexOf(dmg_type) >= 0:
+            return True
+        elif self.check_inventory(item, 1):
+            return True
+        else:
+            return False
+    
+    def burn(self, game_engine, pos_x, pos_y):
+        if not self.is_safe('FIRE', 'INV_FIREBOOTS'):
+            #kill the unit
+            game_engine.items[pos_x][pos_y] = None
+            
+    def drown(self, game_engine, pos_x, pos_y):
+        if not self.is_safe('WATER', 'INV_FLIPPERS'):
+            #kill the unit
+            game_engine.items[pos_x][pos_y] = None
+
+class Player(Creature):
+    """
+    #51    Drowning Chip                       0    0
+    #52    Burned Chip                         0    0
+    #53    Burned Chip(2)                      0    0
+    #57    Chip in Exit - end game             0    0
+    #60    Chip Swimming (N)                   1    0
+    #61    Chip Swimming (W)                   1    0
+    #62    Chip Swimming (S)                   1    0
+    #63    Chip Swimming (E)                   1    0
+    #108    Chip (N)                          1    1
+    #109    Chip (W)                          1    1
+    #110    Chip (S) (Always used)            1    1
+    #111    Chip (E)                          1    1
+    """
+    def __init__(self, img, bg_img):
+        self.bg_img = bg_img
+        self.img = img
+        self.collision_list = [Block]
+
+    def burn(self, game_engine, pos_x, pos_y):
+        if not self.is_safe('FIRE', 'INV_FIREBOOTS'):
+            #kill the unit
+            game_engine.game_state = DEAD
+            
+    def drown(self, game_engine, pos_x, pos_y):
+        if not self.is_safe('WATER', 'INV_FLIPPERS'):
+            #kill the unit
+            game_engine.game_state = DEAD
+
+
+class Monster(Creature):
+    """
+    #Monsters
+    #64    Bug (N)                             1    0
+    #65    Bug (W)                             1    0
+    #66    Bug (S)                             1    0
+    #67    Bug (E)                             1    0
+    #68    Fire Bug (N)                         1    0
+    #69    Fire Bug (W)                        1    0
+    #70    Fire Bug (S)                        1    0
+    #71    Fire Bug (E)                        1    0
+    #72    Pink Ball (N)                        1    0
+    #73    Pink Ball (W)                       1    0
+    #74    Pink Ball (S)                       1    0
+    #75    Pink Ball (E)                       1    0
+    #76    Tank (N)                            1    0
+    #77    Tank (W)                            1    0
+    #78    Tank (S)                            1    0
+    #79    Tank (E)                            1    0
+    #80    Ghost (N)                           1    0
+    #81    Ghost (W)                           1    0
+    #82    Ghost (S)                           1    0
+    #83    Ghost (E)                           1    0
+    #84    Frog (N)                            1    0
+    #85    Frog (W)                            1    0
+    #86    Frog (S)                            1    0
+    #87    Frog (E)                            1    0
+    #88    Dumbbell (N)                        1    0
+    #89    Dumbbell (W)                        1    0
+    #90    Dumbbell (S)                        1    0
+    #91    Dumbbell (E)                        1    0
+    #92    Blob (N)                            1    0
+    #93    Blob (W)                            1    0
+    #94    Blob (S)                            1    0
+    #95    Blob (E)                            1    0
+    #96    Centipede (N)                       1    0
+    #97    Centipede (W)                       1    0
+    #98    Centipede (S)                       1    0
+    #99    Centipede (E)                        1    0
+    """
+    def __init__(self):
+        self.collision_list = []
+
+
+class Bug(Monster):
+    def __init__(self, img, bg_img):
+        self.bg_img = bg_img
+        self.img = img
+
+class FireBug(Monster):
+    def __init__(self, img, bg_img):
+        self.bg_img = bg_img
+        self.img = img
+
+class PinkBall(Monster):
+    def __init__(self, img, bg_img):
+        self.bg_img = bg_img
+        self.img = img
+
+class Tank(Monster):
+    def __init__(self, img, bg_img):
+        self.bg_img = bg_img
+        self.img = img
+
+class Ghost(Monster):
+    def __init__(self, img, bg_img):
+        self.bg_img = bg_img
+        self.img = img
+
+class Frog(Monster):
+    def __init__(self, img, bg_img):
+        self.bg_img = bg_img
+        self.img = img
+
+class Walker(Monster):
+    def __init__(self, img, bg_img):
+        self.bg_img = bg_img
+        self.img = img
+
+class Blob(Monster):
+    def __init__(self, img, bg_img):
+        self.bg_img = bg_img
+        self.img = img
+
+class Centipede(Monster):
+    def __init__(self, img, bg_img):
+        self.bg_img = bg_img
+        self.img = img
+
+
