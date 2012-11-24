@@ -1,0 +1,141 @@
+LEVELSIZE = 32 #LEVEL PARAMETERS
+BYTE = 2 #bytes in python
+WORD = 4 #bytes in python
+
+
+def ord(x):
+    if type(x) == 'string' and len(x) == 1:
+        return x.charCodeAt(0)
+    raise TypeError("Expected string of length 1")
+
+class Level:
+    def __init__(self, layerOne, layerTwo, lvlInfo):
+        self.layerOne = layerOne
+        self.layerTwo = layerTwo
+        self.lvlInfo = lvlInfo
+
+
+class LevelSet:
+    def __init__(self):
+        self.levelList = []
+        
+    def addLevel(self, layerOne, layerTwo, lvlInfo):
+        self.levelList.append(Level(layerOne, layerTwo, lvlInfo))
+    
+    def getLevel(self, lvlNum):
+        lvl = self.levelList[lvlNum-1]
+        return lvl.layerOne, lvl.layerTwo, lvl.lvlInfo
+        
+    def getNumLevels(self):
+        return len(self.levelList)
+
+
+class LevelLoader:
+    def __init__(self, controller, filename):
+        self.controller = controller
+        
+        main = self
+        client = new XMLHttpRequest()
+        client.onreadystatechange = def():
+            if (self.readyState == self.DONE):
+                if (self.response != None):
+                    main.on_download_complete(self.response)
+        client.open("GET", filename, false)
+        client.send()
+        
+    def on_download_complete(self, text):
+        levelSet = self.parseDataFile(text)
+        self.controller.level_loaded(levelSet)
+
+    def string2decWord(self, string):
+        #little endian
+        tmp1 = self.string2decByte(string[BYTE:2*BYTE])
+        tmp2 = self.string2decByte(string[0:BYTE])
+        return (tmp1 << 8) + (tmp2)
+    
+    def string2decByte(self, string):
+        didg1 = self.string2decDidget(string[0])*16
+        didg2 = self.string2decDidget(string[1])
+        return didg1+didg2
+    
+    def string2decDidget(self, string):
+        ordInt = ord(string)
+        if ordInt == 48:
+            return 0
+        elif ordInt < 58:
+            # 0-9 ascii
+            return ordInt-48
+        else:
+            #letter
+            return ordInt-87
+            
+    def readMapLayer(self, text, currPos):
+        layerBytes = self.string2decWord(text[currPos:currPos+WORD])
+        currPos += WORD
+        
+        layerInfo = []
+        bytesLeft = layerBytes
+        
+        while (bytesLeft > 0):
+            #read object code
+            objectCode = self.string2decByte(text[currPos:currPos+BYTE])
+            currPos += BYTE
+            if objectCode==255:
+                #This is RLE encoding, add multiple copies
+                numCopies = self.string2decByte(text[currPos:currPos+BYTE])
+                currPos += BYTE
+                objectCode = self.string2decByte(text[currPos:currPos+BYTE])
+                currPos += BYTE
+                for i in range(numCopies):
+                    layerInfo.append(objectCode)
+                bytesLeft = bytesLeft - 3
+            else:
+                #add 1 copy
+                layerInfo.append(objectCode)
+                bytesLeft = bytesLeft - 1
+        
+        #convert to matrix
+        objArray = []
+        for i in range(LEVELSIZE):
+            objArray.append( layerInfo[(i*LEVELSIZE):(i*LEVELSIZE+32)] )
+        
+        return layerBytes, objArray, currPos
+        
+    def parseDataFile(self, text):
+        #read header
+        currPos = 4*BYTE #read 4 bytes
+        numLevels = self.string2decWord(text[currPos:currPos+WORD])
+        currPos += WORD
+        
+        levelSet  = LevelSet()
+        
+        for i in range(numLevels):
+    
+            #read level header
+            currLevelBytes = self.string2decWord(text[currPos:currPos+WORD])
+            currPos += WORD
+            #currLevelNum = self.string2decWord(text[currPos:currPos+WORD])
+            currPos += WORD
+            currLevelTimeLim = self.string2decWord(text[currPos:currPos+WORD])
+            currPos += WORD
+            currLevelChips = self.string2decWord(text[currPos:currPos+WORD])
+            currPos += WORD
+            lvlInfo = [currLevelTimeLim, currLevelChips]
+        
+            levelLeft = (currLevelBytes-6)*BYTE
+            
+            #read map detail
+            #map detail header
+            currPos += WORD #spare = f.read(WORD) #compressed/uncompressed
+            levelLeft = levelLeft - WORD
+            layerBytes, layerOne, currPos = self.readMapLayer(text, currPos)
+            levelLeft = levelLeft - layerBytes*BYTE - WORD #last 2 for map header fields
+            layerBytes, layerTwo, currPos = self.readMapLayer(text, currPos)
+            levelLeft = levelLeft - layerBytes*BYTE - WORD #last 2 for map header fields
+            
+            currPos = currPos + (levelLeft) #junk = f.read(levelLeft*BYTE)
+            
+            #store the lvl
+            levelSet.addLevel(layerOne, layerTwo, lvlInfo)
+            
+        return levelSet

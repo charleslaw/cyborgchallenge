@@ -1,0 +1,98 @@
+#   Copyright 2012 Charles Law (charles.law@gmail.com)
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+#
+
+import game_model
+import level_loader
+
+
+class Controller:
+    def __init__(self, model):
+        self.model = model
+        self.key_up = False
+        self.key_down = False
+        self.key_left = False
+        self.key_right = False
+        self.key_fire = False
+        
+        
+        #Load images & levels
+        self.levels_loaded = False
+        LevelLoader(self, 'Level1dat.txt')
+        
+        self.images_loaded = False
+        self.load_images()
+        
+        
+    def load_images()
+        #Load images
+        imgsrcs = ['./images/Ship1.png',
+                   './images/Ship2.png',
+                   './images/asteroid.png']
+
+        self.img = [None, None, None]
+        for i in range(3):
+            main.img[i] = new Image()
+            main.img[i].src = imgsrcs[i]
+            main.img[i].onload = def():
+                main.number_images_loaded += 1
+                if main.number_images_loaded >= 3:
+                    main.images_loaded = True
+                    main.try_start_game()
+        
+        
+    def level_loaded(self, level_set):
+        self.level_set = level_set
+        self.levels_loaded = True
+        print(level_set)
+
+
+    def try_start_game(self):
+        if self.levels_loaded and self.images_loaded:
+            self.start_game()
+
+
+    def start_game(self, view):
+        self.view = view
+        self.model.start_game(view)
+        self.model.reset()
+
+        #setup a timer
+        main = self
+        setInterval(def():
+            main.update()
+        , 1000/FPS)
+
+    def update(self):
+        self.keyboard_updates()
+        self.model.update()
+
+    def keyboard_updates(self):
+        ship = self.model.ship
+
+        drot = 0
+        if self.key_left:
+            drot -= ROTATE_SPEED
+        if self.key_right:
+            drot += ROTATE_SPEED
+        if drot:
+            ship.rotate_ship(drot)
+
+        if self.key_up:
+            ship.thrust()
+        else:
+            ship.friction()
+
+        if self.key_fire:
+            self.model.trigger_fire()
