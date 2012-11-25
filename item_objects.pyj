@@ -1,0 +1,312 @@
+import model_objects
+
+class Item(GameObject):
+    def __init__(self):
+        self.collision_list = []
+        self.items = {}
+        self.immunities = []
+        self.momentum = None
+        
+        #Considered saving the index, but that would require a lot of work
+        # to keep updated.  
+        self.is_slipping = False
+
+    def check_map_bound(self, new_x, new_y):
+        #check if the new position is in a map
+        if new_x > (LEVELSIZE-1):
+            return False
+        elif new_x < 0:
+            return False
+        if new_y > (LEVELSIZE-1):
+            return False
+        elif new_y < 0:
+            return False
+
+        return True
+        
+    def valid_move(self, start_x, start_y, dx, dy, map, items, game_engine, slip_ind):
+        """
+        Move an item from start_x, start_y by dx, dy 
+        """
+        #Check the change is in bounds
+        new_x = start_x + dx
+        new_y = start_y + dy
+
+        valid_move = self.check_map_bound(new_x, new_y)
+        if not valid_move:
+            return False, start_x, start_y
+        
+        #see what direction the map wants the player to move
+        # leavable checks if the new position is enterable
+        curr_floor = map[start_x][start_y]
+        valid_move = curr_floor.leavable(start_x, start_y, dx, dy,
+                                         map, items, game_engine)
+        
+        if not valid_move:
+            return False, start_x, start_y
+        
+        neighbors_ok = self.move_neighbors(new_x, new_y, dx, dy, map, items, game_engine)
+        if neighbors_ok:
+            items[new_x][new_y] = self
+            items[start_x][start_y] = None
+            map[new_x][new_y].enter(game_engine, new_x, new_y, dx, dy, self, slip_ind)
+            return True, new_x, new_y
+        else:
+            return False, start_x, start_y
+
+
+    def move_neighbors(self, new_x, new_y, dx, dy, map, items, game_engine):
+        #if there are no item in the way, the move is allowed
+        if not items[new_x][new_y]:
+            return True
+        
+        #see if the items can collide
+        dest_item = items[new_x][new_y]
+        collidable = False
+        for collision_class in self.collision_list:
+            if isinstance(dest_item, collision_class):
+                collidable = True
+                break
+        
+        if not collidable:
+            return False
+        
+        #if dest_item.is_slipping
+        #find the slip_ind
+        slip_ind = None
+        
+        valid_move = dest_item.valid_move(new_x, new_y, dx, dy, map, items, game_engine, slip_ind)[0]
+        return valid_move
+
+    def add_inventory(self, item_name):
+        console.log('Not Implemented')
+        return
+    
+    def check_inventory(self, item_name, count):
+        console.log('Not Implemented')
+        return False
+    
+    def use_item(self, item_name):
+        console.log('Not Implemented')
+        return
+    
+    def is_safe(type, item):
+        console.log('Not Implemented')
+        return False
+    
+    def burn(self, game_engine, pos_x, pos_y):
+        console.log('Not Implemented')
+        return
+            
+    def drown(self, game_engine, pos_x, pos_y):
+        console.log('Not Implemented')
+        return
+        
+    def is_safe(self, dmg_type, item):
+        if self.immunities.indexOf(dmg_type) >= 0:
+            return True
+        elif self.check_inventory(item, 1):
+            return True
+        else:
+            return False
+
+        
+    def add_to_sliplist(self, game_engine, index, pos_x, pos_y, dx, dy):
+        """
+        if index is None, 
+        """
+        self.is_slipping = True
+        if index == None:
+            game_engine.slip_list.append((pos_x, pos_y, dx, dy))
+        else:
+            game_engine.slip_list[index] = (pos_x, pos_y, dx, dy)
+
+
+class Block(Item):
+    def __init__(self, img, bg_img):
+        self.bg_img = bg_img
+        self.img = img
+    
+    def burn(self, game_engine, pos_x, pos_y):
+        #do nothing blocks are not affected by fire
+        return
+    
+    def drown(self, game_engine, pos_x, pos_y):
+        #this drowns the block - makes dirt
+        game_engine.map[pos_x][pos_y] = object_generator(11, game_engine.images)
+        game_engine.items[pos_x][pos_y] = None
+
+
+class Creature(Item):
+    def __init__(self):
+        pass
+    
+    def add_inventory(self, item_name):
+        item_count = self.items[item_name]
+        if type(item_count) is "undefined":
+            self.items[item_name] = 0
+        
+        self.items[item_name] += 1
+    
+    def check_inventory(self, item_name, count):
+        item_count = self.items[item_name]
+        has_items = False
+        if type(item_count) is not "undefined" and \
+                self.items[item_name] >= count:
+            has_items = True
+        return has_items
+    
+    def use_item(self, item_name):
+        self.items[item_name] -= 1
+    
+
+    def burn(self, game_engine, pos_x, pos_y):
+        if not self.is_safe('FIRE', 'INV_FIREBOOTS'):
+            #kill the unit
+            game_engine.items[pos_x][pos_y] = None
+            
+    def drown(self, game_engine, pos_x, pos_y):
+        if not self.is_safe('WATER', 'INV_FLIPPERS'):
+            #kill the unit
+            game_engine.items[pos_x][pos_y] = None
+
+class Player(Creature):
+    """
+    #51    Drowning Chip                       0    0
+    #52    Burned Chip                         0    0
+    #53    Burned Chip(2)                      0    0
+    #57    Chip in Exit - end game             0    0
+    #60    Chip Swimming (N)                   1    0
+    #61    Chip Swimming (W)                   1    0
+    #62    Chip Swimming (S)                   1    0
+    #63    Chip Swimming (E)                   1    0
+    #108    Chip (N)                          1    1
+    #109    Chip (W)                          1    1
+    #110    Chip (S) (Always used)            1    1
+    #111    Chip (E)                          1    1
+    """
+    def __init__(self, img, bg_img):
+        self.bg_img = bg_img
+        self.img = img
+        self.collision_list = [Block]
+
+    def valid_move(self, start_x, start_y, dx, dy, map, items, game_engine, slip_ind):
+        is_valid, new_x, new_y = Item.valid_move(self, start_x, start_y, dx, dy, map, items, game_engine, slip_ind)
+
+        game_engine.x = new_x
+        game_engine.y = new_y
+        console.log('MOVED TO' + new_x + new_y + ' ' + slip_ind)
+        return is_valid, new_x, new_y
+
+    def burn(self, game_engine, pos_x, pos_y):
+        if not self.is_safe('FIRE', 'INV_FIREBOOTS'):
+            #kill the unit
+            game_engine.game_state = DEAD
+            
+    def drown(self, game_engine, pos_x, pos_y):
+        if not self.is_safe('WATER', 'INV_FLIPPERS'):
+            #kill the unit
+            game_engine.game_state = DEAD
+
+    def add_to_sliplist(self, game_engine, index, pos_x, pos_y, dx, dy):
+        """
+        if index is None, add to the list
+        """
+        self.is_slipping = True
+        if index == None:
+            #unshift is like insert(0, item)
+            game_engine.slip_list.unshift((pos_x, pos_y, dx, dy))
+        else:
+            game_engine.slip_list[index] = (pos_x, pos_y, dx, dy)
+
+
+class Monster(Creature):
+    """
+    #Monsters
+    #64    Bug (N)                             1    0
+    #65    Bug (W)                             1    0
+    #66    Bug (S)                             1    0
+    #67    Bug (E)                             1    0
+    #68    Fire Bug (N)                         1    0
+    #69    Fire Bug (W)                        1    0
+    #70    Fire Bug (S)                        1    0
+    #71    Fire Bug (E)                        1    0
+    #72    Pink Ball (N)                        1    0
+    #73    Pink Ball (W)                       1    0
+    #74    Pink Ball (S)                       1    0
+    #75    Pink Ball (E)                       1    0
+    #76    Tank (N)                            1    0
+    #77    Tank (W)                            1    0
+    #78    Tank (S)                            1    0
+    #79    Tank (E)                            1    0
+    #80    Ghost (N)                           1    0
+    #81    Ghost (W)                           1    0
+    #82    Ghost (S)                           1    0
+    #83    Ghost (E)                           1    0
+    #84    Frog (N)                            1    0
+    #85    Frog (W)                            1    0
+    #86    Frog (S)                            1    0
+    #87    Frog (E)                            1    0
+    #88    Dumbbell (N)                        1    0
+    #89    Dumbbell (W)                        1    0
+    #90    Dumbbell (S)                        1    0
+    #91    Dumbbell (E)                        1    0
+    #92    Blob (N)                            1    0
+    #93    Blob (W)                            1    0
+    #94    Blob (S)                            1    0
+    #95    Blob (E)                            1    0
+    #96    Centipede (N)                       1    0
+    #97    Centipede (W)                       1    0
+    #98    Centipede (S)                       1    0
+    #99    Centipede (E)                        1    0
+    """
+    def __init__(self):
+        self.collision_list = []
+
+
+class Bug(Monster):
+    def __init__(self, img, bg_img):
+        self.bg_img = bg_img
+        self.img = img
+
+class FireBug(Monster):
+    def __init__(self, img, bg_img):
+        self.bg_img = bg_img
+        self.img = img
+
+class PinkBall(Monster):
+    def __init__(self, img, bg_img):
+        self.bg_img = bg_img
+        self.img = img
+
+class Tank(Monster):
+    def __init__(self, img, bg_img):
+        self.bg_img = bg_img
+        self.img = img
+
+class Ghost(Monster):
+    def __init__(self, img, bg_img):
+        self.bg_img = bg_img
+        self.img = img
+
+class Frog(Monster):
+    def __init__(self, img, bg_img):
+        self.bg_img = bg_img
+        self.img = img
+
+class Walker(Monster):
+    def __init__(self, img, bg_img):
+        self.bg_img = bg_img
+        self.img = img
+
+class Blob(Monster):
+    def __init__(self, img, bg_img):
+        self.bg_img = bg_img
+        self.img = img
+
+class Centipede(Monster):
+    def __init__(self, img, bg_img):
+        self.bg_img = bg_img
+        self.img = img
+
+

@@ -152,7 +152,8 @@ class Controller:
                 self.used_move = True
  
         if self.state == READY:
-            self.move_delay = FRAMES_PER_REG
+            self.half_speed_marker = False
+            self.quarter_speed_marker = False
             self.state = RUNNING
 
             #setup a timer
@@ -166,18 +167,37 @@ class Controller:
         if self.state < READY:
             return
 
-        self.keyboard_state_updates()
+        if self.half_speed_marker:
+            self.half_speed_updates()
+            self.half_speed_marker = False
+        else:
+            self.half_speed_marker = True
+            
         self.game_engine.update()
+        
 
+    def half_speed_updates(self):
+        """
+        10 m/s updates
+        """
+        self.game_engine.run_slips()
         
-    def keyboard_state_updates(self):
-        self.move_delay -= 1
-        
-        if self.move_delay == 0:
-            self.used_move = False #reset inputs
-            if self.queue_move:
-                self.game_engine.move_player(self.queue_move)
-                self.queue_move = None
-            self.move_delay = FRAMES_PER_REG
+        if self.quarter_speed_marker:
+            self.quarter_speed_updates()
+            self.quarter_speed_marker = False
+        else:
+            self.quarter_speed_marker = True
+
+
+    def quarter_speed_updates(self):
+        """
+        5 m/s updates:
+        - keyboard
+        """
+        self.used_move = False #reset inputs
+        if self.queue_move:
+            self.game_engine.move_player(self.queue_move)
+            self.queue_move = None
+        self.move_delay = FRAMES_PER_REG
  
 

@@ -14,6 +14,7 @@
 #
 
 import model_objects
+import item_objects
 
 direction_dpos_dict = {'UP':    [ 0, -1],
                        'DOWN':  [ 0,  1],
@@ -141,6 +142,7 @@ class Cyborg:
         self.num_chips = level_info[1]
         self.chips_left = level_info[1]
         self.game_state = LEVEL_RUNNING
+        self.slip_list = []
 
 
     def have_all_chips(self):
@@ -164,13 +166,48 @@ class Cyborg:
     def move_player(self, direction):
         dx, dy = direction_dpos_dict[direction]
         player_item = self.items[self.x][self.y]
-        valid_move, self.x, self.y = player_item.valid_move(self.x, self.y, dx, dy,
-                                                            self.map, self.items, self)
+
+        player_item.valid_move(self.x, self.y, dx, dy, self.map, self.items, self, None)
+        
         if self.game_state:
             if self.game_state == FINISHED:
                 self.controller.new_level(True)
             elif self.game_state == DEAD:
                 self.controller.new_level(False)
+
+
+    def run_slips(self):
+        #slip the player
+        more_items_to_slip = len(self.slip_list) > 0
+        i = 0
+        
+        while more_items_to_slip:
+            #get the item
+            pos_x, pos_y, dx, dy = self.slip_list[i]
+            slip_item = self.items[pos_x][pos_y]
+            
+            #try to slip the item
+            console.log('SLIP_ITEM' + pos_x + ' ' + pos_y + ' ' + i + ' ' + dx + ' ' + dy)
+            valid_move, new_x, new_y = slip_item.valid_move(pos_x, pos_y, dx, dy, self.map,
+                                                            self.items, self, i)
+            
+            #if the move failed, update the slip list
+            if not valid_move:
+                #remove from sliplist
+                #bounce (change momentum)
+                #if not failed & on sliding floor:
+                #    append to sliplist
+                pass
+            else:
+                new_floor = self.map[new_x][new_y]
+                currently_on_sliplist = True
+                new_floor.update_slips(slip_item, i, new_x, new_y, dx, dy, self)
+        
+            #go to the next item in the list
+            i += 1
+            more_items_to_slip = i < len(self.slip_list)
+            console.log('END ITER' + self.slip_list)
+
 
     def update(self):
         # Make model updates
