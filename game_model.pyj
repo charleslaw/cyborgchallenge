@@ -22,7 +22,6 @@ direction_dpos_dict = {'UP':    [ 0, -1],
                        'RIGHT': [ 1,  0]}
 
 
-FPS = 20 #20 supports "boosting" @ 20 moves/sec
 FRAMES_PER_SLIDE = 2 #20 f/s / 10m/s = 2 frames
 FRAMES_PER_REG = 4 #20 f/s / 5m/s = 4 frames
 BLOCK_DIM = 48 #pixels per block
@@ -164,6 +163,7 @@ class Cyborg:
 
 
     def move_player(self, direction):
+        console.log('MOVP')
         dx, dy = direction_dpos_dict[direction]
         player_item = self.items[self.x][self.y]
 
@@ -175,19 +175,27 @@ class Cyborg:
             elif self.game_state == DEAD:
                 self.controller.new_level(False)
 
-
+    def get_slip_ind(self, start_x, start_y):
+        for i in range(len(self.slip_list)):
+            slip_x, slip_y, slip_dx, slip_dy = self.slip_list[i]
+            if slip_x == start_x and slip_y == start_y:
+                #found the item, return it
+                return i
+                break
+        return -1
+                
     def run_slips(self):
         #slip the player
         more_items_to_slip = len(self.slip_list) > 0
         i = 0
-        
+
         while more_items_to_slip:
             #get the item
             pos_x, pos_y, dx, dy = self.slip_list[i]
             slip_item = self.items[pos_x][pos_y]
             
             #try to slip the item
-            console.log('SLIP_ITEM' + pos_x + ' ' + pos_y + ' ' + i + ' ' + dx + ' ' + dy)
+            #console.log('SLIP_ITEM' + pos_x + ' ' + pos_y + ' ' + i + ' ' + dx + ' ' + dy)
             valid_move, new_x, new_y = slip_item.valid_move(pos_x, pos_y, dx, dy, self.map,
                                                             self.items, self, i)
             
@@ -206,7 +214,7 @@ class Cyborg:
             #go to the next item in the list
             i += 1
             more_items_to_slip = i < len(self.slip_list)
-            console.log('END ITER' + self.slip_list)
+            #console.log('END ITER' + self.slip_list)
 
 
     def update(self):

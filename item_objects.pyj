@@ -49,9 +49,14 @@ class Item(GameObject):
         if neighbors_ok:
             items[new_x][new_y] = self
             items[start_x][start_y] = None
+            if slip_ind == None and self.is_slipping:
+                #voluntary move, but the item is slipping
+                slip_ind = game_engine.get_slip_ind(start_x, start_y)
+            console.log('slip-ind' + slip_ind)
             map[new_x][new_y].enter(game_engine, new_x, new_y, dx, dy, self, slip_ind)
             return True, new_x, new_y
         else:
+            #TODO: Remove from the sliplist
             return False, start_x, start_y
 
 
@@ -121,6 +126,9 @@ class Item(GameObject):
         else:
             game_engine.slip_list[index] = (pos_x, pos_y, dx, dy)
 
+    def remove_from_sliplist(self, game_engine, index, pos_x, pos_y, dx, dy):
+        game_engine.slip_list.pop(index)
+        self.is_slipping = False
 
 class Block(Item):
     def __init__(self, img, bg_img):
@@ -195,7 +203,6 @@ class Player(Creature):
 
         game_engine.x = new_x
         game_engine.y = new_y
-        console.log('MOVED TO' + new_x + new_y + ' ' + slip_ind)
         return is_valid, new_x, new_y
 
     def burn(self, game_engine, pos_x, pos_y):

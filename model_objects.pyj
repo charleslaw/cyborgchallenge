@@ -33,6 +33,8 @@ class MapObject(GameObject):
         return True
 
     def enter(self, game_engine, pos_x, pos_y, dx, dy, creature, slip_ind):
+        #TODO: remove from sliplist
+        creature.remove_from_sliplist(game_engine, slip_ind, pos_x, pos_y, dx, dy)
         return
         
     def update_slips(self, slip_item, index, pos_x, pos_y, dx, dy, game_engine):
@@ -228,11 +230,14 @@ class SlidingFloor(MapObject):
     
     def enter(self, game_engine, pos_x, pos_y, dx, dy, creature, slip_ind):
         #if this is a manual move, add to the sliplist
-        if slip_ind == None:
-            dx, dy = self.get_slip_dir(dx, dy)
-            is_slippery = not creature.is_safe(self.dmg_type, self.item)
-            if is_slippery:
-                creature.add_to_sliplist(game_engine, None, pos_x, pos_y, dx, dy)
+        console.log('AA' + creature + ' ' + slip_ind)
+        
+        dx, dy = self.get_slip_dir(dx, dy)
+        is_slippery = not creature.is_safe(self.dmg_type, self.item)
+        if is_slippery:
+            creature.add_to_sliplist(game_engine, slip_ind, pos_x, pos_y, dx, dy)
+        else:
+            creature.remove_from_sliplist(game_engine, slip_ind, pos_x, pos_y, dx, dy)
 
 class ForceFloor(SlidingFloor):
     def __init__(self):

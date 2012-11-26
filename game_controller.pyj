@@ -16,7 +16,7 @@
 import game_model
 import level_loader
 
-
+FPS = 20 #20 supports "boosting" @ 20 moves/sec
 INIT = 0
 READY = 1
 RUNNING = 2
@@ -180,13 +180,13 @@ class Controller:
         """
         10 m/s updates
         """
-        self.game_engine.run_slips()
-        
         if self.quarter_speed_marker:
             self.quarter_speed_updates()
             self.quarter_speed_marker = False
         else:
             self.quarter_speed_marker = True
+            
+        self.game_engine.run_slips()
 
 
     def quarter_speed_updates(self):
@@ -194,10 +194,11 @@ class Controller:
         5 m/s updates:
         - keyboard
         """
-        self.used_move = False #reset inputs
         if self.queue_move:
             self.game_engine.move_player(self.queue_move)
             self.queue_move = None
-        self.move_delay = FRAMES_PER_REG
+            self.used_move = True
+        else:
+            self.used_move = False #reset inputs
  
 
