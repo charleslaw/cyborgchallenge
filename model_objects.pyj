@@ -92,122 +92,125 @@ class StaticMapObject(MapObject):
         pass
         
 class Tile(MapObject):
-    def __init__(self, img, bg_img):
+    def __init__(self, type_index, images, bg_img):
         self.bg_img = bg_img
-        self.img = img
+        self.img = images[type_index]
 
 class Wall(MapObject):
-    def __init__(self, img, bg_img):
+    def __init__(self, type_index, images, bg_img):
         self.bg_img = bg_img
-        self.img = img
+        self.img = images[type_index]
 
     def enterable(self, dx, dy, items, creature, game_engine):
         #cannot enter this object
         return False
 
 class Fire(MapObject):
-    def __init__(self, img, bg_img):
+    def __init__(self, type_index, images, bg_img):
         self.bg_img = bg_img
-        self.img = img
+        self.img = images[type_index]
         
     def enter(self, game_engine, pos_x, pos_y, dx, dy, creature, slip_ind):
         creature.burn(game_engine, pos_x, pos_y)
 
 class HiddenWall(MapObject):
-    def __init__(self, img, bg_img):
+    def __init__(self, type_index, images, bg_img):
         self.bg_img = bg_img
-        self.img = img
+        self.img = images[type_index]
 
 class BlockedNorth(MapObject):
-    def __init__(self, img, bg_img):
+    def __init__(self, type_index, images, bg_img):
         self.bg_img = bg_img
-        self.img = img
+        self.img = images[type_index]
 
 class BlockedWest(MapObject):
-    def __init__(self, img, bg_img):
+    def __init__(self, type_index, images, bg_img):
         self.bg_img = bg_img
-        self.img = img
+        self.img = images[type_index]
 
 class BlockedSouth(MapObject):
-    def __init__(self, img, bg_img):
+    def __init__(self, type_index, images, bg_img):
         self.bg_img = bg_img
-        self.img = img
+        self.img = images[type_index]
 
 class BlockedEast(MapObject):
-    def __init__(self, img, bg_img):
+    def __init__(self, type_index, images, bg_img):
         self.bg_img = bg_img
-        self.img = img
+        self.img = images[type_index]
 
 class CloneNorth(MapObject):
-    def __init__(self, img, bg_img):
+    def __init__(self, type_index, images, bg_img):
         self.bg_img = bg_img
-        self.img = img
+        self.img = images[type_index]
 
 class CloneWest(MapObject):
-    def __init__(self, img, bg_img):
+    def __init__(self, type_index, images, bg_img):
         self.bg_img = bg_img
-        self.img = img
+        self.img = images[type_index]
 
 class CloneSouth(MapObject):
-    def __init__(self, img, bg_img):
+    def __init__(self, type_index, images, bg_img):
         self.bg_img = bg_img
-        self.img = img
+        self.img = images[type_index]
 
 class CloneEast(MapObject):
-    def __init__(self, img, bg_img):
+    def __init__(self, type_index, images, bg_img):
         self.bg_img = bg_img
-        self.img = img
+        self.img = images[type_index]
 
 class Theif(MapObject):
-    def __init__(self, img, bg_img):
+    def __init__(self, type_index, images, bg_img):
         self.bg_img = bg_img
-        self.img = img
+        self.img = images[type_index]
 
 class ButtonGreen(MapObject):
-    def __init__(self, img, bg_img):
+    def __init__(self, type_index, images, bg_img):
         self.bg_img = bg_img
-        self.img = img
+        self.img = images[type_index]
+    
+    def enter(self, game_engine, pos_x, pos_y, dx, dy, creature, slip_ind):
+        game_engine.switch_green_doors()
 
 class ButtonRed(MapObject):
-    def __init__(self, img, bg_img):
+    def __init__(self, type_index, images, bg_img):
         self.bg_img = bg_img
-        self.img = img
+        self.img = images[type_index]
 
 class ButtonBrown(MapObject):
-    def __init__(self, img, bg_img):
+    def __init__(self, type_index, images, bg_img):
         self.bg_img = bg_img
-        self.img = img
+        self.img = images[type_index]
 
 class ButtonBlue(MapObject):
-    def __init__(self, img, bg_img):
+    def __init__(self, type_index, images, bg_img):
         self.bg_img = bg_img
-        self.img = img
+        self.img = images[type_index]
 
 class Trap(MapObject):
-    def __init__(self, img, bg_img):
+    def __init__(self, type_index, images, bg_img):
         self.bg_img = bg_img
-        self.img = img
+        self.img = images[type_index]
 
 class Gravel(MapObject):
-    def __init__(self, img, bg_img):
+    def __init__(self, type_index, images, bg_img):
         self.bg_img = bg_img
-        self.img = img
+        self.img = images[type_index]
 
 class BlockedSE(MapObject):
-    def __init__(self, img, bg_img):
+    def __init__(self, type_index, images, bg_img):
         self.bg_img = bg_img
-        self.img = img
+        self.img = images[type_index]
 
 class Cloner(MapObject):
-    def __init__(self, img, bg_img):
+    def __init__(self, type_index, images, bg_img):
         self.bg_img = bg_img
-        self.img = img
+        self.img = images[type_index]
 
 
 class Teleport(MapObject):
-    def __init__(self, img, bg_img):
+    def __init__(self, type_index, images, bg_img):
         self.bg_img = bg_img
-        self.img = img
+        self.img = images[type_index]
 
 
 
@@ -245,38 +248,38 @@ class ForceFloor(SlidingFloor):
         self.item = 'INV_SUCTIONBOOTS'
 
 class ForceAll(ForceFloor):
-    def __init__(self, img, bg_img):
+    def __init__(self, type_index, images, bg_img):
         self.bg_img = bg_img
-        self.img = img
+        self.img = images[type_index]
 
 class ForceNorth(ForceFloor):
-    def __init__(self, img, bg_img):
+    def __init__(self, type_index, images, bg_img):
         self.bg_img = bg_img
-        self.img = img
+        self.img = images[type_index]
             
     def get_slip_dir(self, dx, dy):
         return 0, -1
 
 class ForceEast(ForceFloor):
-    def __init__(self, img, bg_img):
+    def __init__(self, type_index, images, bg_img):
         self.bg_img = bg_img
-        self.img = img
+        self.img = images[type_index]
             
     def get_slip_dir(self, dx, dy):
         return 1, 0
 
 class ForstWest(ForceFloor):
-    def __init__(self, img, bg_img):
+    def __init__(self, type_index, images, bg_img):
         self.bg_img = bg_img
-        self.img = img
+        self.img = images[type_index]
             
     def get_slip_dir(self, dx, dy):
         return -1, 0
 
 class ForceSouth(ForceFloor):
-    def __init__(self, img, bg_img):
+    def __init__(self, type_index, images, bg_img):
         self.bg_img = bg_img
-        self.img = img
+        self.img = images[type_index]
             
     def get_slip_dir(self, dx, dy):
         return 0, 1
@@ -287,17 +290,17 @@ class IceFloor(SlidingFloor):
         self.item = 'INV_SKATES'
 
 class Ice(IceFloor):
-    def __init__(self, img, bg_img):
+    def __init__(self, type_index, images, bg_img):
         self.bg_img = bg_img
-        self.img = img
+        self.img = images[type_index]
         
     def get_slip_dir(self, dx, dy):
         return dx, dy
 
 class IceSE(IceFloor):
-    def __init__(self, img, bg_img):
+    def __init__(self, type_index, images, bg_img):
         self.bg_img = bg_img
-        self.img = img
+        self.img = images[type_index]
         
     def enterable(self, dx, dy, items, creature, game_engine):
         if dx == 1 or dy == 1:
@@ -313,9 +316,9 @@ class IceSE(IceFloor):
         return dx, dy
 
 class IceSW(IceFloor):
-    def __init__(self, img, bg_img):
+    def __init__(self, type_index, images, bg_img):
         self.bg_img = bg_img
-        self.img = img
+        self.img = images[type_index]
         
     def enterable(self, dx, dy, items, creature, game_engine):
         if dx == -1 or dy == 1:
@@ -331,9 +334,9 @@ class IceSW(IceFloor):
         return dx, dy
 
 class IceNW(IceFloor):
-    def __init__(self, img, bg_img):
+    def __init__(self, type_index, images, bg_img):
         self.bg_img = bg_img
-        self.img = img
+        self.img = images[type_index]
         
     def enterable(self, dx, dy, items, creature, game_engine):
         if dx == -1 or dy == -1:
@@ -349,9 +352,9 @@ class IceNW(IceFloor):
         return dx, dy
 
 class IceNE(IceFloor):
-    def __init__(self, img, bg_img):
+    def __init__(self, type_index, images, bg_img):
         self.bg_img = bg_img
-        self.img = img
+        self.img = images[type_index]
     
     def enterable(self, dx, dy, items, creature, game_engine):
         if dx == 1 or dy == -1:
@@ -369,15 +372,15 @@ class IceNE(IceFloor):
 
 
 class Hint(MapObject):
-    def __init__(self, img, bg_img):
+    def __init__(self, type_index, images, bg_img):
         self.bg_img = bg_img
-        self.img = img
+        self.img = images[type_index]
         
 
 class Exit(MapObject):
-    def __init__(self, img, bg_img):
+    def __init__(self, type_index, images, bg_img):
         self.bg_img = bg_img
-        self.img = img
+        self.img = images[type_index]
     
     def enter(self, game_engine, pos_x, pos_y, dx, dy, creature, slip_ind):
         game_engine.game_state = FINISHED
@@ -396,19 +399,22 @@ class DynamicMapObject(MapObject):
     #107    Suction Boots                      0    0 - consume
     
     #3    Water                                0    0 - to dirt
+    
+    #31    Blue Block, becomes Wall            0    0 - draw wall
+    #44    Invisible Wall (Will appear)        0    0 - to wall
+    #46    Pass Wall                           0    0 - to wall
+    
     #11    Dirt                                0    0 - to tile
     #22    Blue Door                           0    1 - to tile
     #23    Red Door                            0    1 - to tile
     #24    Green Door                          0    1 - to tile
     #25    Yellow Door                         0    1 - to tile
-    #30    Blue Block, becomes Tile            0    0 - draw tile
-    #31    Blue Block, becomes Wall            0    0 - draw wall
-    #34    Socket                              0    1 - consume
+    #34    Socket                              0    1 - to tile
+    #30    Blue Block, becomes Tile            0    0 - to tile
+    #42    Bomb                                0    0 - to tile
+    
     #37    Switch Block, Closed                0    0 - draw open
     #38    Switch Block, Open                  0    0 - draw close
-    #42    Bomb                                0    0 - explode
-    #44    Invisible Wall (Will appear)        0    0 - become wall
-    #46    Pass Wall                           0    0 - become wall
     """
     def __init__(self):
         pass
@@ -422,9 +428,9 @@ class Consumeable(MapObject):
         creature.add_inventory(self.item_name)
 
 class Chip(Consumeable):
-    def __init__(self, img, bg_img):
+    def __init__(self, type_index, images, bg_img):
         self.bg_img = bg_img
-        self.img = img
+        self.img = images[type_index]
         self.item_name = 'CHIP'
     
     def enter(self, game_engine, pos_x, pos_y, dx, dy, creature, slip_ind):
@@ -432,51 +438,51 @@ class Chip(Consumeable):
         Consumeable.enter(self, game_engine, pos_x, pos_y, dx, dy, creature)
 
 class KeyBlue(Consumeable):
-    def __init__(self, img, bg_img):
+    def __init__(self, type_index, images, bg_img):
         self.bg_img = bg_img
-        self.img = img
+        self.img = images[type_index]
         self.item_name = 'KEY_BLUE'
 
 class KeyRed(Consumeable):
-    def __init__(self, img, bg_img):
+    def __init__(self, type_index, images, bg_img):
         self.bg_img = bg_img
-        self.img = img
+        self.img = images[type_index]
         self.item_name = 'KEY_RED'
 
 class KeyGreen(Consumeable):
-    def __init__(self, img, bg_img):
+    def __init__(self, type_index, images, bg_img):
         self.bg_img = bg_img
-        self.img = img
+        self.img = images[type_index]
         self.item_name = 'KEY_GREEN'
 
 class KeyYellow(Consumeable):
-    def __init__(self, img, bg_img):
+    def __init__(self, type_index, images, bg_img):
         self.bg_img = bg_img
-        self.img = img
+        self.img = images[type_index]
         self.item_name = 'KEY_YELLOW'
 
 class Flippers(Consumeable):
-    def __init__(self, img, bg_img):
+    def __init__(self, type_index, images, bg_img):
         self.bg_img = bg_img
-        self.img = img
+        self.img = images[type_index]
         self.item_name = 'INV_FLIPPERS'
 
 class FireBoots(Consumeable):
-    def __init__(self, img, bg_img):
+    def __init__(self, type_index, images, bg_img):
         self.bg_img = bg_img
-        self.img = img
+        self.img = images[type_index]
         self.item_name = 'INV_FIREBOOTS'
 
 class Skates(Consumeable):
-    def __init__(self, img, bg_img):
+    def __init__(self, type_index, images, bg_img):
         self.bg_img = bg_img
-        self.img = img
+        self.img = images[type_index]
         self.item_name = 'INV_SKATES'
 
 class SuctionBoots(Consumeable):
-    def __init__(self, img, bg_img):
+    def __init__(self, type_index, images, bg_img):
         self.bg_img = bg_img
-        self.img = img
+        self.img = images[type_index]
         self.item_name = 'INV_SUCTIONBOOTS'
 
 
@@ -498,33 +504,33 @@ class Door(MapObject):
 
 
 class DoorBlue(Door):
-    def __init__(self, img, bg_img):
+    def __init__(self, type_index, images, bg_img):
         self.bg_img = bg_img
-        self.img = img
+        self.img = images[type_index]
         self.key = 'KEY_BLUE'
         self.use_item = True
         self.count = 1
 
 class DoorRed(Door):
-    def __init__(self, img, bg_img):
+    def __init__(self, type_index, images, bg_img):
         self.bg_img = bg_img
-        self.img = img
+        self.img = images[type_index]
         self.key = 'KEY_RED'
         self.use_item = True
         self.count = 1
 
 class DoorGreen(Door):
-    def __init__(self, img, bg_img):
+    def __init__(self, type_index, images, bg_img):
         self.bg_img = bg_img
-        self.img = img
+        self.img = images[type_index]
         self.key = 'KEY_GREEN'
         self.use_item = False #this key is special
         self.count = 1
 
 class DoorYellow(Door):
-    def __init__(self, img, bg_img):
+    def __init__(self, type_index, images, bg_img):
         self.bg_img = bg_img
-        self.img = img
+        self.img = images[type_index]
         self.key = 'KEY_YELLOW'
         self.use_item = True
         self.count = 1
@@ -543,9 +549,9 @@ class ClerableMap(MapObject):
     
 
 class Socket(ClerableMap):
-    def __init__(self, img, bg_img):
+    def __init__(self, type_index, images, bg_img):
         self.bg_img = bg_img
-        self.img = img
+        self.img = images[type_index]
     
     def enterable(self, dx, dy, items, creature, game_engine):
         if game_engine.have_all_chips():
@@ -554,54 +560,66 @@ class Socket(ClerableMap):
             return False
 
 class Dirt(ClerableMap):
-    def __init__(self, img, bg_img):
+    def __init__(self, type_index, images, bg_img):
         self.bg_img = bg_img
-        self.img = img
+        self.img = images[type_index]
 
 
 
 
 class Water(MapObject):
-    def __init__(self, img, bg_img):
+    def __init__(self, type_index, images, bg_img):
         self.bg_img = bg_img
-        self.img = img
+        self.img = images[type_index]
 
     def enter(self, game_engine, pos_x, pos_y, dx, dy, creature, slip_ind):
         creature.drown(game_engine, pos_x, pos_y)
         
 
 class BlueNone(MapObject):
-    def __init__(self, img, bg_img):
+    def __init__(self, type_index, images, bg_img):
         self.bg_img = bg_img
-        self.img = img
+        self.img = images[type_index]
 
 class BlueWall(MapObject):
-    def __init__(self, img, bg_img):
+    def __init__(self, type_index, images, bg_img):
         self.bg_img = bg_img
-        self.img = img
+        self.img = images[type_index]
 
 class SwitchedWall(MapObject):
-    def __init__(self, img, bg_img):
+    def __init__(self, type_index, images, bg_img):
         self.bg_img = bg_img
-        self.img = img
+        
+        self.closed = type_index == 37
+        self.closed_img = images[37]
+        self.open_img = images[38]
+        self.set_image()
+    
+    def set_image(self):
+        if self.closed:
+            self.img = self.closed_img
+        else:
+            self.img = self.open_img
 
-class SwitchedNone(MapObject):
-    def __init__(self, img, bg_img):
-        self.bg_img = bg_img
-        self.img = img
+    def flip_wall(self):
+        self.closed = not self.closed
+        self.set_image()
+        
+    def enterable(self, dx, dy, items, creature, game_engine):
+        return not self.closed
 
 class Bomb(MapObject):
-    def __init__(self, img, bg_img):
+    def __init__(self, type_index, images, bg_img):
         self.bg_img = bg_img
-        self.img = img
+        self.img = images[type_index]
         
 class SemiHiddenWall(MapObject):
-    def __init__(self, img, bg_img):
+    def __init__(self, type_index, images, bg_img):
         self.bg_img = bg_img
-        self.img = img
+        self.img = images[type_index]
 
 class PassWall(MapObject):
-    def __init__(self, img, bg_img):
+    def __init__(self, type_index, images, bg_img):
         self.bg_img = bg_img
-        self.img = img
+        self.img = images[type_index]
 

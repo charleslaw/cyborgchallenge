@@ -84,6 +84,7 @@ class Controller:
     def read_level_set(self, level_num):
         map = new Array(LEVELSIZE)
         items = new Array(LEVELSIZE)
+        links = {'GREEN_BUTTON': []}
         
         for i in range(LEVELSIZE):
             map[i] = new Array(LEVELSIZE)
@@ -101,19 +102,19 @@ class Controller:
                 item_enum = 0
                 floor_enum = 0
                 
-                if enum_is_item(layer_two[i][j]):
-                    item = layer_two[i][j]
-                
                 if enum_is_item(layer_one[i][j]):
                     if item_enum:
                         console.log("Bad Level")
                         raise Exception
                     else:
                         item_enum = layer_one[i][j]
+
+                    if not enum_is_item(layer_two[i][j]):
+                        floor_enum = layer_two[i][j]
                 else:
                     floor_enum = layer_one[i][j]
                     
-                    
+                
                 if item_enum == 110:
                     start_pos = [j, i]
 
@@ -122,13 +123,15 @@ class Controller:
                 else:
                     items[j][i] = None
                 map[j][i] = object_generator(floor_enum, self.img)
+                if floor_enum == 37 or floor_enum == 38:
+                    links['GREEN_BUTTON'].append((j, i))
                 
-        return start_pos, map, items, level_info
+        return start_pos, map, items, links, level_info
 
 
     def start_current_level(self):
-        start_pos, map, items, level_info = self.read_level_set(self.level_num)
-        self.game_engine.start_level(self, start_pos, map, items, level_info, self.img)
+        start_pos, map, items, links, level_info = self.read_level_set(self.level_num)
+        self.game_engine.start_level(self, start_pos, map, items, level_info, self.img, links)
         self.state = READY
         
         #draw the game before the user starts playing & refresh is turned on

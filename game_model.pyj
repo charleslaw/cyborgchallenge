@@ -43,7 +43,7 @@ conversion_map = [Tile, Wall, Chip, Water, Fire, HiddenWall, BlockedNorth, \
     CloneNorth, CloneWest, CloneSouth, CloneEast, ForceNorth, ForceEast, \
     ForstWest, Exit, DoorBlue, DoorRed, DoorGreen, DoorYellow, IceSE, \
     IceSW, IceNW, IceNE, BlueNone, BlueWall, None, Theif, Socket, \
-    ButtonGreen, ButtonRed, SwitchedWall, SwitchedNone, ButtonBrown, \
+    ButtonGreen, ButtonRed, SwitchedWall, SwitchedWall, ButtonBrown, \
     ButtonBlue, Teleport, Bomb, Trap, SemiHiddenWall, Gravel, PassWall, \
     Hint, BlockedSE, Cloner, ForceAll, Player, Player, Player, None, None, \
     None, Player, Exit, Exit, Player, Player, Player, Player, Bug, Bug, Bug, \
@@ -62,7 +62,7 @@ image_map = ['tile1.png', 'tile2.png', 'cyb002.png', 'cyb003.png', 'cyb004.png',
     'CloneNorth', 'CloneWest', 'CloneSouth', 'CloneEast', 'slideU.png', 'slideR.png', \
     'slideL.png', 'exit.png', 'cyb022.png', 'cyb023.png', 'cyb024.png', 'cyb025.png', 'cyb026.png', \
     'cyb027.png', 'cyb028.png', 'cyb029.png', 'BlueNone', 'BlueWall', 'None', 'Theif', 'twi034.gif', \
-    'twi035.gif', 'ButtonRed', 'SwitchedWall', 'SwitchedNone', 'ButtonBrown', \
+    'twi035.gif', 'ButtonRed', 'twi037.gif', 'twi038.gif', 'ButtonBrown', \
     'twi040.gif', 'Teleport', 'Bomb', 'Trap', 'SemiHiddenWall', 'Gravel', 'PassWall', \
     'twi047.gif', 'BlockedSE', 'Cloner', 'ForceAll', 'borg2.png', 'borg2.png', 'borg2.png', 'None', 'None', \
     'None', 'Player', 'exit.png', 'exit.png', 'borg2.png', 'borg2.png', 'borg2.png', 'borg2.png', 'Bug', 'Bug', 'Bug', \
@@ -99,7 +99,7 @@ def object_generator(index, loaded_images):
     else:
         bg_img = None
     
-    return new object_class(loaded_images[index], bg_img)
+    return new object_class(index, loaded_images, bg_img)
 
 
 def enum_is_item(itemEnum):
@@ -131,7 +131,7 @@ class Cyborg:
         self.canvas = canvas
         
 
-    def start_level(self, controller, start_pos, map, items, level_info, images):
+    def start_level(self, controller, start_pos, map, items, level_info, images, links):
         self.controller = controller
         self.x = start_pos[0]
         self.y = start_pos[1]
@@ -141,8 +141,12 @@ class Cyborg:
         self.num_chips = level_info[1]
         self.chips_left = level_info[1]
         self.game_state = LEVEL_RUNNING
+        self.links = links
         self.slip_list = []
 
+    def switch_green_doors(self):
+        for pos_x, pos_y in self.links['GREEN_BUTTON']:
+            self.map[pos_x][pos_y].flip_wall()
 
     def have_all_chips(self):
         if self.chips_left > 0:
