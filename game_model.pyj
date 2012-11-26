@@ -62,8 +62,8 @@ image_map = ['tile1.png', 'tile2.png', 'cyb002.png', 'cyb003.png', 'cyb004.png',
     'CloneNorth', 'CloneWest', 'CloneSouth', 'CloneEast', 'slideU.png', 'slideR.png', \
     'slideL.png', 'exit.png', 'cyb022.png', 'cyb023.png', 'cyb024.png', 'cyb025.png', 'cyb026.png', \
     'cyb027.png', 'cyb028.png', 'cyb029.png', 'BlueNone', 'BlueWall', 'None', 'Theif', 'twi034.gif', \
-    'ButtonGreen', 'ButtonRed', 'SwitchedWall', 'SwitchedNone', 'ButtonBrown', \
-    'ButtonBlue', 'Teleport', 'Bomb', 'Trap', 'SemiHiddenWall', 'Gravel', 'PassWall', \
+    'twi035.gif', 'ButtonRed', 'SwitchedWall', 'SwitchedNone', 'ButtonBrown', \
+    'twi040.gif', 'Teleport', 'Bomb', 'Trap', 'SemiHiddenWall', 'Gravel', 'PassWall', \
     'twi047.gif', 'BlockedSE', 'Cloner', 'ForceAll', 'borg2.png', 'borg2.png', 'borg2.png', 'None', 'None', \
     'None', 'Player', 'exit.png', 'exit.png', 'borg2.png', 'borg2.png', 'borg2.png', 'borg2.png', 'Bug', 'Bug', 'Bug', \
     'Bug', 'FireBug', 'FireBug', 'FireBug', 'FireBug', 'PinkBall', 'PinkBall', 'PinkBall', \
@@ -80,8 +80,8 @@ bg_image = [None, None, None, None, None,
     None, None, None, None, None, None, \
     None, None, None, None, None, None, None, \
     None, None, None, None, None, None, None, None, \
-    None, None, None, None, None, \
-    None, None, None, None, None, None, None, \
+    0, None, None, None, None, \
+    0, None, None, None, None, None, None, \
     None, None, None, None, None, None, None, None, None, \
     None, None, None, None, None, None, None, None, None, None, None, \
     None, None, None, None, None, None, None, None, \
