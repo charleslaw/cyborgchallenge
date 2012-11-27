@@ -6,6 +6,7 @@ class Item(GameObject):
         self.items = {}
         self.immunities = []
         self.momentum = None
+        self.can_push_on_walls = False
         
         #Considered saving the index, but that would require a lot of work
         # to keep updated.  
@@ -197,6 +198,7 @@ class Player(Creature):
         self.bg_img = bg_img
         self.img = images[type_index]
         self.collision_list = [Block]
+        self.can_push_on_walls = True
 
     def valid_move(self, start_x, start_y, dx, dy, map, items, game_engine, slip_ind):
         is_valid, new_x, new_y = Item.valid_move(self, start_x, start_y, dx, dy, map, items, game_engine, slip_ind)
@@ -234,11 +236,11 @@ class Monster(Creature):
     #65    Bug (W)                             1    0
     #66    Bug (S)                             1    0
     #67    Bug (E)                             1    0
-    #68    Fire Bug (N)                         1    0
+    #68    Fire Bug (N)                        1    0
     #69    Fire Bug (W)                        1    0
     #70    Fire Bug (S)                        1    0
     #71    Fire Bug (E)                        1    0
-    #72    Pink Ball (N)                        1    0
+    #72    Pink Ball (N)                       1    0
     #73    Pink Ball (W)                       1    0
     #74    Pink Ball (S)                       1    0
     #75    Pink Ball (E)                       1    0
@@ -265,7 +267,7 @@ class Monster(Creature):
     #96    Centipede (N)                       1    0
     #97    Centipede (W)                       1    0
     #98    Centipede (S)                       1    0
-    #99    Centipede (E)                        1    0
+    #99    Centipede (E)                       1    0
     """
     def __init__(self):
         self.collision_list = []

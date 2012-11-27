@@ -27,9 +27,9 @@ class MapObject(GameObject):
         new_x = start_x + dx
         new_y = start_y + dy
         creature = items[start_x][start_y]
-        return map[new_x][new_y].enterable(dx, dy, items, creature, game_engine)
+        return map[new_x][new_y].enterable(new_x, new_y, dx, dy, items, creature, game_engine)
         
-    def enterable(self, dx, dy, items, creature, game_engine):
+    def enterable(self, pos_x, pos_y, dx, dy, items, creature, game_engine):
         return True
 
     def enter(self, game_engine, pos_x, pos_y, dx, dy, creature, slip_ind):
@@ -101,7 +101,7 @@ class Wall(MapObject):
         self.bg_img = bg_img
         self.img = images[type_index]
 
-    def enterable(self, dx, dy, items, creature, game_engine):
+    def enterable(self, pos_x, pos_y, dx, dy, items, creature, game_engine):
         #cannot enter this object
         return False
 
@@ -117,6 +117,10 @@ class HiddenWall(MapObject):
     def __init__(self, type_index, images, bg_img):
         self.bg_img = bg_img
         self.img = images[type_index]
+
+    def enterable(self, pos_x, pos_y, dx, dy, items, creature, game_engine):
+        #cannot enter this object
+        return False
 
 class BlockedNorth(MapObject):
     def __init__(self, type_index, images, bg_img):
@@ -302,7 +306,7 @@ class IceSE(IceFloor):
         self.bg_img = bg_img
         self.img = images[type_index]
         
-    def enterable(self, dx, dy, items, creature, game_engine):
+    def enterable(self, pos_x, pos_y, dx, dy, items, creature, game_engine):
         if dx == 1 or dy == 1:
             return False
         else:
@@ -320,7 +324,7 @@ class IceSW(IceFloor):
         self.bg_img = bg_img
         self.img = images[type_index]
         
-    def enterable(self, dx, dy, items, creature, game_engine):
+    def enterable(self, pos_x, pos_y, dx, dy, items, creature, game_engine):
         if dx == -1 or dy == 1:
             return False
         else:
@@ -338,7 +342,7 @@ class IceNW(IceFloor):
         self.bg_img = bg_img
         self.img = images[type_index]
         
-    def enterable(self, dx, dy, items, creature, game_engine):
+    def enterable(self, pos_x, pos_y, dx, dy, items, creature, game_engine):
         if dx == -1 or dy == -1:
             return False
         else:
@@ -356,7 +360,7 @@ class IceNE(IceFloor):
         self.bg_img = bg_img
         self.img = images[type_index]
     
-    def enterable(self, dx, dy, items, creature, game_engine):
+    def enterable(self, pos_x, pos_y, dx, dy, items, creature, game_engine):
         if dx == 1 or dy == -1:
             return False
         else:
@@ -412,9 +416,9 @@ class DynamicMapObject(MapObject):
     #34    Socket                              0    1 - to tile
     #30    Blue Block, becomes Tile            0    0 - to tile
     #42    Bomb                                0    0 - to tile
-    
-    #37    Switch Block, Closed                0    0 - draw open
-    #38    Switch Block, Open                  0    0 - draw close
+
+    #37    SwitchedWall, Closed                0    0 - draw open
+    #38    SwitchedWall, Open                  0    0 - draw close
     """
     def __init__(self):
         pass
@@ -490,7 +494,7 @@ class Door(MapObject):
     def __init__(self):
         pass
         
-    def enterable(self, dx, dy, items, creature, game_engine):
+    def enterable(self, pos_x, pos_y, dx, dy, items, creature, game_engine):
         return creature.check_inventory(self.key, self.count)
     
     def enter(self, game_engine, pos_x, pos_y, dx, dy, creature, slip_ind):
@@ -553,7 +557,7 @@ class Socket(ClerableMap):
         self.bg_img = bg_img
         self.img = images[type_index]
     
-    def enterable(self, dx, dy, items, creature, game_engine):
+    def enterable(self, pos_x, pos_y, dx, dy, items, creature, game_engine):
         if game_engine.have_all_chips():
             return True
         else:
@@ -564,7 +568,11 @@ class Dirt(ClerableMap):
         self.bg_img = bg_img
         self.img = images[type_index]
 
-
+class BlueNone(ClerableMap):
+    def __init__(self, type_index, images, bg_img):
+        self.bg_img = bg_img
+        self.img = images[type_index]
+        
 
 
 class Water(MapObject):
@@ -576,15 +584,49 @@ class Water(MapObject):
         creature.drown(game_engine, pos_x, pos_y)
         
 
-class BlueNone(MapObject):
+
+class BecomeWall(MapObject):
+    def __init__(self):
+        pass
+        
+    def enterable(self, pos_x, pos_y, dx, dy, items, creature, game_engine):
+        if creature.can_push_on_walls:
+            #replace the chip with a tile
+            new_obj = object_generator(1, game_engine.images)
+            game_engine.map[pos_x][pos_y] = new_obj
+        return False
+
+class BlueWall(BecomeWall):
     def __init__(self, type_index, images, bg_img):
         self.bg_img = bg_img
         self.img = images[type_index]
 
-class BlueWall(MapObject):
+class SemiHiddenWall(BecomeWall):
     def __init__(self, type_index, images, bg_img):
         self.bg_img = bg_img
         self.img = images[type_index]
+        
+class PassWall(MapObject):
+    def __init__(self, type_index, images, bg_img):
+        self.bg_img = bg_img
+        self.img = images[type_index]
+        self.still_passable = False
+
+    def enterable(self, pos_x, pos_y, dx, dy, items, creature, game_engine):
+        ret = self.still_passable
+        if creature.can_push_on_walls:
+            #replace the chip with a tile
+            new_obj = object_generator(1, game_engine.images)
+            game_engine.map[pos_x][pos_y] = new_obj
+            self.still_passable = False
+        return ret
+        
+
+class Bomb(MapObject):
+    def __init__(self, type_index, images, bg_img):
+        self.bg_img = bg_img
+        self.img = images[type_index]
+
 
 class SwitchedWall(MapObject):
     def __init__(self, type_index, images, bg_img):
@@ -605,21 +647,5 @@ class SwitchedWall(MapObject):
         self.closed = not self.closed
         self.set_image()
         
-    def enterable(self, dx, dy, items, creature, game_engine):
+    def enterable(self, pos_x, pos_y, dx, dy, items, creature, game_engine):
         return not self.closed
-
-class Bomb(MapObject):
-    def __init__(self, type_index, images, bg_img):
-        self.bg_img = bg_img
-        self.img = images[type_index]
-        
-class SemiHiddenWall(MapObject):
-    def __init__(self, type_index, images, bg_img):
-        self.bg_img = bg_img
-        self.img = images[type_index]
-
-class PassWall(MapObject):
-    def __init__(self, type_index, images, bg_img):
-        self.bg_img = bg_img
-        self.img = images[type_index]
-

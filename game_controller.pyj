@@ -68,7 +68,7 @@ class Controller:
         console.log('ImagesLoaded')
         self.images_finished_loading = True
         if self.levels_finished_loading:
-            self.level_num = 4
+            self.level_num = 6
             self.start_current_level()
         
 
@@ -125,6 +125,7 @@ class Controller:
                 map[j][i] = object_generator(floor_enum, self.img)
                 if floor_enum == 37 or floor_enum == 38:
                     links['GREEN_BUTTON'].append((j, i))
+                #console.log('A ' + layer_one[i][j] + ' ' + layer_two[i][j])
                 
         return start_pos, map, items, links, level_info
 
