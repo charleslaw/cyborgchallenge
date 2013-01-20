@@ -5,7 +5,6 @@ class Item(GameObject):
         self.collision_list = []
         self.items = {}
         self.immunities = []
-        self.momentum = None
         self.can_push_on_walls = False
         
         #Considered saving the index, but that would require a lot of work
@@ -135,6 +134,7 @@ class Block(Item):
     def __init__(self, type_index, images, bg_img):
         self.bg_img = bg_img
         self.img = images[type_index]
+        self.is_slipping = False
     
     def burn(self, game_engine, pos_x, pos_y):
         #do nothing blocks are not affected by fire
@@ -199,6 +199,8 @@ class Player(Creature):
         self.img = images[type_index]
         self.collision_list = [Block]
         self.can_push_on_walls = True
+        self.items = {}
+        self.is_slipping = False
 
     def valid_move(self, start_x, start_y, dx, dy, map, items, game_engine, slip_ind):
         is_valid, new_x, new_y = Item.valid_move(self, start_x, start_y, dx, dy, map, items, game_engine, slip_ind)
