@@ -31,7 +31,7 @@ class Interface:
 
     def setKey(self, k, set):
         if set:
-            d_pos = key_delta_pos_dict[k+""]
+            d_pos = key_delta_pos_dict[str(k)]
             if type(d_pos) is not "undefined":
                 self.controller.keyboard_input(d_pos)
 
