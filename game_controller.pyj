@@ -50,7 +50,7 @@ class Controller:
         self.number_images_loaded = 0
 
         #Load images
-        self.img = [new Image() for image in image_map]
+        self.img = [Image() for image in image_map]
         num_images = len(image_map)
         main = self
         for i in range(len(image_map)):
@@ -82,13 +82,13 @@ class Controller:
 
 
     def read_level_set(self, level_num):
-        map = new Array(LEVELSIZE)
-        items = new Array(LEVELSIZE)
         links = {'GREEN_BUTTON': []}
+        map = Array(LEVELSIZE)
+        items = Array(LEVELSIZE)
         
         for i in range(LEVELSIZE):
-            map[i] = new Array(LEVELSIZE)
-            items[i] = new Array(LEVELSIZE)
+            map[i] = Array(LEVELSIZE)
+            items[i] = Array(LEVELSIZE)
             
         #get level info
         layer_one, layer_two, level_info = self.level_set.getLevel(level_num)

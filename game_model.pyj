@@ -16,10 +16,7 @@
 import model_objects
 import item_objects
 
-direction_dpos_dict = {'UP':    [ 0, -1],
-                       'DOWN':  [ 0,  1],
-                       'LEFT':  [-1,  0],
-                       'RIGHT': [ 1,  0]}
+direction_dpos_dict = {'UP':    [ 0, -1], 'DOWN':  [ 0,  1], 'LEFT':  [-1,  0], 'RIGHT': [ 1,  0]}
 
 
 FRAMES_PER_SLIDE = 2 #20 f/s / 10m/s = 2 frames
