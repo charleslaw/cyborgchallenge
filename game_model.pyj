@@ -140,10 +140,36 @@ class Cyborg:
         self.game_state = LEVEL_RUNNING
         self.links = links
         self.slip_list = []
+        
+        player_item = self.items[self.x][self.y]
+        inv_items = ['key_red', 'key_green']
+        for inv_item in inv_items:
+            player_item.set_inventory_icon(inv_item, undefined)
+
 
     def switch_green_doors(self):
         for pos_x, pos_y in self.links['GREEN_BUTTON']:
             self.map[pos_x][pos_y].flip_wall()
+    
+    def get_next_teleport(self, pos_x, pos_y):
+        #get the ind of the current teleport
+        ind = -1
+        for i in range(len(self.links['TELEPORTS'])):
+            tel_x, tel_y = self.links['TELEPORTS'][i]
+            if tel_x == pos_x and tel_y == pos_y:
+                ind = i
+                break
+        
+        if ind < 0:
+            return None, None
+        else:
+            if ind == 0:
+                pre_ind = len(self.links['TELEPORTS']) - 1
+            else:
+                pre_ind = ind - 1
+            
+            return self.links['TELEPORTS'][pre_ind]
+        
 
     def have_all_chips(self):
         if self.chips_left > 0:
@@ -151,7 +177,7 @@ class Cyborg:
         else:
             return True
 
-    def get_chip(self)
+    def get_chip(self):
         self.chips_left -= 1
 
 
@@ -164,7 +190,6 @@ class Cyborg:
 
 
     def move_player(self, direction):
-        console.log('MOVP')
         dx, dy = direction_dpos_dict[direction]
         player_item = self.items[self.x][self.y]
 

@@ -21,7 +21,7 @@ class LevelSet:
         self.levelList = []
         
     def addLevel(self, layerOne, layerTwo, lvlInfo):
-        self.levelList.append(Level(layerOne, layerTwo, lvlInfo))
+        self.levelList.push(Level(layerOne, layerTwo, lvlInfo))
     
     def getLevel(self, lvlNum):
         lvl = self.levelList[lvlNum-1]
@@ -88,17 +88,17 @@ class LevelLoader:
                 objectCode = self.string2decByte(text[currPos:currPos+BYTE])
                 currPos += BYTE
                 for i in range(numCopies):
-                    layerInfo.append(objectCode)
+                    layerInfo.push(objectCode)
                 bytesLeft = bytesLeft - 3
             else:
                 #add 1 copy
-                layerInfo.append(objectCode)
+                layerInfo.push(objectCode)
                 bytesLeft = bytesLeft - 1
         
         #convert to matrix
         objArray = []
         for i in range(LEVELSIZE):
-            objArray.append( layerInfo[(i*LEVELSIZE):(i*LEVELSIZE+32)] )
+            objArray.push( layerInfo[(i*LEVELSIZE):(i*LEVELSIZE+32)] )
         
         return layerBytes, objArray, currPos
         

@@ -429,7 +429,7 @@ class Consumeable(MapObject):
         #replace the chip with a tile
         new_obj = object_generator(0, game_engine.images)
         game_engine.map[pos_x][pos_y] = new_obj
-        creature.add_inventory(self.item_name)
+        creature.add_inventory(self.item_name, self)
 
 class Chip(Consumeable):
     def __init__(self, type_index, images, bg_img):
@@ -441,29 +441,37 @@ class Chip(Consumeable):
         game_engine.get_chip()
         Consumeable.enter(self, game_engine, pos_x, pos_y, dx, dy, creature)
 
-class KeyBlue(Consumeable):
+class Key(Consumeable):
+    def __init__(self):
+        pass
+
+class KeyBlue(Key):
     def __init__(self, type_index, images, bg_img):
         self.bg_img = bg_img
         self.img = images[type_index]
         self.item_name = 'KEY_BLUE'
+        self.div_name = 'blue'
 
-class KeyRed(Consumeable):
+class KeyRed(Key):
     def __init__(self, type_index, images, bg_img):
         self.bg_img = bg_img
         self.img = images[type_index]
         self.item_name = 'KEY_RED'
+        self.div_name = 'red'
 
-class KeyGreen(Consumeable):
+class KeyGreen(Key):
     def __init__(self, type_index, images, bg_img):
         self.bg_img = bg_img
         self.img = images[type_index]
         self.item_name = 'KEY_GREEN'
+        self.div_name = 'green'
 
-class KeyYellow(Consumeable):
+class KeyYellow(Key):
     def __init__(self, type_index, images, bg_img):
         self.bg_img = bg_img
         self.img = images[type_index]
         self.item_name = 'KEY_YELLOW'
+        self.div_name = 'yellow'
 
 class Flippers(Consumeable):
     def __init__(self, type_index, images, bg_img):

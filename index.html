@@ -1,14 +1,33 @@
 <html>
 <head>
 <title>RapydScript Space Game</title>
+<link rel='stylesheet' href='cyborg.css' />
 <script type="text/javascript" src="rapyd.js"></script>
-<script type="text/javascript" src="stdlib.js"></script>
+<script type="text/javascript" src="stdlib2.js"></script>
 </head>
 <body onload="runGame();">
 <br>
-<canvas id="myCanvas" width="800" height="600">
-Upgrade your browser.
-</canvas>
+<div id="game">
+	<div id="display">
+        <canvas id="myCanvas" width="800" height="432">
+        Upgrade your browser.
+        </canvas>
+    </div>
+    <div id="hud">
+    	<div>
+    		<div class="hud"><div class="item" id="inv_flippers"></div></div>
+    		<div class="hud"><div class="item" id="inv_fireboots"></div></div>
+    		<div class="hud"><div class="item" id="inv_skates"></div></div>
+    		<div class="hud"><div class="item" id="inv_suctionboots"></div></div>
+    	</div>
+    	<div>
+    		<div class="hud"><div class="item" id="key_green"></div></div>
+    		<div class="hud"><div class="item" id="key_yellow"></div></div>
+    		<div class="hud"><div class="item" id="key_red"></div></div>
+    		<div class="hud"><div class="item" id="key_blue"></div></div>
+    	</div>
+    </div>
+</div>
 <hr/>
 Left/Right arrows turn, Up key thrusts, Space bar fires<br/>
 <a href="http://pyjeon.com/">About Space Game</a><br/>

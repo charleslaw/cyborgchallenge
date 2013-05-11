@@ -46,7 +46,7 @@ class Controller:
         self.load_images()
         
         
-    def load_images(self)
+    def load_images(self):
         self.number_images_loaded = 0
 
         #Load images
@@ -68,7 +68,7 @@ class Controller:
         console.log('ImagesLoaded')
         self.images_finished_loading = True
         if self.levels_finished_loading:
-            self.level_num = 6
+            self.level_num = 1
             self.start_current_level()
         
 
@@ -82,9 +82,10 @@ class Controller:
 
 
     def read_level_set(self, level_num):
-        links = {'GREEN_BUTTON': []}
         map = Array(LEVELSIZE)
         items = Array(LEVELSIZE)
+        links = {'GREEN_BUTTON': [],
+                 'TELEPORTS': []}
         
         for i in range(LEVELSIZE):
             map[i] = Array(LEVELSIZE)
@@ -96,36 +97,40 @@ class Controller:
         start_pos = [0, 0]
 
         #read the layers into the map & items
-        for i in range(LEVELSIZE):
-            for j in range(LEVELSIZE):
+        for y in range(LEVELSIZE):
+            for x in range(LEVELSIZE):
             
                 item_enum = 0
                 floor_enum = 0
                 
-                if enum_is_item(layer_one[i][j]):
+                if enum_is_item(layer_one[y][x]):
                     if item_enum:
                         console.log("Bad Level")
                         raise Exception
                     else:
-                        item_enum = layer_one[i][j]
+                        item_enum = layer_one[y][x]
 
-                    if not enum_is_item(layer_two[i][j]):
-                        floor_enum = layer_two[i][j]
+                    if not enum_is_item(layer_two[y][x]):
+                        floor_enum = layer_two[y][x]
                 else:
-                    floor_enum = layer_one[i][j]
+                    floor_enum = layer_one[y][x]
                     
                 
                 if item_enum == 110:
-                    start_pos = [j, i]
+                    start_pos = [x, y]
 
                 if item_enum and not enum_is_monster(item_enum):
-                    items[j][i] = object_generator(item_enum, self.img)
+                    items[x][y] = object_generator(item_enum, self.img)
                 else:
-                    items[j][i] = None
-                map[j][i] = object_generator(floor_enum, self.img)
+                    items[x][y] = None
+                map[x][y] = object_generator(floor_enum, self.img)
+                
+                #save links
+                #TODO: Use dicts here
                 if floor_enum == 37 or floor_enum == 38:
-                    links['GREEN_BUTTON'].append((j, i))
-                #console.log('A ' + layer_one[i][j] + ' ' + layer_two[i][j])
+                    links['GREEN_BUTTON'].push((x, y))
+                elif floor_enum == 41:
+                    links['TELEPORTS'].push((x, y))
                 
         return start_pos, map, items, links, level_info
 

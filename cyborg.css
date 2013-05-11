@@ -1,0 +1,25 @@
+div#game{
+  display: inline-block;
+}
+div#display{
+  width: 432px;
+  height: 432px;
+  float: left;
+}
+div#hud{
+  width: 192px;
+  float: right;
+  padding: 2em;
+}
+
+div.hud{
+	width: 48px;
+	height: 48px;
+	float: left;
+	background-image: url(images/tile1.png)
+}
+
+.item{
+	width: 48px;
+	height: 48px;
+}
