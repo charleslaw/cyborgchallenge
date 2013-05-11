@@ -10,22 +10,23 @@ def ord(x):
 
 
 class Level:
-    def __init__(self, layerOne, layerTwo, lvlInfo):
+    def __init__(self, layerOne, layerTwo, lvlInfo, creature_links):
         self.layerOne = layerOne
         self.layerTwo = layerTwo
         self.lvlInfo = lvlInfo
+        self.creature_links = creature_links
 
 
 class LevelSet:
     def __init__(self):
         self.levelList = []
         
-    def addLevel(self, layerOne, layerTwo, lvlInfo):
-        self.levelList.push(Level(layerOne, layerTwo, lvlInfo))
+    def addLevel(self, layerOne, layerTwo, lvlInfo, creature_links):
+        self.levelList.push(Level(layerOne, layerTwo, lvlInfo, creature_links))
     
     def getLevel(self, lvlNum):
         lvl = self.levelList[lvlNum-1]
-        return lvl.layerOne, lvl.layerTwo, lvl.lvlInfo
+        return lvl.layerOne, lvl.layerTwo, lvl.lvlInfo, lvl.creature_links
         
     def getNumLevels(self):
         return len(self.levelList)
@@ -102,6 +103,29 @@ class LevelLoader:
         
         return layerBytes, objArray, currPos
         
+    def read_optional_info(self, text, currPos, left):
+        creature_links = []
+        while left>0:
+            field_type = self.string2decByte(text[currPos:currPos+BYTE])
+            currPos += BYTE
+            field_size = self.string2decByte(text[currPos:currPos+BYTE])*BYTE
+            currPos += BYTE
+            left -= (BYTE + BYTE)
+            if field_type == 10:
+                for monster_num in range((field_size/BYTE)/2):
+                    xpos = self.string2decByte(text[currPos:currPos+BYTE])
+                    currPos += BYTE
+                    left -= BYTE
+                    ypos = self.string2decByte(text[currPos:currPos+BYTE])
+                    currPos += BYTE
+                    left -= BYTE
+                    creature_links.push([xpos, ypos])
+            else:
+                currPos += field_size
+                left -= field_size
+        return creature_links
+                
+        
     def parseDataFile(self, text):
         #read header
         currPos = 4*BYTE #read 4 bytes
@@ -134,9 +158,14 @@ class LevelLoader:
             layerBytes, layerTwo, currPos = self.readMapLayer(text, currPos)
             levelLeft = levelLeft - layerBytes*BYTE - WORD #last 2 for map header fields
             
-            currPos = currPos + (levelLeft) #junk = f.read(levelLeft*BYTE)
+            #Read optional fields info
+            levelLeft = self.string2decWord(text[currPos:currPos+WORD])*BYTE
+            currPos += WORD
+            
+            creature_links = self.read_optional_info(text, currPos, levelLeft)
+            currPos += levelLeft
             
             #store the lvl
-            levelSet.addLevel(layerOne, layerTwo, lvlInfo)
+            levelSet.addLevel(layerOne, layerTwo, lvlInfo, creature_links)
             
         return levelSet

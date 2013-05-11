@@ -128,7 +128,7 @@ class Cyborg:
         self.canvas = canvas
         
 
-    def start_level(self, controller, start_pos, map, items, level_info, images, links):
+    def start_level(self, controller, start_pos, map, items, level_info, images, links, creature_links):
         self.controller = controller
         self.x = start_pos[0]
         self.y = start_pos[1]
@@ -139,6 +139,7 @@ class Cyborg:
         self.chips_left = level_info[1]
         self.game_state = LEVEL_RUNNING
         self.links = links
+        self.creature_links = creature_links
         self.slip_list = []
         
         player_item = self.items[self.x][self.y]
@@ -146,6 +147,9 @@ class Cyborg:
         for inv_item in inv_items:
             player_item.set_inventory_icon(inv_item, undefined)
 
+    def move_monsters(self):
+        for pos_x, pos_y in self.creature_links:
+            console.log('Move Obj '+pos_x+' '+pos_y+' type' + (self.map[pos_y][pos_x] instanceof Creature))
 
     def switch_green_doors(self):
         for pos_x, pos_y in self.links['GREEN_BUTTON']:

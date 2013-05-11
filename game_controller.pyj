@@ -50,7 +50,7 @@ class Controller:
         self.number_images_loaded = 0
 
         #Load images
-        self.img = [Image() for image in image_map]
+        self.img = [new Image() for image in image_map]
         num_images = len(image_map)
         main = self
         for i in range(len(image_map)):
@@ -68,7 +68,7 @@ class Controller:
         console.log('ImagesLoaded')
         self.images_finished_loading = True
         if self.levels_finished_loading:
-            self.level_num = 1
+            self.level_num = 2
             self.start_current_level()
         
 
@@ -92,7 +92,7 @@ class Controller:
             items[i] = Array(LEVELSIZE)
             
         #get level info
-        layer_one, layer_two, level_info = self.level_set.getLevel(level_num)
+        layer_one, layer_two, level_info, creature_links = self.level_set.getLevel(level_num)
         
         start_pos = [0, 0]
 
@@ -128,16 +128,16 @@ class Controller:
                 #save links
                 #TODO: Use dicts here
                 if floor_enum == 37 or floor_enum == 38:
-                    links['GREEN_BUTTON'].push((x, y))
+                    links['GREEN_BUTTON'].push([x, y])
                 elif floor_enum == 41:
-                    links['TELEPORTS'].push((x, y))
+                    links['TELEPORTS'].push([x, y])
                 
-        return start_pos, map, items, links, level_info
+        return start_pos, map, items, links, level_info, creature_links
 
 
     def start_current_level(self):
-        start_pos, map, items, links, level_info = self.read_level_set(self.level_num)
-        self.game_engine.start_level(self, start_pos, map, items, level_info, self.img, links)
+        start_pos, map, items, links, level_info, creature_links = self.read_level_set(self.level_num)
+        self.game_engine.start_level(self, start_pos, map, items, level_info, self.img, links, creature_links)
         self.state = READY
         
         #draw the game before the user starts playing & refresh is turned on
@@ -209,5 +209,6 @@ class Controller:
             self.used_move = True
         else:
             self.used_move = False #reset inputs
+        self.game_engine.move_monsters()
  
 
