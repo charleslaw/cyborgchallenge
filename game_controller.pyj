@@ -119,7 +119,7 @@ class Controller:
                 if item_enum == 110:
                     start_pos = [x, y]
 
-                if item_enum and not enum_is_monster(item_enum):
+                if item_enum:
                     items[x][y] = object_generator(item_enum, self.img)
                 else:
                     items[x][y] = None

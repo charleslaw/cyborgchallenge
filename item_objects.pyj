@@ -1,5 +1,38 @@
 import model_objects
 
+DIRDXY = {
+    'N': [ 0, -1],
+    'S': [ 0,  1],
+    'E': [ 1,  0],
+    'W': [-1,  0]
+}
+TURN_DICT = {
+    'N': {
+        'L': 'W',
+        'R': 'E',
+        'F': 'N',
+        'B': 'S'
+    },
+    'S': {
+        'L': 'E',
+        'R': 'W',
+        'F': 'S',
+        'B': 'N'
+    },
+    'W': {
+        'L': 'S',
+        'R': 'N',
+        'F': 'W',
+        'B': 'E'
+    },
+    'E': {
+        'L': 'N',
+        'R': 'S',
+        'F': 'E',
+        'B': 'W'
+    }
+}
+
 class Item(GameObject):
     def __init__(self):
         self.collision_list = []
@@ -308,7 +341,44 @@ class Monster(Creature):
 class Bug(Monster):
     def __init__(self, type_index, images, bg_img):
         self.bg_img = bg_img
-        self.img = images[type_index]
+
+        #Make this better (maybe a constant?)
+        self.dir_map = {
+            'N': 64,
+            'W': 65,
+            'S': 66,
+            'E': 67
+        }
+        #HACK! clean this up
+        self.dir_map_rev = {
+            64: 'N',
+            65: 'W',
+            66: 'S',
+            67: 'E'
+        }
+        self.image_set = images
+        self.set_new_dir(self.dir_map_rev[type_index])
+        self.turn_priority = ['L', 'F', 'R', 'B']
+
+    def set_new_dir(self, dir):
+        type_index = self.dir_map[dir]
+        self.dir = dir
+        self.img = self.image_set[type_index]
+
+    def move(self, start_x, start_y, game_engine):
+        map = game_engine.map
+        items = game_engine.items
+        turn_dict_current = TURN_DICT[self.dir]
+        for turn_dir in self.turn_priority:
+            #map the turn direction to a absolute direction
+            abs_turn_dir = turn_dict_current[turn_dir]
+            dx, dy = DIRDXY[abs_turn_dir]
+            is_valid, new_x, new_y = self.valid_move(start_x, start_y, dx, dy, map, items, game_engine, None)
+            if is_valid:
+                self.set_new_dir(abs_turn_dir)
+                return new_x, new_y
+        return start_x, start_y
+            
 
 class FireBug(Monster):
     def __init__(self, type_index, images, bg_img):
@@ -348,6 +418,21 @@ class Blob(Monster):
 class Centipede(Monster):
     def __init__(self, type_index, images, bg_img):
         self.bg_img = bg_img
-        self.img = images[type_index]
 
+        #Make this better (maybe a constant?)
+        self.dir_map = {
+            98: 'N',
+            97: 'W',
+            98: 'S',
+            99: 'E'
+        }
+        self.type_index = type_index
+        self.image_set = images
+        self.set_image()
 
+    def set_image(self):
+        self.img = self.image_set[self.type_index]
+
+    def move(start_x, start_y):
+        self.valid_move(start_x, start_y, dx, dy, map, items, game_engine, slip_ind)
+        pass
