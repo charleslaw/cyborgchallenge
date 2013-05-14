@@ -35,8 +35,6 @@ class Controller:
         
         #state parameters
         self.state = INIT
-        self.queue_move = None
-        self.used_move = False
         
         #Load images & levels
         self.levels_finished_loading = False
@@ -131,18 +129,24 @@ class Controller:
                     links['GREEN_BUTTON'].push([x, y])
                 elif floor_enum == 41:
                     links['TELEPORTS'].push([x, y])
-                
-        return start_pos, map, items, links, level_info, creature_links
+
+        #create a copy of the creature links
+        creature_links_copy = []
+        for creature_link in creature_links:
+            creature_links_copy.push(creature_link)
+
+        return start_pos, map, items, links, level_info, creature_links_copy
 
 
     def start_current_level(self):
         start_pos, map, items, links, level_info, creature_links = self.read_level_set(self.level_num)
         self.game_engine.start_level(self, start_pos, map, items, level_info, self.img, links, creature_links)
         self.state = READY
-        
+        self.queue_move = None
+        self.used_move = False
+
         #draw the game before the user starts playing & refresh is turned on
         self.update()
-        
     
     def new_level(self, incriment):
         clearInterval(self.timer_id)
