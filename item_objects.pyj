@@ -36,7 +36,8 @@ TURN_DICT = {
 
 class Item(GameObject):
     def __init__(self):
-        self.collision_list = []
+        self.avoid_list = []
+        self.push_list = []
         self.items = {}
         self.immunities = []
         self.can_push_on_walls = False
@@ -101,23 +102,34 @@ class Item(GameObject):
         if not items[new_x][new_y]:
             return True
         
-        #see if the items can collide
+        #see if the items can interact
         dest_item = items[new_x][new_y]
-        collidable = False
-        for collision_class in self.collision_list:
-            if isinstance(dest_item, collision_class):
-                collidable = True
+        interactive = True
+        for untouchable_class in self.avoid_list:
+            if isinstance(dest_item, untouchable_class):
+                interactive = False
                 break
-        
-        if not collidable:
+
+        if not interactive:
             return False
-        
+
         #if dest_item.is_slipping
         #find the slip_ind
         slip_ind = None
-        
-        valid_move = dest_item.valid_move(new_x, new_y, dx, dy, map, items, game_engine, slip_ind)[0]
-        return valid_move
+
+        pushable = False
+        for merge_class in self.push_list:
+            if isinstance(dest_item, merge_class):
+                pushable = True
+                break
+
+        if pushable:
+            valid_move = dest_item.valid_move(new_x, new_y, dx, dy, map, items, game_engine, slip_ind)[0]
+            return valid_move
+        return True
+    
+    def step_on_item(self, target_item):
+        return None
 
     def add_inventory(self, item_name, item):
         console.log('Not Implemented')
@@ -239,7 +251,8 @@ class Player(Creature):
     def __init__(self, type_index, images, bg_img):
         self.bg_img = bg_img
         self.img = images[type_index]
-        self.collision_list = [Block]
+        self.push_list = [Block]
+        self.avoid_list = []
         self.can_push_on_walls = True
         self.items = {}
         self.is_slipping = False
@@ -345,7 +358,8 @@ class Monster(Creature):
     #99    Centipede (E)                       1    0
     """
     def __init__(self):
-        self.collision_list = []
+        self.collision_list = [Creature]
+        self.avoid_list = [Block]
 
 
 class Bug(Monster):
@@ -359,15 +373,15 @@ class Bug(Monster):
             'S': 66,
             'E': 67
         }
-        #HACK! clean this up
-        self.dir_map_rev = {
-            64: 'N',
-            65: 'W',
-            66: 'S',
-            67: 'E'
-        }
         self.image_set = images
-        self.set_new_dir(self.dir_map_rev[type_index])
+
+        dir = None
+        #TODO: Something more backwards compatible
+        for key in Object.keys(self.dir_map):
+            if self.dir_map[key] == type_index:
+                dir = key
+                break
+        self.set_new_dir(dir)
         self.turn_priority = ['L', 'F', 'R', 'B']
 
     def step_on_item(self, target_item):
