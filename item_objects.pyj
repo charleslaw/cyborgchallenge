@@ -445,10 +445,12 @@ class Tank(Monster):
                 dir = key
                 break
         self.set_new_dir(dir)
+        self.fin_dir = None
+        self.clicked = False
 
     def step_on_item(self, target_item):
         if (target_item instanceof Player):
-            return "bug ate player"
+            return "tank crushed player"
         return None
 
     def set_new_dir(self, dir):
@@ -459,10 +461,27 @@ class Tank(Monster):
     def trigger(self):
         #turn the object instantly
         new_dir = TURN_DICT[self.dir]['L']
+        fin_dir = TURN_DICT[new_dir]['L']
         self.set_new_dir(new_dir)
+        self.fin_dir = fin_dir
+        self.clicked = True
 
     def move(self, start_x, start_y, game_engine):
-        return start_x, start_y
+        if not self.clicked:
+            return start_x, start_y
+
+        if self.new_dir != self.fin_dir:
+            self.set_new_dir(self.fin_dir)
+        #try to move
+        dx, dy = DIRDXY[self.fin_dir]
+        map = game_engine.map
+        items = game_engine.items
+        is_valid, new_x, new_y = self.valid_move(start_x, start_y, dx, dy, map, items, game_engine, None)
+        if is_valid:
+            return new_x, new_y
+        else:
+            self.clicked = False
+            return start_x, start_y
 
 
 class Ghost(Monster):
