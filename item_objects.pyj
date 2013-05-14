@@ -1,4 +1,5 @@
 import model_objects
+import game_exceptions
 
 DIRDXY = {
     'N': [ 0, -1],
@@ -80,6 +81,9 @@ class Item(GameObject):
         
         neighbors_ok = self.move_neighbors(new_x, new_y, dx, dy, map, items, game_engine)
         if neighbors_ok:
+            game_over_msg = self.step_on_item(items[new_x][new_y])
+            if game_over_msg:
+                raise PlayerKilled(game_over_msg)
             items[new_x][new_y] = self
             items[start_x][start_y] = None
             if slip_ind == None and self.is_slipping:
@@ -167,7 +171,13 @@ class Block(Item):
         self.bg_img = bg_img
         self.img = images[type_index]
         self.is_slipping = False
-    
+
+    def step_on_item(self, target_item):
+        if (target_item instanceof Player):
+            return "block crushed player"
+        return None
+        
+
     def burn(self, game_engine, pos_x, pos_y):
         #do nothing blocks are not affected by fire
         return
@@ -275,12 +285,12 @@ class Player(Creature):
     def burn(self, game_engine, pos_x, pos_y):
         if not self.is_safe('FIRE', 'INV_FIREBOOTS'):
             #kill the unit
-            game_engine.game_state = DEAD
+            raise PlayerKilled('Burned')
             
     def drown(self, game_engine, pos_x, pos_y):
         if not self.is_safe('WATER', 'INV_FLIPPERS'):
             #kill the unit
-            game_engine.game_state = DEAD
+            raise PlayerKilled('Drowned')
 
     def add_to_sliplist(self, game_engine, index, pos_x, pos_y, dx, dy):
         """
@@ -359,6 +369,11 @@ class Bug(Monster):
         self.image_set = images
         self.set_new_dir(self.dir_map_rev[type_index])
         self.turn_priority = ['L', 'F', 'R', 'B']
+
+    def step_on_item(self, target_item):
+        if (target_item instanceof Player):
+            return "bug ate player"
+        return None
 
     def set_new_dir(self, dir):
         type_index = self.dir_map[dir]

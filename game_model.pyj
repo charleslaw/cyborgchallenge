@@ -152,6 +152,8 @@ class Cyborg:
         for i in range(len(self.creature_links)):
             pos_x, pos_y = self.creature_links[i]
             new_x, new_y = self.items[pos_x][pos_y].move(pos_x, pos_y, self)
+            if self.game_state != LEVEL_RUNNING:
+                break
             self.creature_links[i] = new_x, new_y
 
     def switch_green_doors(self):
@@ -200,13 +202,11 @@ class Cyborg:
         dx, dy = direction_dpos_dict[direction]
         player_item = self.items[self.x][self.y]
 
+        #This might raise a PlayerKilled Exception
         player_item.valid_move(self.x, self.y, dx, dy, self.map, self.items, self, None)
         
-        if self.game_state:
-            if self.game_state == FINISHED:
-                self.controller.new_level(True)
-            elif self.game_state == DEAD:
-                self.controller.new_level(False)
+        if self.game_state == FINISHED:
+            self.controller.new_level(True)
 
     def get_slip_ind(self, start_x, start_y):
         for i in range(len(self.slip_list)):

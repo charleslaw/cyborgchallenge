@@ -15,6 +15,7 @@
 
 import game_model
 import level_loader
+import game_exceptions
 
 FPS = 20 #20 supports "boosting" @ 20 moves/sec
 INIT = 0
@@ -157,13 +158,18 @@ class Controller:
 
 
     def keyboard_input(self, direction):
-        if not self.queue_move:
-            if self.used_move:
-                self.queue_move = direction
-            else:
-                self.game_engine.move_player(direction)
-                self.used_move = True
- 
+        try:
+            if not self.queue_move:
+                if self.used_move:
+                    self.queue_move = direction
+                else:
+                    self.game_engine.move_player(direction)
+                    self.used_move = True
+        except PlayerKilled as exc:
+            console.log(exc.msg)
+            self.new_level(False)
+            return
+
         if self.state == READY:
             self.half_speed_marker = False
             self.quarter_speed_marker = False
@@ -177,15 +183,20 @@ class Controller:
 
 
     def update(self):
-        if self.state < READY:
-            return
+        try:
+            if self.state < READY:
+                return
 
-        if self.half_speed_marker:
-            self.half_speed_updates()
-            self.half_speed_marker = False
-        else:
-            self.half_speed_marker = True
-            
+            if self.state == RUNNING:
+                if self.half_speed_marker:
+                    self.half_speed_updates()
+                    self.half_speed_marker = False
+                else:
+                    self.half_speed_marker = True
+        except PlayerKilled as exc:
+            console.log(exc.msg)
+            self.new_level(False)
+
         self.game_engine.update()
         
 
