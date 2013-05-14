@@ -190,6 +190,9 @@ class ButtonBlue(MapObject):
         self.bg_img = bg_img
         self.img = images[type_index]
 
+    def enter(self, game_engine, pos_x, pos_y, dx, dy, creature, slip_ind):
+        game_engine.turn_tanks()
+
 class Trap(MapObject):
     def __init__(self, type_index, images, bg_img):
         self.bg_img = bg_img

@@ -128,6 +128,7 @@ class Controller:
                 #TODO: Use dicts here
                 if floor_enum == 37 or floor_enum == 38:
                     links['GREEN_BUTTON'].push([x, y])
+                
                 elif floor_enum == 41:
                     links['TELEPORTS'].push([x, y])
 

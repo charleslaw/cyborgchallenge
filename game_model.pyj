@@ -159,6 +159,14 @@ class Cyborg:
     def switch_green_doors(self):
         for pos_x, pos_y in self.links['GREEN_BUTTON']:
             self.map[pos_x][pos_y].flip_wall()
+
+    def turn_tanks(self):
+        for i in range(len(self.creature_links)):
+            pos_x, pos_y = self.creature_links[i]
+            self.items[pos_x][pos_y]
+            if self.items[pos_x][pos_y] instanceof Tank:
+                self.items[pos_x][pos_y].trigger()
+                
     
     def get_next_teleport(self, pos_x, pos_y):
         #get the ind of the current teleport

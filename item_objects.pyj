@@ -436,6 +436,8 @@ class Tank(Monster):
         }
         self.image_set = images
 
+        self.state = 0 #0=still, 1=turning, 2=moving
+
         dir = None
         #TODO: Something more backwards compatible
         for key in Object.keys(self.dir_map):
@@ -443,7 +445,6 @@ class Tank(Monster):
                 dir = key
                 break
         self.set_new_dir(dir)
-        self.turn_priority = ['L', 'F', 'R', 'B']
 
     def step_on_item(self, target_item):
         if (target_item instanceof Player):
@@ -454,6 +455,11 @@ class Tank(Monster):
         type_index = self.dir_map[dir]
         self.dir = dir
         self.img = self.image_set[type_index]
+
+    def trigger(self):
+        #turn the object instantly
+        new_dir = TURN_DICT[self.dir]['L']
+        self.set_new_dir(new_dir)
 
     def move(self, start_x, start_y, game_engine):
         return start_x, start_y
