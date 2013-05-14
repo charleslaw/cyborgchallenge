@@ -67,7 +67,7 @@ class Controller:
         console.log('ImagesLoaded')
         self.images_finished_loading = True
         if self.levels_finished_loading:
-            self.level_num = 2
+            self.level_num = 4
             self.start_current_level()
         
 

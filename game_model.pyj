@@ -65,7 +65,7 @@ image_map = ['tile1.png', 'tile2.png', 'cyb002.png', 'cyb003.png', 'cyb004.png',
     'None', 'Player', 'exit.png', 'exit.png', 'borg2.png', 'borg2.png', 'borg2.png', 'borg2.png', 'twi064.gif', \
     'twi065.gif', 'twi066.gif', \
     'twi067.gif', 'FireBug', 'FireBug', 'FireBug', 'FireBug', 'PinkBall', 'PinkBall', 'PinkBall', \
-    'PinkBall', 'Tank', 'Tank', 'Tank', 'Tank', 'Ghost', 'Ghost', 'Ghost', 'Ghost', 'Frog', 'Frog', \
+    'PinkBall', 'twi076.gif', 'twi077.gif', 'twi078.gif', 'twi079.gif', 'Ghost', 'Ghost', 'Ghost', 'Ghost', 'Frog', 'Frog', \
     'Frog', 'Frog', 'Walker', 'Walker', 'Walker', 'Walker', 'Blob', 'Blob', 'Blob', 'Blob', \
     'Centipede', 'Centipede', 'Centipede', 'Centipede', 'twi100.gif', 'twi101.gif', 'twi102.gif', \
     'twi103.gif', 'twi104.gif', 'twi105.gif', 'twi106.gif', 'twi107.gif', 'borg2.png', 'borg2.png', \
