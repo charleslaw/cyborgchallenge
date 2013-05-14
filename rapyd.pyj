@@ -8,6 +8,10 @@ ASTEROID_SIZE = 180.0
 CANVAS_DIM_X = 800
 CANVAS_DIM_Y = 600
 
+#BUGS:
+# key/boots don't reset after a level (icons?)
+# add error msg on death
+# add chip count & time to display
 
 key_delta_pos_dict = {'38': 'UP', '40': 'DOWN', '37': 'LEFT', '39': 'RIGHT'}
 
