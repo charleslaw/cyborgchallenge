@@ -135,7 +135,8 @@ class Controller:
         #create a copy of the creature links
         creature_links_copy = []
         for creature_link in creature_links:
-            creature_links_copy.push(creature_link)
+            #reverse the order of the array
+            creature_links_copy.unshift(creature_link)
 
         return start_pos, map, items, links, level_info, creature_links_copy
 

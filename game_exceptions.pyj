@@ -2,3 +2,7 @@
 class PlayerKilled:
     def __init__(self, msg):
         self.msg = msg
+
+class MonsterKilled:
+    def __init__(self, msg):
+        self.msg = msg

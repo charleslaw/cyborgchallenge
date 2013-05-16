@@ -149,11 +149,13 @@ class Cyborg:
             player_item.set_inventory_icon(inv_item, undefined)
 
     def move_monsters(self):
-        for i in range(len(self.creature_links)):
+        for i in range(len(self.creature_links)-1, -1, -1):
             pos_x, pos_y = self.creature_links[i]
-            new_x, new_y = self.items[pos_x][pos_y].move(pos_x, pos_y, self)
-            if self.game_state != LEVEL_RUNNING:
-                break
+            try:
+                new_x, new_y = self.items[pos_x][pos_y].move(pos_x, pos_y, self)
+            except MonsterKilled as exc:
+                #TODO: What if a monster kills another?  is that possible
+                self.creature_links.splice(i, 1)
             self.creature_links[i] = new_x, new_y
 
     def switch_green_doors(self):
