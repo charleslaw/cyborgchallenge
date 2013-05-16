@@ -633,10 +633,16 @@ class PassWall(MapObject):
         return ret
         
 
-class Bomb(MapObject):
+class Bomb(ClerableMap):
     def __init__(self, type_index, images, bg_img):
         self.bg_img = bg_img
         self.img = images[type_index]
+
+    def enter(self, game_engine, pos_x, pos_y, dx, dy, creature, slip_ind):
+        ClerableMap.enter(self, game_engine, pos_x, pos_y, dx, dy, creature, slip_ind)
+        #bombs shoud also kill the object
+        game_engine.items[pos_x][pos_y] = None
+        creature.kill('exploded')
 
 
 class SwitchedWall(MapObject):
