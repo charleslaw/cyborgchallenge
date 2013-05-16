@@ -63,9 +63,10 @@ image_map = ['tile1.png', 'tile2.png', 'cyb002.png', 'cyb003.png', 'cyb004.png',
     'twi040.gif', 'twi041.gif', 'twi042.gif', 'twi043.gif', 'tile1.png', 'Gravel', 'PassWall', \
     'twi047.gif', 'BlockedSE', 'twi049.gif', 'ForceAll', 'borg2.png', 'borg2.png', 'borg2.png', 'None', 'None', \
     'None', 'Player', 'exit.png', 'exit.png', 'borg2.png', 'borg2.png', 'borg2.png', 'borg2.png', 'twi064.gif', \
-    'twi065.gif', 'twi066.gif', \
-    'twi067.gif', 'FireBug', 'FireBug', 'FireBug', 'FireBug', 'PinkBall', 'PinkBall', 'PinkBall', \
-    'PinkBall', 'twi076.gif', 'twi077.gif', 'twi078.gif', 'twi079.gif', 'Ghost', 'Ghost', 'Ghost', 'Ghost', 'Frog', 'Frog', \
+    'twi065.gif', 'twi066.gif', 'twi067.gif', 'twi068.gif', 'twi069.gif', \
+    'twi070.gif', 'twi071.gif', 'twi072.gif', 'twi073.gif', 'twi074.gif', \
+    'twi075.gif', 'twi076.gif', 'twi077.gif', 'twi078.gif', 'twi079.gif', \
+    'twi080.gif', 'twi081.gif', 'twi082.gif', 'twi083.gif', 'Frog', 'Frog', \
     'Frog', 'Frog', 'Walker', 'Walker', 'Walker', 'Walker', 'Blob', 'Blob', 'Blob', 'Blob', \
     'Centipede', 'Centipede', 'Centipede', 'Centipede', 'twi100.gif', 'twi101.gif', 'twi102.gif', \
     'twi103.gif', 'twi104.gif', 'twi105.gif', 'twi106.gif', 'twi107.gif', 'borg2.png', 'borg2.png', \

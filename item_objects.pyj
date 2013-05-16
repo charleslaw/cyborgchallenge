@@ -177,6 +177,10 @@ class Item(GameObject):
         game_engine.slip_list.pop(index)
         self.is_slipping = False
 
+    def kill(self, msg):
+        #By default do nothing
+        return
+
 class Block(Item):
     def __init__(self, type_index, images, bg_img):
         self.bg_img = bg_img
@@ -231,6 +235,7 @@ class Creature(Item):
         if not self.is_safe('WATER', 'INV_FLIPPERS'):
             #kill the unit
             game_engine.items[pos_x][pos_y] = None
+            raise MonsterKilled('drowned')
 
 class Player(Creature):
     """
@@ -320,6 +325,9 @@ class Player(Creature):
         else:
             game_engine.slip_list[index] = (pos_x, pos_y, dx, dy)
 
+    def kill(self, msg):
+        raise PlayerKilled(msg)
+
 
 class Monster(Creature):
     """
@@ -364,6 +372,9 @@ class Monster(Creature):
     def __init__(self):
         self.collision_list = [Creature]
         self.avoid_list = [Block]
+
+    def kill(self, msg):
+        raise MonsterKilled(msg)
 
 
 class Bug(Monster):
@@ -415,13 +426,96 @@ class Bug(Monster):
 
 class FireBug(Monster):
     def __init__(self, type_index, images, bg_img):
+        self.immunities = ['FIRE']
         self.bg_img = bg_img
-        self.img = images[type_index]
+
+        #Make this better (maybe a constant?)
+        self.dir_map = {
+            'N': 68,
+            'W': 69,
+            'S': 70,
+            'E': 71
+        }
+        self.image_set = images
+
+        dir = None
+        #TODO: Something more backwards compatible
+        for key in Object.keys(self.dir_map):
+            if self.dir_map[key] == type_index:
+                dir = key
+                break
+        self.set_new_dir(dir)
+        self.turn_priority = ['F', 'L', 'R', 'B']
+
+    def step_on_item(self, target_item):
+        if (target_item instanceof Player):
+            return "fireball burned player"
+        return None
+
+    def set_new_dir(self, dir):
+        type_index = self.dir_map[dir]
+        self.dir = dir
+        self.img = self.image_set[type_index]
+
+    def move(self, start_x, start_y, game_engine):
+        map = game_engine.map
+        items = game_engine.items
+        turn_dict_current = TURN_DICT[self.dir]
+        for turn_dir in self.turn_priority:
+            #map the turn direction to a absolute direction
+            abs_turn_dir = turn_dict_current[turn_dir]
+            dx, dy = DIRDXY[abs_turn_dir]
+            is_valid, new_x, new_y = self.valid_move(start_x, start_y, dx, dy, map, items, game_engine, None)
+            if is_valid:
+                self.set_new_dir(abs_turn_dir)
+                return new_x, new_y
+        return start_x, start_y
 
 class PinkBall(Monster):
     def __init__(self, type_index, images, bg_img):
         self.bg_img = bg_img
-        self.img = images[type_index]
+
+        #Make this better (maybe a constant?)
+        self.dir_map = {
+            'N': 72,
+            'W': 73,
+            'S': 74,
+            'E': 75
+        }
+        self.image_set = images
+
+        dir = None
+        #TODO: Something more backwards compatible
+        for key in Object.keys(self.dir_map):
+            if self.dir_map[key] == type_index:
+                dir = key
+                break
+        self.set_new_dir(dir)
+        self.turn_priority = ['F', 'B']
+
+    def step_on_item(self, target_item):
+        if (target_item instanceof Player):
+            return "fireball burned player"
+        return None
+
+    def set_new_dir(self, dir):
+        type_index = self.dir_map[dir]
+        self.dir = dir
+        self.img = self.image_set[type_index]
+
+    def move(self, start_x, start_y, game_engine):
+        map = game_engine.map
+        items = game_engine.items
+        turn_dict_current = TURN_DICT[self.dir]
+        for turn_dir in self.turn_priority:
+            #map the turn direction to a absolute direction
+            abs_turn_dir = turn_dict_current[turn_dir]
+            dx, dy = DIRDXY[abs_turn_dir]
+            is_valid, new_x, new_y = self.valid_move(start_x, start_y, dx, dy, map, items, game_engine, None)
+            if is_valid:
+                self.set_new_dir(abs_turn_dir)
+                return new_x, new_y
+        return start_x, start_y
 
 class Tank(Monster):
     def __init__(self, type_index, images, bg_img):
@@ -487,7 +581,48 @@ class Tank(Monster):
 class Ghost(Monster):
     def __init__(self, type_index, images, bg_img):
         self.bg_img = bg_img
-        self.img = images[type_index]
+
+        #Make this better (maybe a constant?)
+        self.dir_map = {
+            'N': 80,
+            'W': 81,
+            'S': 82,
+            'E': 83
+        }
+        self.image_set = images
+
+        dir = None
+        #TODO: Something more backwards compatible
+        for key in Object.keys(self.dir_map):
+            if self.dir_map[key] == type_index:
+                dir = key
+                break
+        self.set_new_dir(dir)
+        self.turn_priority = ['F', 'L', 'R', 'B']
+
+    def step_on_item(self, target_item):
+        if (target_item instanceof Player):
+            return "fireball burned player"
+        return None
+
+    def set_new_dir(self, dir):
+        type_index = self.dir_map[dir]
+        self.dir = dir
+        self.img = self.image_set[type_index]
+
+    def move(self, start_x, start_y, game_engine):
+        map = game_engine.map
+        items = game_engine.items
+        turn_dict_current = TURN_DICT[self.dir]
+        for turn_dir in self.turn_priority:
+            #map the turn direction to a absolute direction
+            abs_turn_dir = turn_dict_current[turn_dir]
+            dx, dy = DIRDXY[abs_turn_dir]
+            is_valid, new_x, new_y = self.valid_move(start_x, start_y, dx, dy, map, items, game_engine, None)
+            if is_valid:
+                self.set_new_dir(abs_turn_dir)
+                return new_x, new_y
+        return start_x, start_y
 
 class Frog(Monster):
     def __init__(self, type_index, images, bg_img):
