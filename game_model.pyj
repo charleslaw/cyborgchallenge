@@ -239,15 +239,6 @@ class Cyborg:
         if self.game_state == FINISHED:
             self.controller.new_level(True)
 
-    def get_slip_ind(self, start_x, start_y):
-        for i in range(len(self.slip_list)):
-            slip_x, slip_y, slip_dx, slip_dy = self.slip_list[i]
-            if slip_x == start_x and slip_y == start_y:
-                #found the item, return it
-                return i
-                break
-        return -1
-                
     def run_slips(self):
         #slip the player
         i = 0
@@ -257,18 +248,14 @@ class Cyborg:
             #get the item
             pos_x, pos_y, dx, dy = self.slip_list[i]
             slip_item = self.items[pos_x][pos_y]
-            
+
             #try to slip the item
-            #console.log('SLIP_ITEM' + pos_x + ' ' + pos_y + ' ' + i + ' ' + dx + ' ' + dy)
-            console.log('1 '+JSON.stringify(self.slip_list))
             valid_move, new_x, new_y = slip_item.valid_move(pos_x, pos_y, dx, dy, self.map,
                                                             self.items, self, i)
-            console.log('2 '+JSON.stringify(self.slip_list))
-        
+
             #go to the next item in the list
             i += 1
             more_items_to_slip = i < len(self.slip_list)
-            #console.log('END ITER' + self.slip_list)
 
 
     def update(self):

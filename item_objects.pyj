@@ -62,7 +62,9 @@ class Item(GameObject):
         
     def valid_move(self, start_x, start_y, dx, dy, map, items, game_engine, slip_ind):
         """
-        Move an item from start_x, start_y by dx, dy 
+        Move an item from start_x, start_y by dx, dy.
+        Note that it does not update the sliplist.  Note that monsters cannot
+        try and move when on the sliplist 
         """
         #Check the change is in bounds
         new_x = start_x + dx
@@ -94,10 +96,17 @@ class Item(GameObject):
                 raise PlayerKilled(game_over_msg)
             items[new_x][new_y] = self
             items[start_x][start_y] = None
-            if slip_ind == None and self.is_slipping:
-                #voluntary move, but the item is slipping
-                slip_ind = game_engine.get_slip_ind(start_x, start_y)
-            map[new_x][new_y].enter(game_engine, new_x, new_y, dx, dy, self, slip_ind)
+            new_floor = map[new_x][new_y]
+            is_slippery = new_floor.slip_item(self)
+            if is_slippery:
+                s_dx, s_dy = new_floor.get_slip_dir(dx, dy)
+                if slip_ind == None:
+                    self.add_to_sliplist(game_engine, slip_ind, new_x, new_y, s_dx, s_dy)
+                else:
+                    self.update_sliplist(game_engine, slip_ind, new_x, new_y, s_dx, s_dy)
+            elif slip_ind != None:
+                self.remove_from_sliplist(game_engine, slip_ind)
+            map[new_x][new_y].enter(game_engine, new_x, new_y, dx, dy, self)
             return True, new_x, new_y
         else:
             #TODO: Remove from the sliplist
@@ -169,22 +178,20 @@ class Item(GameObject):
             return True
         else:
             return False
-        
+
+    def update_sliplist(self, game_engine, index, pos_x, pos_y, dx, dy):
+        self.is_slipping = True
+        game_engine.slip_list[index] = (pos_x, pos_y, dx, dy)
+
     def add_to_sliplist(self, game_engine, index, pos_x, pos_y, dx, dy):
         """
         if index is None, 
         """
         self.is_slipping = True
-        if index == None:
-            game_engine.slip_list.push((pos_x, pos_y, dx, dy))
-        else:
-            game_engine.slip_list[index] = (pos_x, pos_y, dx, dy)
-        console.log(JSON.stringify(game_engine.slip_list))
+        game_engine.slip_list.push((pos_x, pos_y, dx, dy))
 
-    def remove_from_sliplist(self, game_engine, index, pos_x, pos_y, dx, dy):
-        if index != None:
-            console.log('REM '+pos_x+' '+pos_y+' '+index)
-            game_engine.slip_list.pop(index)
+    def remove_from_sliplist(self, game_engine, index):
+        game_engine.slip_list.splice(index, 1)
         self.is_slipping = False
 
     def kill(self, msg):
@@ -272,6 +279,9 @@ class Player(Creature):
         self.is_slipping = False
 
     def valid_move(self, start_x, start_y, dx, dy, map, items, game_engine, slip_ind):
+        if slip_ind == None and self.is_slipping:
+            #Player is always at slipind 0
+            slip_ind = 0
         is_valid, new_x, new_y = Item.valid_move(self, start_x, start_y, dx, dy, map, items, game_engine, slip_ind)
 
         game_engine.x = new_x
@@ -329,13 +339,8 @@ class Player(Creature):
         if index is None, add to the list
         """
         self.is_slipping = True
-        console.log('b'+JSON.stringify(game_engine.slip_list))
-        if index == None:
-            #unshift is like insert(0, item)
-            game_engine.slip_list.unshift((pos_x, pos_y, dx, dy))
-        else:
-            game_engine.slip_list[index] = (pos_x, pos_y, dx, dy)
-        console.log('a'+JSON.stringify(game_engine.slip_list))
+        #unshift is like insert(0, item)
+        game_engine.slip_list.unshift((pos_x, pos_y, dx, dy))
 
     def kill(self, msg):
         raise PlayerKilled(msg)
