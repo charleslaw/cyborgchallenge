@@ -10,23 +10,25 @@ def ord(x):
 
 
 class Level:
-    def __init__(self, layerOne, layerTwo, lvlInfo, creature_links):
+    def __init__(self, layerOne, layerTwo, lvlInfo, creature_links, trap_controls, clone_controles):
         self.layerOne = layerOne
         self.layerTwo = layerTwo
         self.lvlInfo = lvlInfo
         self.creature_links = creature_links
+        self.trap_controls = trap_controls
+        self.clone_controles = clone_controles
 
 
 class LevelSet:
     def __init__(self):
         self.levelList = []
         
-    def addLevel(self, layerOne, layerTwo, lvlInfo, creature_links):
-        self.levelList.push(Level(layerOne, layerTwo, lvlInfo, creature_links))
+    def addLevel(self, layerOne, layerTwo, lvlInfo, creature_links, trap_controls, clone_controles):
+        self.levelList.push(Level(layerOne, layerTwo, lvlInfo, creature_links, trap_controls, clone_controles))
     
     def getLevel(self, lvlNum):
         lvl = self.levelList[lvlNum-1]
-        return lvl.layerOne, lvl.layerTwo, lvl.lvlInfo, lvl.creature_links
+        return lvl.layerOne, lvl.layerTwo, lvl.lvlInfo, lvl.creature_links, lvl.trap_controls, lvl.clone_controles
         
     def getNumLevels(self):
         return len(self.levelList)
@@ -39,9 +41,10 @@ class LevelLoader:
         main = self
         client = new XMLHttpRequest()
         client.onreadystatechange = def():
-            if (self.readyState == self.DONE):
-                if (self.response != None):
-                    main.on_download_complete(self.response)
+            console.log(this.readyState)
+            if (this.readyState == this.DONE):
+                if (this.response != None):
+                    self.on_download_complete(this.response)
         client.open("GET", filename, false)
         client.send()
         
@@ -105,6 +108,8 @@ class LevelLoader:
         
     def read_optional_info(self, text, currPos, left):
         creature_links = []
+        trap_controls = []
+        clone_controles = []
         while left>0:
             field_type = self.string2decByte(text[currPos:currPos+BYTE])
             currPos += BYTE
@@ -120,10 +125,42 @@ class LevelLoader:
                     currPos += BYTE
                     left -= BYTE
                     creature_links.push([xpos, ypos])
+            elif field_type == 4:
+                for trap_num in range((field_size/WORD)/5):
+                    but_xpos = self.string2decWord(text[currPos:currPos+WORD])
+                    currPos += WORD
+                    left -= WORD
+                    but_ypos = self.string2decWord(text[currPos:currPos+WORD])
+                    currPos += WORD
+                    left -= WORD
+                    trap_xpos = self.string2decWord(text[currPos:currPos+WORD])
+                    currPos += WORD
+                    left -= WORD
+                    trap_ypos = self.string2decWord(text[currPos:currPos+WORD])
+                    currPos += WORD
+                    left -= WORD
+                    currPos += WORD
+                    left -= WORD
+                    trap_controls.push([but_xpos, but_ypos, trap_xpos, trap_ypos])
+            elif field_type == 5:
+                for clone_num in range((field_size/WORD)/4):
+                    but_xpos = self.string2decWord(text[currPos:currPos+WORD])
+                    currPos += WORD
+                    left -= WORD
+                    but_ypos = self.string2decWord(text[currPos:currPos+WORD])
+                    currPos += WORD
+                    left -= WORD
+                    trap_xpos = self.string2decWord(text[currPos:currPos+WORD])
+                    currPos += WORD
+                    left -= WORD
+                    trap_ypos = self.string2decWord(text[currPos:currPos+WORD])
+                    currPos += WORD
+                    left -= WORD
+                    clone_controles.push([but_xpos, but_ypos, trap_xpos, trap_ypos])
             else:
                 currPos += field_size
                 left -= field_size
-        return creature_links
+        return creature_links, trap_controls, clone_controles
                 
         
     def parseDataFile(self, text):
@@ -162,10 +199,10 @@ class LevelLoader:
             levelLeft = self.string2decWord(text[currPos:currPos+WORD])*BYTE
             currPos += WORD
             
-            creature_links = self.read_optional_info(text, currPos, levelLeft)
+            creature_links, trap_controls, clone_controles = self.read_optional_info(text, currPos, levelLeft)
             currPos += levelLeft
             
             #store the lvl
-            levelSet.addLevel(layerOne, layerTwo, lvlInfo, creature_links)
+            levelSet.addLevel(layerOne, layerTwo, lvlInfo, creature_links, trap_controls, clone_controles)
             
         return levelSet

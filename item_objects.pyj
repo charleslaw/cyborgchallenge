@@ -37,6 +37,7 @@ TURN_DICT = {
 class Item(GameObject):
     def __init__(self):
         self.avoid_list = []
+        self.unenterable = []
         self.push_list = []
         self.items = {}
         self.immunities = []
@@ -80,6 +81,12 @@ class Item(GameObject):
         if not valid_move:
             return False, start_x, start_y
         
+        #See if this creature can enter this type of flooring
+        dest_floor = map[new_x][new_y]
+        for unenterabe_class in self.unenterable:
+            if dest_floor instanceof unenterabe_class:
+                return False, start_x, start_y
+        
         neighbors_ok = self.move_neighbors(new_x, new_y, dx, dy, map, items, game_engine)
         if neighbors_ok:
             game_over_msg = self.step_on_item(items[new_x][new_y])
@@ -106,7 +113,7 @@ class Item(GameObject):
         dest_item = items[new_x][new_y]
         interactive = True
         for untouchable_class in self.avoid_list:
-            if isinstance(dest_item, untouchable_class):
+            if dest_item instanceof untouchable_class:
                 interactive = False
                 break
 
@@ -172,9 +179,12 @@ class Item(GameObject):
             game_engine.slip_list.push((pos_x, pos_y, dx, dy))
         else:
             game_engine.slip_list[index] = (pos_x, pos_y, dx, dy)
+        console.log(JSON.stringify(game_engine.slip_list))
 
     def remove_from_sliplist(self, game_engine, index, pos_x, pos_y, dx, dy):
-        game_engine.slip_list.pop(index)
+        if index != None:
+            console.log('REM '+pos_x+' '+pos_y+' '+index)
+            game_engine.slip_list.pop(index)
         self.is_slipping = False
 
     def kill(self, msg):
@@ -319,11 +329,13 @@ class Player(Creature):
         if index is None, add to the list
         """
         self.is_slipping = True
+        console.log('b'+JSON.stringify(game_engine.slip_list))
         if index == None:
             #unshift is like insert(0, item)
             game_engine.slip_list.unshift((pos_x, pos_y, dx, dy))
         else:
             game_engine.slip_list[index] = (pos_x, pos_y, dx, dy)
+        console.log('a'+JSON.stringify(game_engine.slip_list))
 
     def kill(self, msg):
         raise PlayerKilled(msg)
@@ -370,8 +382,33 @@ class Monster(Creature):
     #99    Centipede (E)                       1    0
     """
     def __init__(self):
+        #TODO: Remove collision_list
         self.collision_list = [Creature]
+        self.unenterable = [Dirt, Gravel]
         self.avoid_list = [Block]
+
+    def valid_move(self, start_x, start_y, dx, dy, map, items, game_engine, slip_ind):
+        valid_move, new_x, new_y = Item.valid_move(self, start_x, start_y, dx, dy, map, items, game_engine, slip_ind)
+        if valid_move:
+            game_engine.creature_links[self.creature_link] = new_x, new_y
+        return valid_move, new_x, new_y
+
+
+    def move(self, start_x, start_y, game_engine):
+        if self.is_slipping:
+            return start_x, start_y
+        map = game_engine.map
+        items = game_engine.items
+        turn_dict_current = TURN_DICT[self.dir]
+        for turn_dir in self.turn_priority:
+            #map the turn direction to a absolute direction
+            abs_turn_dir = turn_dict_current[turn_dir]
+            dx, dy = DIRDXY[abs_turn_dir]
+            is_valid, new_x, new_y = self.valid_move(start_x, start_y, dx, dy, map, items, game_engine, None)
+            if is_valid:
+                self.set_new_dir(abs_turn_dir)
+                return new_x, new_y
+        return start_x, start_y
 
     def kill(self, msg):
         raise MonsterKilled(msg)
@@ -380,6 +417,7 @@ class Monster(Creature):
 class Bug(Monster):
     def __init__(self, type_index, images, bg_img):
         self.bg_img = bg_img
+        self.avoid_list = [Block, Dirt, Gravel, Bug]
 
         #Make this better (maybe a constant?)
         self.dir_map = {
@@ -409,20 +447,6 @@ class Bug(Monster):
         self.dir = dir
         self.img = self.image_set[type_index]
 
-    def move(self, start_x, start_y, game_engine):
-        map = game_engine.map
-        items = game_engine.items
-        turn_dict_current = TURN_DICT[self.dir]
-        for turn_dir in self.turn_priority:
-            #map the turn direction to a absolute direction
-            abs_turn_dir = turn_dict_current[turn_dir]
-            dx, dy = DIRDXY[abs_turn_dir]
-            is_valid, new_x, new_y = self.valid_move(start_x, start_y, dx, dy, map, items, game_engine, None)
-            if is_valid:
-                self.set_new_dir(abs_turn_dir)
-                return new_x, new_y
-        return start_x, start_y
-            
 
 class FireBug(Monster):
     def __init__(self, type_index, images, bg_img):
@@ -457,19 +481,6 @@ class FireBug(Monster):
         self.dir = dir
         self.img = self.image_set[type_index]
 
-    def move(self, start_x, start_y, game_engine):
-        map = game_engine.map
-        items = game_engine.items
-        turn_dict_current = TURN_DICT[self.dir]
-        for turn_dir in self.turn_priority:
-            #map the turn direction to a absolute direction
-            abs_turn_dir = turn_dict_current[turn_dir]
-            dx, dy = DIRDXY[abs_turn_dir]
-            is_valid, new_x, new_y = self.valid_move(start_x, start_y, dx, dy, map, items, game_engine, None)
-            if is_valid:
-                self.set_new_dir(abs_turn_dir)
-                return new_x, new_y
-        return start_x, start_y
 
 class PinkBall(Monster):
     def __init__(self, type_index, images, bg_img):
@@ -503,19 +514,6 @@ class PinkBall(Monster):
         self.dir = dir
         self.img = self.image_set[type_index]
 
-    def move(self, start_x, start_y, game_engine):
-        map = game_engine.map
-        items = game_engine.items
-        turn_dict_current = TURN_DICT[self.dir]
-        for turn_dir in self.turn_priority:
-            #map the turn direction to a absolute direction
-            abs_turn_dir = turn_dict_current[turn_dir]
-            dx, dy = DIRDXY[abs_turn_dir]
-            is_valid, new_x, new_y = self.valid_move(start_x, start_y, dx, dy, map, items, game_engine, None)
-            if is_valid:
-                self.set_new_dir(abs_turn_dir)
-                return new_x, new_y
-        return start_x, start_y
 
 class Tank(Monster):
     def __init__(self, type_index, images, bg_img):
@@ -610,19 +608,6 @@ class Ghost(Monster):
         self.dir = dir
         self.img = self.image_set[type_index]
 
-    def move(self, start_x, start_y, game_engine):
-        map = game_engine.map
-        items = game_engine.items
-        turn_dict_current = TURN_DICT[self.dir]
-        for turn_dir in self.turn_priority:
-            #map the turn direction to a absolute direction
-            abs_turn_dir = turn_dict_current[turn_dir]
-            dx, dy = DIRDXY[abs_turn_dir]
-            is_valid, new_x, new_y = self.valid_move(start_x, start_y, dx, dy, map, items, game_engine, None)
-            if is_valid:
-                self.set_new_dir(abs_turn_dir)
-                return new_x, new_y
-        return start_x, start_y
 
 class Frog(Monster):
     def __init__(self, type_index, images, bg_img):
@@ -642,7 +627,6 @@ class Blob(Monster):
 class Centipede(Monster):
     def __init__(self, type_index, images, bg_img):
         self.bg_img = bg_img
-
         #Make this better (maybe a constant?)
         self.dir_map = {
             98: 'N',

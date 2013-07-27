@@ -33,7 +33,6 @@ class MapObject(GameObject):
         return True
 
     def enter(self, game_engine, pos_x, pos_y, dx, dy, creature, slip_ind):
-        #TODO: remove from sliplist
         creature.remove_from_sliplist(game_engine, slip_ind, pos_x, pos_y, dx, dy)
         return
         
@@ -41,9 +40,9 @@ class MapObject(GameObject):
         """
         Assume a non-slippery surface, so remove the item from the sliplist
         """
-        console.log('AA' + pos_x + ' ' + pos_y)
         if index != None:
             #remove the item from the slip list
+            console.log('POP '+pos_x+' '+pos_y)
             game_engine.slip_list.pop(index)
 
 
@@ -180,10 +179,23 @@ class ButtonRed(MapObject):
         self.bg_img = bg_img
         self.img = images[type_index]
 
+    def set_trap(self, trap_x, trap_y):
+        self.trap_x = trap_x
+        self.trap_y = trap_y
+
 class ButtonBrown(MapObject):
     def __init__(self, type_index, images, bg_img):
         self.bg_img = bg_img
         self.img = images[type_index]
+
+    def set_trap(self, trap_x, trap_y):
+        console.log('set_button')
+        self.trap_x = trap_x
+        self.trap_y = trap_y
+
+    def enter(self, game_engine, pos_x, pos_y, dx, dy, creature, slip_ind):
+        trap = game_engine.map[self.trap_x][self.trap_y]
+        trap.open_trap()
 
 class ButtonBlue(MapObject):
     def __init__(self, type_index, images, bg_img):
@@ -197,6 +209,21 @@ class Trap(MapObject):
     def __init__(self, type_index, images, bg_img):
         self.bg_img = bg_img
         self.img = images[type_index]
+        self.trapped = True
+
+    def leavable(self, start_x, start_y, dx, dy, map, items, game_engine):
+        """
+        in charge of determinging if a player can move
+        """
+        if self.trapped:
+            return False
+        return MapObject.leavable(self, start_x, start_y, dx, dy, map, items, game_engine)
+
+    def open_trap(self):
+        self.trapped = False
+
+    def close_trap(self):
+        self.trapped = True
 
 class Gravel(MapObject):
     def __init__(self, type_index, images, bg_img):
@@ -213,6 +240,11 @@ class Cloner(MapObject):
         self.bg_img = bg_img
         self.img = images[type_index]
 
+    def leavable(self, start_x, start_y, dx, dy, map, items, game_engine):
+        """
+        in charge of determinging if a player can move
+        """
+        return False
 
 class Teleport(MapObject):
     def __init__(self, type_index, images, bg_img):
@@ -234,20 +266,22 @@ class SlidingFloor(MapObject):
         #if new_floor.is_slippery_for_item(slip_item):
         is_slippery = not slip_item.is_safe(self.dmg_type, self.item)
         
+        console.log('SLL'+is_slippery)
         if is_slippery:
             #Add/update sliplist information
             slip_item.add_to_sliplist(game_engine, index, pos_x, pos_y, dx, dy)
     
     def enter(self, game_engine, pos_x, pos_y, dx, dy, creature, slip_ind):
         #if this is a manual move, add to the sliplist
-        console.log('AA' + creature + ' ' + slip_ind)
-        
         dx, dy = self.get_slip_dir(dx, dy)
         is_slippery = not creature.is_safe(self.dmg_type, self.item)
+        if pos_x != 27 and pos_y != 15:
+            console.log('AA' + creature + ' ' + slip_ind + ' ' + is_slippery)
         if is_slippery:
             creature.add_to_sliplist(game_engine, slip_ind, pos_x, pos_y, dx, dy)
         else:
-            creature.remove_from_sliplist(game_engine, slip_ind, pos_x, pos_y, dx, dy)
+            pass
+            #creature.remove_from_sliplist(game_engine, slip_ind, pos_x, pos_y, dx, dy)
 
 class ForceFloor(SlidingFloor):
     def __init__(self):
