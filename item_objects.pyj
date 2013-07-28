@@ -166,6 +166,9 @@ class Item(GameObject):
     def burn(self, game_engine, pos_x, pos_y):
         console.log('Not Implemented')
         return
+    
+    def set_new_dir(self, dir):
+        return
             
     def drown(self, game_engine, pos_x, pos_y):
         console.log('Not Implemented')
@@ -422,7 +425,7 @@ class Monster(Creature):
 class Bug(Monster):
     def __init__(self, type_index, images, bg_img):
         self.bg_img = bg_img
-        self.avoid_list = [Block, Dirt, Gravel, Bug]
+        self.avoid_list = [Block, Bug]
 
         #Make this better (maybe a constant?)
         self.dir_map = {
@@ -457,6 +460,7 @@ class FireBug(Monster):
     def __init__(self, type_index, images, bg_img):
         self.immunities = ['FIRE']
         self.bg_img = bg_img
+        self.avoid_list = [Block, FireBug]
 
         #Make this better (maybe a constant?)
         self.dir_map = {
@@ -490,6 +494,7 @@ class FireBug(Monster):
 class PinkBall(Monster):
     def __init__(self, type_index, images, bg_img):
         self.bg_img = bg_img
+        self.avoid_list = [Block, PinkBall]
 
         #Make this better (maybe a constant?)
         self.dir_map = {
@@ -523,6 +528,7 @@ class PinkBall(Monster):
 class Tank(Monster):
     def __init__(self, type_index, images, bg_img):
         self.bg_img = bg_img
+        self.avoid_list = [Block, Tank]
 
         #Make this better (maybe a constant?)
         self.dir_map = {
@@ -584,6 +590,7 @@ class Tank(Monster):
 class Ghost(Monster):
     def __init__(self, type_index, images, bg_img):
         self.bg_img = bg_img
+        self.avoid_list = [Block, Ghost]
 
         #Make this better (maybe a constant?)
         self.dir_map = {
@@ -632,6 +639,7 @@ class Blob(Monster):
 class Centipede(Monster):
     def __init__(self, type_index, images, bg_img):
         self.bg_img = bg_img
+        self.avoid_list = [Block, Centipede]
 
         #Make this better (maybe a constant?)
         self.dir_map = {
