@@ -68,7 +68,7 @@ image_map = ['tile1.png', 'tile2.png', 'cyb002.png', 'cyb003.png', 'cyb004.png',
     'twi075.gif', 'twi076.gif', 'twi077.gif', 'twi078.gif', 'twi079.gif', \
     'twi080.gif', 'twi081.gif', 'twi082.gif', 'twi083.gif', 'Frog', 'Frog', \
     'Frog', 'Frog', 'Walker', 'Walker', 'Walker', 'Walker', 'Blob', 'Blob', 'Blob', 'Blob', \
-    'Centipede', 'Centipede', 'Centipede', 'Centipede', 'twi100.gif', 'twi101.gif', 'twi102.gif', \
+    'twi096.gif', 'twi097.gif', 'twi098.gif', 'twi099.gif', 'twi100.gif', 'twi101.gif', 'twi102.gif', \
     'twi103.gif', 'twi104.gif', 'twi105.gif', 'twi106.gif', 'twi107.gif', 'borg2.png', 'borg2.png', \
     'borg2.png', 'borg2.png']
     

@@ -632,20 +632,27 @@ class Blob(Monster):
 class Centipede(Monster):
     def __init__(self, type_index, images, bg_img):
         self.bg_img = bg_img
+
         #Make this better (maybe a constant?)
         self.dir_map = {
-            98: 'N',
-            97: 'W',
-            98: 'S',
-            99: 'E'
+            'N': 96,
+            'W': 97,
+            'S': 98,
+            'E': 99
         }
-        self.type_index = type_index
         self.image_set = images
-        self.set_image()
 
-    def set_image(self):
-        self.img = self.image_set[self.type_index]
+        dir = None
+        #TODO: Something more backwards compatible
+        for key in Object.keys(self.dir_map):
+            if self.dir_map[key] == type_index:
+                dir = key
+                break
+        self.set_new_dir(dir)
+        self.turn_priority = ['R', 'F', 'L', 'B']
 
-    def move(start_x, start_y):
-        self.valid_move(start_x, start_y, dx, dy, map, items, game_engine, slip_ind)
-        pass
+    def set_new_dir(self, dir):
+        type_index = self.dir_map[dir]
+        self.dir = dir
+        self.img = self.image_set[type_index]
+
