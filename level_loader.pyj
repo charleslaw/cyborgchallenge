@@ -29,8 +29,8 @@ class LevelSet:
     def getLevel(self, lvlNum):
         lvl = self.levelList[lvlNum-1]
         return lvl.layerOne, lvl.layerTwo, lvl.lvlInfo, lvl.creature_links, lvl.trap_controls, lvl.clone_controles
-        
-    def getNumLevels(self):
+
+    def get_num_levels(self):
         return len(self.levelList)
 
 

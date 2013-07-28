@@ -130,6 +130,16 @@ class Cyborg:
         self.canvas = canvas
         
 
+    def end_game(self):
+        Alertify.dialog.alert(
+            "Thank you for playing!<br><br>Written by Charles Law<br>Check " + \
+            "out other projects I work on:<br>" + \
+            "<a href=\"http://www.grafpad.com\" target=\"_blank\">Grafpad</a><br>" + \
+            "<a href=\"http://rapydscript.pyjeon.com\" target=\"_blank\">RapydScript</a>",
+            def ():
+                self.controller._start_game()
+            )
+
     def start_level(self, controller, start_pos, map, items, level_info, images, links, creature_links, trap_controls, clone_controles):
         self.controller = controller
         self.x = start_pos[0]

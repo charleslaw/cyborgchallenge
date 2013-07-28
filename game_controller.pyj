@@ -71,7 +71,7 @@ class Controller:
 
 
     def _start_game(self):
-        self.level_num = 1
+        self.level_num = 12
         self.start_current_level()
 
 
@@ -164,6 +164,9 @@ class Controller:
         
         if incriment:
             self.level_num += 1
+            if self.level_num > self.level_set.get_num_levels():
+                self.game_engine.end_game()
+                return
         self.start_current_level()
 
 
