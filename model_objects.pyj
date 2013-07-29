@@ -36,7 +36,7 @@ class MapObject(GameObject):
         return pos_x, pos_y
 
     def slip_item(self, creature):
-        if self.dmg_type != 'FORCE' and self.dmg_type != 'ICE':
+        if self.dmg_type != 'FORCE' and self.dmg_type != 'ICE' and self.dmg_type != 'TELEPORT':
             return False
         return (not creature.is_safe(self.dmg_type, self.item))
 
@@ -257,7 +257,10 @@ class Teleport(MapObject):
     def __init__(self, type_index, images, bg_img):
         self.bg_img = bg_img
         self.img = images[type_index]
+        self.dmg_type = 'TELEPORT'
 
+    def get_slip_dir(self, dx, dy):
+        return dx, dy
 
     def enter(self, game_engine, pos_x, pos_y, dx, dy, creature):
         i = 0
@@ -275,6 +278,7 @@ class Teleport(MapObject):
             valid = creature.valid_move(t_x, t_y, dx, dy, map, items,
                                         game_engine, slip_ind, test=True)[0]
             if valid:
+                #Move item from the new position to the transported position
                 return t_x, t_y
             i += 1
 
