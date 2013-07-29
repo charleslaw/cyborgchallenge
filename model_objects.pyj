@@ -132,6 +132,14 @@ class BlockedSouth(MapObject):
         self.bg_img = bg_img
         self.img = images[type_index]
 
+    def leavable(self, start_x, start_y, dx, dy, map, items, game_engine):
+        """
+        in charge of determinging if a player can move
+        """
+        if dy == 1:
+            return False
+        return MapObject.leavable(self, start_x, start_y, dx, dy, map, items, game_engine)
+
 class BlockedEast(MapObject):
     def __init__(self, type_index, images, bg_img):
         self.bg_img = bg_img
@@ -620,22 +628,23 @@ class SemiHiddenWall(BecomeWall):
     def __init__(self, type_index, images, bg_img):
         self.bg_img = bg_img
         self.img = images[type_index]
-        
+
+
 class PassWall(MapObject):
     def __init__(self, type_index, images, bg_img):
         self.bg_img = bg_img
         self.img = images[type_index]
-        self.still_passable = False
+
+    def enter(self, game_engine, pos_x, pos_y, dx, dy, creature):
+        #replace this item with a tile
+        new_obj = object_generator(1, game_engine.images)
+        game_engine.map[pos_x][pos_y] = new_obj
+        return pos_x, pos_y
 
     def enterable(self, pos_x, pos_y, dx, dy, items, creature, game_engine):
-        ret = self.still_passable
-        if creature.can_push_on_walls:
-            #replace the chip with a tile
-            new_obj = object_generator(1, game_engine.images)
-            game_engine.map[pos_x][pos_y] = new_obj
-            self.still_passable = False
-        return ret
-        
+        #TODO: Block Monsters, and maybe Blocks
+        return True
+
 
 class Bomb(ClerableMap):
     def __init__(self, type_index, images, bg_img):

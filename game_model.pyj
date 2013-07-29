@@ -54,13 +54,13 @@ conversion_map = [Tile, Wall, Chip, Water, Fire, HiddenWall, BlockedNorth, \
 
 image_map = ['tile1.png', 'tile2.png', 'cyb002.png', 'cyb003.png', 'cyb004.png',
     'tile1.png', 'BlockedNorth', \
-    'BlockedWest', 'BlockedSouth', 'BlockedEast', \
+    'BlockedWest', 'twi008.gif', 'BlockedEast', \
     'box.png', 'cyb011.png', 'cyb012.png', 'slideD.png', \
     'CloneNorth', 'CloneWest', 'CloneSouth', 'CloneEast', 'slideU.png', 'slideR.png', \
     'slideL.png', 'exit.png', 'cyb022.png', 'cyb023.png', 'cyb024.png', 'cyb025.png', 'cyb026.png', \
     'cyb027.png', 'cyb028.png', 'cyb029.png', 'twi030.png', 'twi030.png', 'None', 'twi033.gif', 'twi034.gif', \
     'twi035.gif', 'twi036.gif', 'twi037.gif', 'twi038.gif', 'twi039.gif', \
-    'twi040.gif', 'twi041.gif', 'twi042.gif', 'twi043.gif', 'tile1.png', 'twi045.gif', 'PassWall', \
+    'twi040.gif', 'twi041.gif', 'twi042.gif', 'twi043.gif', 'tile1.png', 'twi045.gif', 'cyb046.png', \
     'twi047.gif', 'BlockedSE', 'twi049.gif', 'ForceAll', 'borg2.png', 'borg2.png', 'borg2.png', 'None', 'None', \
     'None', 'Player', 'exit.png', 'exit.png', 'borg2.png', 'borg2.png', 'borg2.png', 'borg2.png', 'twi064.gif', \
     'twi065.gif', 'twi066.gif', 'twi067.gif', 'twi068.gif', 'twi069.gif', \
