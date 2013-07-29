@@ -60,11 +60,11 @@ class Item(GameObject):
 
         return True
         
-    def valid_move(self, start_x, start_y, dx, dy, map, items, game_engine, slip_ind):
+    def valid_move(self, start_x, start_y, dx, dy, map, items, game_engine, slip_ind, test=False):
         """
         Move an item from start_x, start_y by dx, dy.
         Note that it does not update the sliplist.  Note that monsters cannot
-        try and move when on the sliplist 
+        move themselves when on the sliplist.
         """
         #Check the change is in bounds
         new_x = start_x + dx
@@ -89,31 +89,42 @@ class Item(GameObject):
             if dest_floor instanceof unenterabe_class:
                 return False, start_x, start_y
         
-        neighbors_ok = self.move_neighbors(new_x, new_y, dx, dy, map, items, game_engine)
+        neighbors_ok = self.move_neighbors(new_x, new_y, dx, dy, map, items, game_engine, test=test)
         if neighbors_ok:
+            if test:
+                return True, new_x, new_y
             game_over_msg = self.step_on_item(items[new_x][new_y])
             if game_over_msg:
                 raise PlayerKilled(game_over_msg)
-            items[new_x][new_y] = self
-            items[start_x][start_y] = None
             new_floor = map[new_x][new_y]
+
+            #Move the new item onto the box
+            items[new_x][new_y] = items[start_x][start_y]
+            items[start_x][start_y] = None
+
+            dest_x, dest_y = map[new_x][new_y].enter(game_engine, new_x, new_y, dx, dy, self)
             is_slippery = new_floor.slip_item(self)
             if is_slippery:
                 s_dx, s_dy = new_floor.get_slip_dir(dx, dy)
                 if slip_ind == None:
-                    self.add_to_sliplist(game_engine, slip_ind, new_x, new_y, s_dx, s_dy)
+                    self.add_to_sliplist(game_engine, slip_ind, dest_x, dest_y, s_dx, s_dy)
                 else:
-                    self.update_sliplist(game_engine, slip_ind, new_x, new_y, s_dx, s_dy)
+                    self.update_sliplist(game_engine, slip_ind, dest_x, dest_y, s_dx, s_dy)
             elif slip_ind != None:
                 self.remove_from_sliplist(game_engine, slip_ind)
-            map[new_x][new_y].enter(game_engine, new_x, new_y, dx, dy, self)
+
+            #Do not use self, item may be deleted (and the value may be None)
+            if dest_x != new_x or dest_y != new_y:
+                items[dest_x][dest_y] = items[new_x][new_y]
+                items[new_x][new_y] = None
+
             return True, new_x, new_y
         else:
             #TODO: Remove from the sliplist
             return False, start_x, start_y
 
 
-    def move_neighbors(self, new_x, new_y, dx, dy, map, items, game_engine):
+    def move_neighbors(self, new_x, new_y, dx, dy, map, items, game_engine, test=False):
         #if there are no item in the way, the move is allowed
         if not items[new_x][new_y]:
             return True
@@ -140,7 +151,8 @@ class Item(GameObject):
                 break
 
         if pushable:
-            valid_move = dest_item.valid_move(new_x, new_y, dx, dy, map, items, game_engine, slip_ind)[0]
+            valid_move = dest_item.valid_move(new_x, new_y, dx, dy, map, items,
+                                              game_engine, slip_ind, test=test)[0]
             return valid_move
         return True
     
@@ -206,6 +218,7 @@ class Block(Item):
         self.bg_img = bg_img
         self.img = images[type_index]
         self.is_slipping = False
+        self.avoid_list = [Block]
 
     def step_on_item(self, target_item):
         if (target_item instanceof Player):
@@ -281,14 +294,16 @@ class Player(Creature):
         self.items = {}
         self.is_slipping = False
 
-    def valid_move(self, start_x, start_y, dx, dy, map, items, game_engine, slip_ind):
+    def valid_move(self, start_x, start_y, dx, dy, map, items, game_engine, slip_ind, test=False):
         if slip_ind == None and self.is_slipping:
             #Player is always at slipind 0
             slip_ind = 0
-        is_valid, new_x, new_y = Item.valid_move(self, start_x, start_y, dx, dy, map, items, game_engine, slip_ind)
+        is_valid, new_x, new_y = Item.valid_move(self, start_x, start_y, dx, dy,
+                                                 map, items, game_engine, slip_ind, test=test)
 
-        game_engine.x = new_x
-        game_engine.y = new_y
+        if not test:
+            game_engine.x = new_x
+            game_engine.y = new_y
         return is_valid, new_x, new_y
 
     def set_inventory_icon(self, item_name, item):

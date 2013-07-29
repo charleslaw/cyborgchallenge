@@ -10,8 +10,7 @@ class GameObject:
         if self.bg_img:
             ctx.drawImage(self.bg_img, dispx, dispy)
         ctx.drawImage(self.img, dispx, dispy)
-        
-    
+
 
 class MapObject(GameObject):
     """
@@ -34,7 +33,7 @@ class MapObject(GameObject):
         return True
 
     def enter(self, game_engine, pos_x, pos_y, dx, dy, creature):
-        return
+        return pos_x, pos_y
 
     def slip_item(self, creature):
         if self.dmg_type != 'FORCE' and self.dmg_type != 'ICE':
@@ -107,6 +106,7 @@ class Fire(MapObject):
         
     def enter(self, game_engine, pos_x, pos_y, dx, dy, creature):
         creature.burn(game_engine, pos_x, pos_y)
+        return pos_x, pos_y
 
 class HiddenWall(MapObject):
     def __init__(self, type_index, images, bg_img):
@@ -177,6 +177,7 @@ class ButtonGreen(MapObject):
     
     def enter(self, game_engine, pos_x, pos_y, dx, dy, creature):
         game_engine.switch_green_doors()
+        return pos_x, pos_y
 
 class ButtonRed(MapObject):
     def __init__(self, type_index, images, bg_img):
@@ -200,6 +201,7 @@ class ButtonBrown(MapObject):
     def enter(self, game_engine, pos_x, pos_y, dx, dy, creature):
         trap = game_engine.map[self.trap_x][self.trap_y]
         trap.open_trap()
+        return pos_x, pos_y
 
 class ButtonBlue(MapObject):
     def __init__(self, type_index, images, bg_img):
@@ -208,6 +210,7 @@ class ButtonBlue(MapObject):
 
     def enter(self, game_engine, pos_x, pos_y, dx, dy, creature):
         game_engine.turn_tanks()
+        return pos_x, pos_y
 
 class Trap(MapObject):
     def __init__(self, type_index, images, bg_img):
@@ -255,6 +258,29 @@ class Teleport(MapObject):
         self.bg_img = bg_img
         self.img = images[type_index]
 
+
+    def enter(self, game_engine, pos_x, pos_y, dx, dy, creature):
+        i = 0
+        num_teleports = 4 #TODO: Code this
+        t_ind = game_engine.get_teleport_ind(pos_x, pos_y)
+        while i < (num_teleports-1):
+            #make sure the move will work
+            t_ind = game_engine.get_next_teleport_ind(t_ind)
+            t_x, t_y = game_engine.get_teleport_pos(t_ind)
+
+            map = game_engine.map
+            items = game_engine.items
+            #This is not needed since test=True
+            slip_ind = None
+            valid = creature.valid_move(t_x, t_y, dx, dy, map, items,
+                                        game_engine, slip_ind, test=True)[0]
+            if valid:
+                return t_x, t_y
+            i += 1
+
+        #TODO: Slide in the reverse direction
+        console.log('Not Implemented ' + a)
+        return pos_x, pos_y
 
 
 class SlidingFloor(MapObject):
@@ -403,6 +429,7 @@ class Exit(MapObject):
     
     def enter(self, game_engine, pos_x, pos_y, dx, dy, creature):
         game_engine.game_state = FINISHED
+        return pos_x, pos_y
 
 
 class DynamicMapObject(MapObject):
@@ -445,6 +472,7 @@ class Consumeable(MapObject):
         new_obj = object_generator(0, game_engine.images)
         game_engine.map[pos_x][pos_y] = new_obj
         creature.add_inventory(self.item_name, self)
+        return pos_x, pos_y
 
 class Chip(Consumeable):
     def __init__(self, type_index, images, bg_img):
@@ -454,7 +482,7 @@ class Chip(Consumeable):
     
     def enter(self, game_engine, pos_x, pos_y, dx, dy, creature):
         game_engine.get_chip()
-        Consumeable.enter(self, game_engine, pos_x, pos_y, dx, dy, creature)
+        return Consumeable.enter(self, game_engine, pos_x, pos_y, dx, dy, creature)
 
 class Key(Consumeable):
     def __init__(self):
@@ -528,6 +556,7 @@ class Door(MapObject):
         #replace the chip with a tile
         new_obj = object_generator(0, game_engine.images)
         game_engine.map[pos_x][pos_y] = new_obj
+        return pos_x, pos_y
 
 
 class DoorBlue(Door):
@@ -572,7 +601,7 @@ class ClerableMap(MapObject):
         #replace this item with a tile
         new_obj = object_generator(0, game_engine.images)
         game_engine.map[pos_x][pos_y] = new_obj
-
+        return pos_x, pos_y
     
 
 class Socket(ClerableMap):
@@ -605,7 +634,7 @@ class Water(MapObject):
 
     def enter(self, game_engine, pos_x, pos_y, dx, dy, creature):
         creature.drown(game_engine, pos_x, pos_y)
-        
+        return pos_x, pos_y
 
 
 class BecomeWall(MapObject):
@@ -656,6 +685,7 @@ class Bomb(ClerableMap):
         #bombs shoud also kill the object
         game_engine.items[pos_x][pos_y] = None
         creature.kill('exploded')
+        return pos_x, pos_y
 
 
 class SwitchedWall(MapObject):
