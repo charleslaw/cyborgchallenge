@@ -169,6 +169,11 @@ class Cyborg:
         for inv_item in inv_items:
             player_item.set_inventory_icon(inv_item, undefined)
 
+    def is_player_sliding(self):
+        """
+        See if the player is sliding
+        """
+        return self.items[self.x][self.y].is_slipping
 
     def _set_creature_links(self):
         """

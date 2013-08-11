@@ -32,6 +32,7 @@ class Controller:
         self.key_left = False
         self.key_right = False
         self.key_fire = False
+        self.pressed_key = None
         
         
         #state parameters
@@ -71,7 +72,7 @@ class Controller:
 
 
     def _start_game(self):
-        self.level_num = 12
+        self.level_num = 8
         self.start_current_level()
 
 
@@ -120,6 +121,7 @@ class Controller:
                 
                 if item_enum == 110:
                     start_pos = [x, y]
+                    #start_pos = [15, 4]
                     #items[15][4] = object_generator(item_enum, self.img)
 
                 if item_enum:
@@ -170,18 +172,19 @@ class Controller:
         self.start_current_level()
 
 
-    def keyboard_input(self, direction):
-        try:
-            if not self.queue_move:
-                if self.used_move:
-                    self.queue_move = direction
-                else:
-                    self.game_engine.move_player(direction)
-                    self.used_move = True
-        except PlayerKilled as exc:
-            console.log(exc.msg)
-            self.new_level(False)
-            return
+    def keyboard_input(self, direction, set):
+        if set:
+            self.made_move = direction
+            if not self.pressed_key:
+                self.press_delay = True
+                self.just_pressed = True
+                self.hold_delay = 2
+            self.pressed_key = direction
+        else:
+            self.pressed_key = None
+            self.press_delay = False
+            self.just_pressed = False
+            self.hold_delay = 0
 
         if self.state == READY:
             self.half_speed_marker = False
@@ -211,17 +214,37 @@ class Controller:
             self.new_level(False)
 
         self.game_engine.update()
-        
+
 
     def half_speed_updates(self):
         """
         10 m/s updates
         """
+        if self.made_move:
+            pressed_key = self.made_move
+        else:
+            pressed_key = self.pressed_key
+        
         if self.quarter_speed_marker:
             self.quarter_speed_updates()
             self.quarter_speed_marker = False
         else:
+            if pressed_key and (self.just_pressed or not self.hold_delay):
+                if not self.queue_move:
+                    if self.used_move:
+                        self.queue_move = pressed_key
+                    else:
+                        self.game_engine.move_player(pressed_key)
+                        self.used_move = True
+                        if self.just_pressed:
+                            self.just_pressed = False
+            if self.game_engine.is_player_sliding():
+                self.used_move = False
+                self.just_pressed = False
+                if self.hold_delay:
+                    self.hold_delay -= 1
             self.quarter_speed_marker = True
+            self.made_move = None
             self.game_engine.run_slips()
 
 
@@ -230,13 +253,26 @@ class Controller:
         5 m/s updates:
         - keyboard
         """
+        if self.made_move:
+            pressed_key = self.made_move
+        else:
+            pressed_key = self.pressed_key
+
+        if self.hold_delay:
+            self.hold_delay -= 1
+
         if self.queue_move:
             self.game_engine.move_player(self.queue_move)
             self.queue_move = None
             self.used_move = True
+        elif pressed_key and (self.just_pressed or not self.hold_delay):
+            self.game_engine.move_player(pressed_key)
+            self.used_move = True
         else:
             self.used_move = False #reset inputs
+        self.just_pressed = False
         self.game_engine.run_slips()
         self.game_engine.move_monsters()
- 
+        self.made_move = None
+
 
