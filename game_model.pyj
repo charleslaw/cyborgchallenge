@@ -183,14 +183,45 @@ class Cyborg:
             pos_x, pos_y = self.creature_links[i]
             self.items[pos_x][pos_y].creature_link = i
 
+    def kill_monster(self, x, y):
+        """
+        Right now this only supports a player killing a monster
+        """
+        #Find monster in creature_links & remove
+        found_moving_monster = False
+        for i in range(len(self.creature_links)-1, -1, -1):
+            pos_x, pos_y = self.creature_links[i]
+            if pos_x == x and pos_y == y:
+                #Remove this item
+                self.creature_links.splice(i, 1)
+                found_moving_monster = True
+        if found_moving_monster:
+            self._set_creature_links()
+
+        #Remove from the sliplist as well
+        for i in range(len(self.slip_list)-1, -1, -1):
+            pos_x, pos_y = self.slip_list[i][0:2]
+            if pos_x == x and pos_y == y:
+                #Remove this item
+                console.log('kill monster s'+i)
+                self.slip_list.splice(i, 1)
+        
+        #Now actually kill the monster
+        self.items[x][y] = None
 
     def move_monsters(self):
+        #TODO: Watch for the case where the moving monster kills another monster
+        #Notes: Killing himself is easy due to how the loop not getting messed
+        #up, killing a monster already moved/not yet moved is tricky though.
+        #We can probably assume that only 1 monster dies per move.
+        #Note2: An exception doesn't do much here.  If the monster A kills
+        #monster B, the exception that monster B is killed is raised before
+        #all the work is done for moving monster A.
         for i in range(len(self.creature_links)-1, -1, -1):
             pos_x, pos_y = self.creature_links[i]
             try:
                 new_x, new_y = self.items[pos_x][pos_y].move(pos_x, pos_y, self)
             except MonsterKilled as exc:
-                #TODO: What if a monster kills another?  is that possible
                 self.creature_links.splice(i, 1)
                 self._set_creature_links()
 

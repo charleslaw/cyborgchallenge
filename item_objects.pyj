@@ -93,9 +93,8 @@ class Item(GameObject):
         if neighbors_ok:
             if test:
                 return True, new_x, new_y
-            game_over_msg = self.step_on_item(items[new_x][new_y])
-            if game_over_msg:
-                raise PlayerKilled(game_over_msg)
+            #could raise a PlayerKilled or MonsterKilled
+            self.step_on_item(items[new_x][new_y], new_x, new_y, game_engine)
             new_floor = map[new_x][new_y]
 
             #Move the new item onto the box
@@ -156,7 +155,7 @@ class Item(GameObject):
             return valid_move
         return True
     
-    def step_on_item(self, target_item):
+    def step_on_item(self, target_item, t_x, t_y, game_engine):
         return None
 
     def add_inventory(self, item_name, item):
@@ -220,9 +219,11 @@ class Block(Item):
         self.is_slipping = False
         self.avoid_list = [Block]
 
-    def step_on_item(self, target_item):
+    def step_on_item(self, target_item, t_x, t_y, game_engine):
         if (target_item instanceof Player):
-            return "block crushed player"
+            raise PlayerKilled("block crushed player")
+        if (target_item instanceof Monster):
+            game_engine.kill_monster(t_x, t_y)
         return None
         
 
@@ -347,7 +348,7 @@ class Player(Creature):
             #kill the unit
             raise PlayerKilled('Drowned')
 
-    def step_on_item(self, target_item):
+    def step_on_item(self, target_item, t_x, t_y, game_engine):
         if (target_item instanceof Monster):
             raise PlayerKilled("player stepped on monster")
         return None
@@ -407,7 +408,7 @@ class Monster(Creature):
     def __init__(self):
         #TODO: Remove collision_list
         self.collision_list = [Creature]
-        self.unenterable = [Dirt, Gravel]
+        self.unenterable = [Dirt, Gravel, Fire, Chip, PassWall]
         self.avoid_list = [Block]
 
     def valid_move(self, start_x, start_y, dx, dy, map, items, game_engine, slip_ind):
@@ -435,6 +436,11 @@ class Monster(Creature):
 
     def kill(self, msg):
         raise MonsterKilled(msg)
+        
+    def step_on_item(self, target_item, t_x, t_y, game_engine):
+        if (target_item instanceof Player):
+            raise PlayerKilled("Monster killed player")
+        return None
 
 
 class Bug(Monster):
@@ -460,11 +466,6 @@ class Bug(Monster):
         self.set_new_dir(dir)
         self.turn_priority = ['L', 'F', 'R', 'B']
 
-    def step_on_item(self, target_item):
-        if (target_item instanceof Player):
-            return "bug ate player"
-        return None
-
     def set_new_dir(self, dir):
         type_index = self.dir_map[dir]
         self.dir = dir
@@ -476,6 +477,7 @@ class FireBug(Monster):
         self.immunities = ['FIRE']
         self.bg_img = bg_img
         self.avoid_list = [Block, FireBug]
+        self.unenterable = [Dirt, Gravel, Chip]
 
         #Make this better (maybe a constant?)
         self.dir_map = {
@@ -494,11 +496,6 @@ class FireBug(Monster):
                 break
         self.set_new_dir(dir)
         self.turn_priority = ['F', 'L', 'R', 'B']
-
-    def step_on_item(self, target_item):
-        if (target_item instanceof Player):
-            return "fireball burned player"
-        return None
 
     def set_new_dir(self, dir):
         type_index = self.dir_map[dir]
@@ -528,11 +525,6 @@ class PinkBall(Monster):
                 break
         self.set_new_dir(dir)
         self.turn_priority = ['F', 'B']
-
-    def step_on_item(self, target_item):
-        if (target_item instanceof Player):
-            return "fireball burned player"
-        return None
 
     def set_new_dir(self, dir):
         type_index = self.dir_map[dir]
@@ -624,11 +616,6 @@ class Ghost(Monster):
                 break
         self.set_new_dir(dir)
         self.turn_priority = ['F', 'L', 'R', 'B']
-
-    def step_on_item(self, target_item):
-        if (target_item instanceof Player):
-            return "fireball burned player"
-        return None
 
     def set_new_dir(self, dir):
         type_index = self.dir_map[dir]
