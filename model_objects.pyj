@@ -183,10 +183,20 @@ class ButtonRed(MapObject):
     def __init__(self, type_index, images, bg_img):
         self.bg_img = bg_img
         self.img = images[type_index]
+        self.link = None
 
     def set_trap(self, trap_x, trap_y):
         self.trap_x = trap_x
         self.trap_y = trap_y
+
+    def link_cloner(self, cl_x, cl_y):
+        self.link = [cl_x, cl_y]
+
+    def enter(self, game_engine, pos_x, pos_y, dx, dy, creature):
+        if self.link:
+            cl_x, cl_y = self.link
+            game_engine.map[cl_x][cl_y].clone(game_engine, cl_x, cl_y)
+        return pos_x, pos_y
 
 class ButtonBrown(MapObject):
     def __init__(self, type_index, images, bg_img):
@@ -246,12 +256,30 @@ class Cloner(MapObject):
     def __init__(self, type_index, images, bg_img):
         self.bg_img = bg_img
         self.img = images[type_index]
+        self.images = images
+        self.cloned_enum = None
 
-    def leavable(self, start_x, start_y, dx, dy, map, items, game_engine):
+    def clone(self, game_engine, x, y):
+        if game_engine.items[x][y] is None:
+            game_engine.items[x][y] = object_generator(self.cloned_enum,
+                                                       self.images)
+            game_engine.creature_links.push([x, y])
+            game_engine._set_creature_links()
+
+    def set_cloned(self, items, cloned_enum, x, y):
         """
-        in charge of determinging if a player can move
+        Set item that should be cloned on the cloner
         """
-        return False
+        if self.cloned_enum is not None:
+            #if it's already set, return
+            return
+        #a little tricky, but I think it's good use of bg_img and img
+        self.bg_img = self.img
+        self.img = self.images[cloned_enum]
+        #save this to generate new copies of the object
+        self.cloned_enum = cloned_enum
+        #set the item to None, it will be drawn here
+        items[x][y] = None
 
 class Teleport(MapObject):
     def __init__(self, type_index, images, bg_img):

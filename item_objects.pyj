@@ -100,6 +100,10 @@ class Item(GameObject):
             #Move the new item onto the box
             items[new_x][new_y] = items[start_x][start_y]
             items[start_x][start_y] = None
+            #This is for monsters
+            #TODO: How does this work with slips (dest_x, dest_y)?
+            if items[new_x][new_y].creature_link:
+                game_engine.creature_links[self.creature_link] = new_x, new_y
 
             dest_x, dest_y = map[new_x][new_y].enter(game_engine, new_x, new_y, dx, dy, self)
             is_slippery = new_floor.slip_item(self)

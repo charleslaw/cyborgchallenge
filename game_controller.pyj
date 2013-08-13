@@ -148,6 +148,20 @@ class Controller:
             #reverse the order of the array
             creature_links_copy.unshift(creature_link)
 
+        for clonelink in clone_controles:
+            but_xpos, but_ypos, cloner_xpos, cloner_ypos = clonelink
+            #TODO: Check this assumption, make sure it's always layer_one
+            cloned_enum = layer_one[cloner_ypos][cloner_xpos]
+            map[cloner_xpos][cloner_ypos].set_cloned(items, cloned_enum,
+                                                     cloner_xpos, cloner_ypos)
+            map[but_xpos][but_ypos].link_cloner(cloner_xpos, cloner_ypos)
+
+        #This is cleanup, make sure the cloned items are not on the monster list
+        for i in range(len(creature_links_copy)-1, -1, -1):
+            x, y = creature_links_copy[i]
+            if items[x][y] == None:
+                creature_links_copy.splice(i, 1)
+
         return start_pos, map, items, links, level_info, creature_links_copy, trap_controls, clone_controles
 
 
