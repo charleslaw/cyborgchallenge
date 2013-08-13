@@ -224,6 +224,8 @@ class Cyborg:
             except MonsterKilled as exc:
                 self.creature_links.splice(i, 1)
                 self._set_creature_links()
+            except as e:
+                console.log('MM Error'+pos_x+','+pos_y+' '+e)
 
     def switch_green_doors(self):
         for pos_x, pos_y in self.links['GREEN_BUTTON']:
