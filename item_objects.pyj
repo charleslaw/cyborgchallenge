@@ -559,13 +559,8 @@ class Tank(Monster):
                 dir = key
                 break
         self.set_new_dir(dir)
-        self.fin_dir = None
-        self.clicked = False
-
-    def step_on_item(self, target_item):
-        if (target_item instanceof Player):
-            return "tank crushed player"
-        return None
+        self.fin_dir = dir
+        self.clicked = True
 
     def set_new_dir(self, dir):
         type_index = self.dir_map[dir]
@@ -590,12 +585,14 @@ class Tank(Monster):
         dx, dy = DIRDXY[self.fin_dir]
         map = game_engine.map
         items = game_engine.items
+        
+        #Assume click was turned off
+        self.clicked = False
         is_valid, new_x, new_y = self.valid_move(start_x, start_y, dx, dy, map, items, game_engine, None)
         if is_valid:
-            return new_x, new_y
-        else:
-            self.clicked = False
-            return start_x, start_y
+            #Still valid, so keep the tank moving
+            self.clicked = True
+        return new_x, new_y
 
 
 class Ghost(Monster):
