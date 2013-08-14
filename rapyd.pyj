@@ -31,7 +31,10 @@ class Interface:
         )
 
     def setKey(self, k, set):
-        #TODO: Support other inputs like 'r' for reload level
+        if k == 82:
+            #r key
+            self.controller.new_level(False)
+
         d_pos = key_delta_pos_dict[String(k)]
         if type(d_pos) is not "undefined":
             self.controller.keyboard_input(d_pos, set)
