@@ -158,6 +158,7 @@ class Cyborg:
 
         self._set_creature_links()
         self.set_chips_text()
+        self.reset_inventory_ui()
         
         #setup controls
         for but_x, but_y, trap_x, trap_y in trap_controls:
@@ -288,6 +289,12 @@ class Cyborg:
         else:
             return True
 
+
+    def reset_inventory_ui(self):
+        items = document.getElementsByClassName('item')
+        for item in items:
+            item.style.backgroundImage = ''
+        
 
     def set_chips_text(self):
         chips_div = document.getElementById('count')
