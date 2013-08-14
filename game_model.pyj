@@ -157,6 +157,7 @@ class Cyborg:
         self.slip_list = []
 
         self._set_creature_links()
+        self.set_chips_text()
         
         #setup controls
         for but_x, but_y, trap_x, trap_y in trap_controls:
@@ -287,8 +288,18 @@ class Cyborg:
         else:
             return True
 
+
+    def set_chips_text(self):
+        chips_div = document.getElementById('count')
+        num_chars = 3
+        pad = new Array(1 + num_chars).join('0');
+        chips_text = (pad + self.chips_left).slice(-pad.length);
+        chips_div.innerHTML = chips_text
+
+
     def get_chip(self):
         self.chips_left -= 1
+        self.set_chips_text()
 
 
     def calculate_move(self, start_x, start_y, dx, dy):

@@ -8,7 +8,7 @@ div#display{
 }
 div#hud{
   width: 192px;
-  float: right;
+  float: left;
   padding: 2em;
 }
 
@@ -17,6 +17,25 @@ div.hud{
 	height: 48px;
 	float: left;
 	background-image: url(images/tile1.png)
+}
+
+div#chips{
+  width: 192px;
+  float: left;
+  padding: 2em;
+  padding-right: 0em;
+}
+
+div.chips{
+  width: 192px;
+  float: left;
+  padding-left: 1em;
+  font-size: 2em;
+  font-family: "Segoe UI Light", "Helvetica Neue", 'RobotoLight', "Segoe UI", "Segoe WP", sans-serif;
+}
+
+#count{
+    padding-left: 2em;
 }
 
 .item{
