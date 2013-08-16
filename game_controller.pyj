@@ -21,6 +21,7 @@ FPS = 20 #20 supports "boosting" @ 20 moves/sec
 INIT = 0
 READY = 1
 RUNNING = 2
+DEAD = 3
 
 
 class Controller:
@@ -216,7 +217,7 @@ class Controller:
 
     def update(self):
         try:
-            if self.state < READY:
+            if self.state < READY or self.state == DEAD:
                 return
 
             if self.state == RUNNING:
@@ -226,8 +227,12 @@ class Controller:
                 else:
                     self.half_speed_marker = True
         except PlayerKilled as exc:
-            console.log(exc.msg)
-            self.new_level(False)
+            self.state = DEAD
+            Alertify.dialog.alert(
+                exc.msg,
+                def ():
+                    self.new_level(False)
+                )
 
         self.game_engine.update()
 
