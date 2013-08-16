@@ -73,7 +73,7 @@ class Controller:
 
 
     def _start_game(self):
-        self.level_num = 5
+        self.level_num = 1
         self.start_current_level()
 
 
