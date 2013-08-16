@@ -173,7 +173,10 @@ class Item(GameObject):
     def use_item(self, item_name):
         console.log('Not Implemented')
         return
-    
+
+    def clear_boots(self):
+        pass
+
     def is_safe(type, item):
         console.log('Not Implemented')
         return False
@@ -335,7 +338,15 @@ class Player(Creature):
         
         #The UI also shows chips left
         pass
-        
+
+    def clear_boots(self):
+        """
+        Just clear all boots
+        """
+        for item in ['INV_FIREBOOTS', 'INV_FLIPPERS', 'INV_SKATES', 'INV_SUCTIONBOOTS']:
+            self.items[item] = 0
+            self.set_inventory_icon(item, None)
+
     def use_item(self, item_name):
         Creature.use_item(self, item_name)
         

@@ -170,6 +170,10 @@ class Theif(MapObject):
         self.bg_img = bg_img
         self.img = images[type_index]
 
+    def enter(self, game_engine, pos_x, pos_y, dx, dy, creature):
+        creature.clear_boots()
+        return pos_x, pos_y
+
 class ButtonGreen(MapObject):
     def __init__(self, type_index, images, bg_img):
         self.bg_img = bg_img
