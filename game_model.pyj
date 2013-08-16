@@ -226,6 +226,8 @@ class Cyborg:
             except MonsterKilled as exc:
                 self.creature_links.splice(i, 1)
                 self._set_creature_links()
+            except PlayerKilled as exc:
+                raise exc
             except as e:
                 console.log('MM Error'+pos_x+','+pos_y+' '+e)
 
