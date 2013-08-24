@@ -21,21 +21,17 @@ div.hud{
 
 div#chips{
   width: 192px;
-  float: left;
-  padding: 2em;
-  padding-right: 0em;
+  padding-bottom: 2em;
 }
 
 div.chips{
-  width: 192px;
-  float: left;
-  padding-left: 1em;
   font-size: 2em;
   font-family: "Segoe UI Light", "Helvetica Neue", 'RobotoLight', "Segoe UI", "Segoe WP", sans-serif;
 }
 
 #count{
-    padding-left: 2em;
+    padding-left: 1em;
+    padding-bottom: 1em;
 }
 
 .item{
