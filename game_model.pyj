@@ -58,17 +58,17 @@ image_map = ['tile1.png', 'tile2.png', 'cyb002.png', 'cyb003.png', 'cyb004.png',
     'box.png', 'cyb011.png', 'cyb012.png', 'slideD.png', \
     'CloneNorth', 'CloneWest', 'CloneSouth', 'CloneEast', 'slideU.png', 'slideR.png', \
     'slideL.png', 'exit.png', 'cyb022.png', 'cyb023.png', 'cyb024.png', 'cyb025.png', 'cyb026.png', \
-    'cyb027.png', 'cyb028.png', 'cyb029.png', 'twi030.png', 'twi030.png', 'None', 'twi033.gif', 'twi034.gif', \
-    'twi035.gif', 'twi036.gif', 'twi037.gif', 'twi038.gif', 'twi039.gif', \
-    'twi040.gif', 'twi041.gif', 'twi042.gif', 'twi043.gif', 'tile1.png', 'twi045.gif', 'cyb046.png', \
-    'twi047.gif', 'BlockedSE', 'twi049.gif', 'ForceAll', 'borg2.png', 'borg2.png', 'borg2.png', 'None', 'None', \
-    'None', 'Player', 'exit.png', 'exit.png', 'borg2.png', 'borg2.png', 'borg2.png', 'borg2.png', 'twi064.gif', \
-    'twi065.gif', 'twi066.gif', 'twi067.gif', 'twi068.gif', 'twi069.gif', \
-    'twi070.gif', 'twi071.gif', 'twi072.gif', 'twi073.gif', 'twi074.gif', \
-    'twi075.gif', 'twi076.gif', 'twi077.gif', 'twi078.gif', 'twi079.gif', \
-    'twi080.gif', 'twi081.gif', 'twi082.gif', 'twi083.gif', 'Frog', 'Frog', \
+    'cyb027.png', 'cyb028.png', 'cyb029.png', 'cyb030.png', 'cyb030.png', 'None', 'twi033.gif', 'cyb034.gif', \
+    'cyb035.png', 'cyb036.png', 'cyb037.png', 'cyb038.png', 'cyb039.png', \
+    'cyb040.png', 'cyb041.png', 'twi042.gif', 'cyb043.png', 'tile1.png', 'cyb045.gif', 'cyb046.png', \
+    'cyb047.png', 'BlockedSE', 'cyb049.gif', 'ForceAll', 'borg2.png', 'borg2.png', 'borg2.png', 'None', 'None', \
+    'None', 'Player', 'exit.png', 'exit.png', 'borg2.png', 'borg2.png', 'borg2.png', 'borg2.png', 'cyb064.png', \
+    'cyb065.png', 'cyb066.png', 'cyb067.png', 'cyb068.png', 'cyb069.png', \
+    'cyb070.png', 'cyb071.png', 'cyb072.png', 'cyb073.png', 'cyb074.png', \
+    'cyb075.png', 'cyb076.png', 'cyb077.png', 'cyb078.png', 'cyb079.png', \
+    'cyb080.png', 'cyb081.png', 'cyb082.png', 'cyb083.png', 'Frog', 'Frog', \
     'Frog', 'Frog', 'Walker', 'Walker', 'Walker', 'Walker', 'Blob', 'Blob', 'Blob', 'Blob', \
-    'twi096.gif', 'twi097.gif', 'twi098.gif', 'twi099.gif', 'twi100.gif', 'twi101.gif', 'twi102.gif', \
+    'cyb096.png', 'cyb097.png', 'cyb098.png', 'cyb099.png', 'twi100.gif', 'twi101.gif', 'twi102.gif', \
     'twi103.gif', 'twi104.gif', 'twi105.gif', 'twi106.gif', 'twi107.gif', 'borg2.png', 'borg2.png', \
     'borg2.png', 'borg2.png']
     
