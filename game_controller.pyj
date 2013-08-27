@@ -53,16 +53,15 @@ class Controller:
         #Load images
         self.img = [new Image() for image in image_map]
         num_images = len(image_map)
-        main = self
         for i in range(len(image_map)):
             if image_map[i].indexOf('.') < 0:
                 num_images -= 1
             else:
                 self.img[i].src = './images/' + image_map[i]
                 self.img[i].onload = def():
-                    main.number_images_loaded += 1
-                    if main.number_images_loaded >= num_images:
-                        main.images_loaded()
+                    self.number_images_loaded += 1
+                    if self.number_images_loaded >= num_images:
+                        self.images_loaded()
 
 
     def images_loaded(self):
@@ -209,9 +208,8 @@ class Controller:
             self.state = RUNNING
 
             #setup a timer
-            main = self
             self.timer_id = setInterval(def():
-                main.update()
+                self.update()
             , 1000/FPS)
 
 

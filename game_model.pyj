@@ -54,13 +54,13 @@ conversion_map = [Tile, Wall, Chip, Water, Fire, HiddenWall, BlockedNorth, \
 
 image_map = ['tile1.png', 'tile2.png', 'cyb002.png', 'cyb003.png', 'cyb004.png',
     'tile1.png', 'BlockedNorth', \
-    'BlockedWest', 'twi008.gif', 'BlockedEast', \
+    'BlockedWest', 'cyb008.png', 'BlockedEast', \
     'box.png', 'cyb011.png', 'cyb012.png', 'slideD.png', \
     'CloneNorth', 'CloneWest', 'CloneSouth', 'CloneEast', 'slideU.png', 'slideR.png', \
     'slideL.png', 'exit.png', 'cyb022.png', 'cyb023.png', 'cyb024.png', 'cyb025.png', 'cyb026.png', \
-    'cyb027.png', 'cyb028.png', 'cyb029.png', 'cyb030.png', 'cyb030.png', 'None', 'twi033.gif', 'cyb034.gif', \
+    'cyb027.png', 'cyb028.png', 'cyb029.png', 'cyb030.png', 'cyb030.png', 'None', 'cyb033.png', 'cyb034.gif', \
     'cyb035.png', 'cyb036.png', 'cyb037.png', 'cyb038.png', 'cyb039.png', \
-    'cyb040.png', 'cyb041.png', 'twi042.gif', 'cyb043.png', 'tile1.png', 'cyb045.gif', 'cyb046.png', \
+    'cyb040.png', 'cyb041.png', 'cyb042.png', 'cyb043.png', 'tile1.png', 'cyb045.gif', 'cyb046.png', \
     'cyb047.png', 'BlockedSE', 'cyb049.gif', 'ForceAll', 'borg2.png', 'borg2.png', 'borg2.png', 'None', 'None', \
     'None', 'Player', 'exit.png', 'exit.png', 'borg2.png', 'borg2.png', 'borg2.png', 'borg2.png', 'cyb064.png', \
     'cyb065.png', 'cyb066.png', 'cyb067.png', 'cyb068.png', 'cyb069.png', \
@@ -68,8 +68,8 @@ image_map = ['tile1.png', 'tile2.png', 'cyb002.png', 'cyb003.png', 'cyb004.png',
     'cyb075.png', 'cyb076.png', 'cyb077.png', 'cyb078.png', 'cyb079.png', \
     'cyb080.png', 'cyb081.png', 'cyb082.png', 'cyb083.png', 'Frog', 'Frog', \
     'Frog', 'Frog', 'Walker', 'Walker', 'Walker', 'Walker', 'Blob', 'Blob', 'Blob', 'Blob', \
-    'cyb096.png', 'cyb097.png', 'cyb098.png', 'cyb099.png', 'twi100.gif', 'twi101.gif', 'twi102.gif', \
-    'twi103.gif', 'twi104.gif', 'twi105.gif', 'twi106.gif', 'twi107.gif', 'borg2.png', 'borg2.png', \
+    'cyb096.png', 'cyb097.png', 'cyb098.png', 'cyb099.png', 'cyb100.gif', 'cyb101.gif', 'cyb102.gif', \
+    'cyb103.gif', 'cyb104.png', 'cyb105.png', 'cyb106.png', 'cyb107.png', 'borg2.png', 'borg2.png', \
     'borg2.png', 'borg2.png']
     
 bg_image = [None, None, None, None, None,
@@ -236,9 +236,7 @@ class Cyborg:
             self.map[pos_x][pos_y].flip_wall()
 
     def turn_tanks(self):
-        for i in range(len(self.creature_links)):
-            pos_x, pos_y = self.creature_links[i]
-            self.items[pos_x][pos_y]
+        for pos_x, pos_y in self.creature_links:
             if self.items[pos_x][pos_y] instanceof Tank:
                 self.items[pos_x][pos_y].trigger()
 

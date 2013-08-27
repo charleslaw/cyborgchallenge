@@ -5,7 +5,7 @@ from game_controller import Controller
 SHOT_COLOR = '#fff'
 
 ASTEROID_SIZE = 180.0
-CANVAS_DIM_X = 800
+CANVAS_DIM_X = 700
 CANVAS_DIM_Y = 600
 
 #BUGS:
@@ -44,7 +44,7 @@ def runGame():
     # The view tells when the controller to start and passes in a reference
     # to itself
     canvas = document.getElementById('myCanvas')
-    canvas.width = 800
+    canvas.width = 700
     canvas.height = 500
     game_engine = Cyborg(canvas)
     controller = Controller(game_engine)
