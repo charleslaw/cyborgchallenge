@@ -20,19 +20,20 @@ class MapObject(GameObject):
         self.dmg_type = None
         self.item = None
         
-    def leavable(self, start_x, start_y, dx, dy, map, items):
+    def leavable(self, start_x, start_y, dx, dy):
         """
         in charge of determinging if a player can move
         """
         new_x = start_x + dx
         new_y = start_y + dy
-        creature = items[start_x][start_y]
-        return map[new_x][new_y].enterable(new_x, new_y, dx, dy, items, creature)
+        creature = self.game_engine.items[start_x][start_y]
+        return self.game_engine.map[new_x][new_y].enterable(new_x, new_y, dx,
+                                                            dy, creature)
         
-    def enterable(self, pos_x, pos_y, dx, dy, items, creature):
+    def enterable(self, pos_x, pos_y, dx, dy, creature):
         return True
 
-    def enter(self, game_engine, pos_x, pos_y, dx, dy, creature):
+    def enter(self, pos_x, pos_y, dx, dy, creature):
         return pos_x, pos_y
 
     def slip_item(self, creature):
@@ -97,7 +98,7 @@ class Wall(MapObject):
         self.img = images[type_index]
         self.game_engine = game_engine
 
-    def enterable(self, pos_x, pos_y, dx, dy, items, creature):
+    def enterable(self, pos_x, pos_y, dx, dy, creature):
         #cannot enter this object
         return False
 
@@ -107,8 +108,8 @@ class Fire(MapObject):
         self.img = images[type_index]
         self.game_engine = game_engine
         
-    def enter(self, game_engine, pos_x, pos_y, dx, dy, creature):
-        creature.burn(game_engine, pos_x, pos_y)
+    def enter(self, pos_x, pos_y, dx, dy, creature):
+        creature.burn(pos_x, pos_y)
         return pos_x, pos_y
 
 class HiddenWall(MapObject):
@@ -117,7 +118,7 @@ class HiddenWall(MapObject):
         self.img = images[type_index]
         self.game_engine = game_engine
 
-    def enterable(self, pos_x, pos_y, dx, dy, items, creature):
+    def enterable(self, pos_x, pos_y, dx, dy, creature):
         #cannot enter this object
         return False
 
@@ -139,13 +140,13 @@ class BlockedSouth(MapObject):
         self.img = images[type_index]
         self.game_engine = game_engine
 
-    def leavable(self, start_x, start_y, dx, dy, map, items):
+    def leavable(self, start_x, start_y, dx, dy):
         """
         in charge of determinging if a player can move
         """
         if dy == 1:
             return False
-        return MapObject.leavable(self, start_x, start_y, dx, dy, map, items)
+        return MapObject.leavable(self, start_x, start_y, dx, dy)
 
 class BlockedEast(MapObject):
     def __init__(self, type_index, images, bg_img, game_engine):
@@ -183,7 +184,7 @@ class Theif(MapObject):
         self.img = images[type_index]
         self.game_engine = game_engine
 
-    def enter(self, game_engine, pos_x, pos_y, dx, dy, creature):
+    def enter(self, pos_x, pos_y, dx, dy, creature):
         creature.clear_boots()
         return pos_x, pos_y
 
@@ -193,8 +194,8 @@ class ButtonGreen(MapObject):
         self.img = images[type_index]
         self.game_engine = game_engine
     
-    def enter(self, game_engine, pos_x, pos_y, dx, dy, creature):
-        game_engine.switch_green_doors()
+    def enter(self, pos_x, pos_y, dx, dy, creature):
+        self.game_engine.switch_green_doors()
         return pos_x, pos_y
 
 class ButtonRed(MapObject):
@@ -211,10 +212,10 @@ class ButtonRed(MapObject):
     def link_cloner(self, cl_x, cl_y):
         self.link = [cl_x, cl_y]
 
-    def enter(self, game_engine, pos_x, pos_y, dx, dy, creature):
+    def enter(self, pos_x, pos_y, dx, dy, creature):
         if self.link:
             cl_x, cl_y = self.link
-            game_engine.map[cl_x][cl_y].clone(game_engine, cl_x, cl_y)
+            self.game_engine.map[cl_x][cl_y].clone(cl_x, cl_y)
         return pos_x, pos_y
 
 class ButtonBrown(MapObject):
@@ -228,8 +229,8 @@ class ButtonBrown(MapObject):
         self.trap_x = trap_x
         self.trap_y = trap_y
 
-    def enter(self, game_engine, pos_x, pos_y, dx, dy, creature):
-        trap = game_engine.map[self.trap_x][self.trap_y]
+    def enter(self, pos_x, pos_y, dx, dy, creature):
+        trap = self.game_engine.map[self.trap_x][self.trap_y]
         trap.open_trap()
         return pos_x, pos_y
 
@@ -239,8 +240,8 @@ class ButtonBlue(MapObject):
         self.img = images[type_index]
         self.game_engine = game_engine
 
-    def enter(self, game_engine, pos_x, pos_y, dx, dy, creature):
-        game_engine.turn_tanks()
+    def enter(self, pos_x, pos_y, dx, dy, creature):
+        self.game_engine.turn_tanks()
         return pos_x, pos_y
 
 class Trap(MapObject):
@@ -250,13 +251,13 @@ class Trap(MapObject):
         self.trapped = True
         self.game_engine = game_engine
 
-    def leavable(self, start_x, start_y, dx, dy, map, items):
+    def leavable(self, start_x, start_y, dx, dy):
         """
         in charge of determinging if a player can move
         """
         if self.trapped:
             return False
-        return MapObject.leavable(self, start_x, start_y, dx, dy, map, items)
+        return MapObject.leavable(self, start_x, start_y, dx, dy)
 
     def open_trap(self):
         self.trapped = False
@@ -284,12 +285,13 @@ class Cloner(MapObject):
         self.images = images
         self.cloned_enum = None
 
-    def clone(self, game_engine, x, y):
-        if game_engine.items[x][y] is None:
-            game_engine.items[x][y] = object_generator(self.cloned_enum,
-                                                       self.images)
-            game_engine.creature_links.push([x, y])
-            game_engine._set_creature_links()
+    def clone(self, x, y):
+        if self.game_engine.items[x][y] is None:
+            self.game_engine.items[x][y] = object_generator(self.cloned_enum,
+                                                            self.images,
+                                                            self.game_engine)
+            self.game_engine.creature_links.push([x, y])
+            self.game_engine._set_creature_links()
 
     def set_cloned(self, items, cloned_enum, x, y):
         """
@@ -316,21 +318,20 @@ class Teleport(MapObject):
     def get_slip_dir(self, dx, dy):
         return dx, dy
 
-    def enter(self, game_engine, pos_x, pos_y, dx, dy, creature):
+    def enter(self, pos_x, pos_y, dx, dy, creature):
         i = 0
         num_teleports = 4 #TODO: Code this
-        t_ind = game_engine.get_teleport_ind(pos_x, pos_y)
+        t_ind = self.game_engine.get_teleport_ind(pos_x, pos_y)
         while i < (num_teleports-1):
             #make sure the move will work
-            t_ind = game_engine.get_next_teleport_ind(t_ind)
-            t_x, t_y = game_engine.get_teleport_pos(t_ind)
+            t_ind = self.game_engine.get_next_teleport_ind(t_ind)
+            t_x, t_y = self.game_engine.get_teleport_pos(t_ind)
 
-            map = game_engine.map
-            items = game_engine.items
+            map = self.game_engine.map
+            items = self.game_engine.items
             #This is not needed since test=True
             slip_ind = None
-            valid = creature.valid_move(t_x, t_y, dx, dy, map, items,
-                                        game_engine, slip_ind, test=True)[0]
+            valid = creature.valid_move(t_x, t_y, dx, dy, slip_ind, test=True)[0]
             if valid:
                 #Move item from the new position to the transported position
                 return t_x, t_y
@@ -412,7 +413,7 @@ class IceSE(IceFloor):
         self.img = images[type_index]
         self.game_engine = game_engine
 
-    def enterable(self, pos_x, pos_y, dx, dy, items, creature):
+    def enterable(self, pos_x, pos_y, dx, dy, creature):
         if dx == 1 or dy == 1:
             return False
         else:
@@ -431,7 +432,7 @@ class IceSW(IceFloor):
         self.img = images[type_index]
         self.game_engine = game_engine
 
-    def enterable(self, pos_x, pos_y, dx, dy, items, creature):
+    def enterable(self, pos_x, pos_y, dx, dy, creature):
         if dx == -1 or dy == 1:
             return False
         else:
@@ -450,7 +451,7 @@ class IceNW(IceFloor):
         self.img = images[type_index]
         self.game_engine = game_engine
 
-    def enterable(self, pos_x, pos_y, dx, dy, items, creature):
+    def enterable(self, pos_x, pos_y, dx, dy, creature):
         if dx == -1 or dy == -1:
             return False
         else:
@@ -469,7 +470,7 @@ class IceNE(IceFloor):
         self.img = images[type_index]
         self.game_engine = game_engine
 
-    def enterable(self, pos_x, pos_y, dx, dy, items, creature):
+    def enterable(self, pos_x, pos_y, dx, dy, creature):
         if dx == 1 or dy == -1:
             return False
         else:
@@ -497,8 +498,8 @@ class Exit(MapObject):
         self.img = images[type_index]
         self.game_engine = game_engine
 
-    def enter(self, game_engine, pos_x, pos_y, dx, dy, creature):
-        game_engine.game_state = FINISHED
+    def enter(self, pos_x, pos_y, dx, dy, creature):
+        self.game_engine.game_state = FINISHED
         return pos_x, pos_y
 
 
@@ -537,10 +538,10 @@ class DynamicMapObject(MapObject):
 
 
 class Consumeable(MapObject):
-    def enter(self, game_engine, pos_x, pos_y, dx, dy, creature):
+    def enter(self, pos_x, pos_y, dx, dy, creature):
         #replace the chip with a tile
-        new_obj = object_generator(0, game_engine.images)
-        game_engine.map[pos_x][pos_y] = new_obj
+        new_obj = object_generator(0, self.game_engine.images, self.game_engine)
+        self.game_engine.map[pos_x][pos_y] = new_obj
         creature.add_inventory(self.item_name, self)
         return pos_x, pos_y
 
@@ -551,9 +552,9 @@ class Chip(Consumeable):
         self.game_engine = game_engine
         self.item_name = 'CHIP'
     
-    def enter(self, game_engine, pos_x, pos_y, dx, dy, creature):
-        game_engine.get_chip()
-        return Consumeable.enter(self, game_engine, pos_x, pos_y, dx, dy, creature)
+    def enter(self, pos_x, pos_y, dx, dy, creature):
+        self.game_engine.get_chip()
+        return Consumeable.enter(self, pos_x, pos_y, dx, dy, creature)
 
 class Key(Consumeable):
     def __init__(self):
@@ -624,17 +625,17 @@ class Door(MapObject):
     def __init__(self):
         pass
         
-    def enterable(self, pos_x, pos_y, dx, dy, items, creature):
+    def enterable(self, pos_x, pos_y, dx, dy, creature):
         return creature.check_inventory(self.key, self.count)
     
-    def enter(self, game_engine, pos_x, pos_y, dx, dy, creature):
+    def enter(self, pos_x, pos_y, dx, dy, creature):
         #use the inventory:
         if self.use_item:
             creature.use_item(self.key)
         
         #replace the chip with a tile
-        new_obj = object_generator(0, game_engine.images)
-        game_engine.map[pos_x][pos_y] = new_obj
+        new_obj = object_generator(0, self.game_engine.images, self.game_engine)
+        self.game_engine.map[pos_x][pos_y] = new_obj
         return pos_x, pos_y
 
 
@@ -680,10 +681,10 @@ class ClerableMap(MapObject):
     def __init__(self):
         pass
     
-    def enter(self, game_engine, pos_x, pos_y, dx, dy, creature):
+    def enter(self, pos_x, pos_y, dx, dy, creature):
         #replace this item with a tile
-        new_obj = object_generator(0, game_engine.images)
-        game_engine.map[pos_x][pos_y] = new_obj
+        new_obj = object_generator(0, self.game_engine.images, self.game_engine)
+        self.game_engine.map[pos_x][pos_y] = new_obj
         return pos_x, pos_y
     
 
@@ -692,9 +693,8 @@ class Socket(ClerableMap):
         self.bg_img = bg_img
         self.img = images[type_index]
         self.game_engine = game_engine
-        self.game_engine = game_engine
     
-    def enterable(self, pos_x, pos_y, dx, dy, items, creature):
+    def enterable(self, pos_x, pos_y, dx, dy, creature):
         if self.game_engine.have_all_chips():
             return True
         else:
@@ -720,8 +720,8 @@ class Water(MapObject):
         self.img = images[type_index]
         self.game_engine = game_engine
 
-    def enter(self, game_engine, pos_x, pos_y, dx, dy, creature):
-        creature.drown(game_engine, pos_x, pos_y)
+    def enter(self, pos_x, pos_y, dx, dy, creature):
+        creature.drown(pos_x, pos_y)
         return pos_x, pos_y
 
 
@@ -729,10 +729,10 @@ class BecomeWall(MapObject):
     def __init__(self):
         pass
         
-    def enterable(self, pos_x, pos_y, dx, dy, items, creature):
+    def enterable(self, pos_x, pos_y, dx, dy, creature):
         if creature.can_push_on_walls:
             #replace the chip with a tile
-            new_obj = object_generator(1, game_engine.images, self.game_engine)
+            new_obj = object_generator(1, self.game_engine.images, self.game_engine)
             self.game_engine.map[pos_x][pos_y] = new_obj
         return False
 
@@ -755,13 +755,13 @@ class PassWall(MapObject):
         self.img = images[type_index]
         self.game_engine = game_engine
 
-    def enter(self, game_engine, pos_x, pos_y, dx, dy, creature):
+    def enter(self, pos_x, pos_y, dx, dy, creature):
         #replace this item with a tile
-        new_obj = object_generator(1, game_engine.images)
-        game_engine.map[pos_x][pos_y] = new_obj
+        new_obj = object_generator(1, self.game_engine.images, self.game_engine)
+        self.game_engine.map[pos_x][pos_y] = new_obj
         return pos_x, pos_y
 
-    def enterable(self, pos_x, pos_y, dx, dy, items, creature):
+    def enterable(self, pos_x, pos_y, dx, dy, creature):
         #TODO: Block Monsters, and maybe Blocks
         return True
 
@@ -772,10 +772,10 @@ class Bomb(ClerableMap):
         self.img = images[type_index]
         self.game_engine = game_engine
 
-    def enter(self, game_engine, pos_x, pos_y, dx, dy, creature):
-        ClerableMap.enter(self, game_engine, pos_x, pos_y, dx, dy, creature)
+    def enter(self, pos_x, pos_y, dx, dy, creature):
+        ClerableMap.enter(self, pos_x, pos_y, dx, dy, creature)
         #bombs shoud also kill the object
-        game_engine.items[pos_x][pos_y] = None
+        self.game_engine.items[pos_x][pos_y] = None
         creature.kill('exploded')
         return pos_x, pos_y
 
@@ -799,5 +799,5 @@ class SwitchedWall(MapObject):
         self.closed = not self.closed
         self.set_image()
         
-    def enterable(self, pos_x, pos_y, dx, dy, items, creature):
+    def enterable(self, pos_x, pos_y, dx, dy, creature):
         return not self.closed

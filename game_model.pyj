@@ -222,7 +222,7 @@ class Cyborg:
         for i in range(len(self.creature_links)-1, -1, -1):
             pos_x, pos_y = self.creature_links[i]
             try:
-                new_x, new_y = self.items[pos_x][pos_y].move(pos_x, pos_y, self)
+                new_x, new_y = self.items[pos_x][pos_y].move(pos_x, pos_y)
             except MonsterKilled as exc:
                 self.creature_links.splice(i, 1)
                 self._set_creature_links()
@@ -322,7 +322,7 @@ class Cyborg:
         player_item = self.items[self.x][self.y]
 
         #This might raise a PlayerKilled Exception
-        player_item.valid_move(self.x, self.y, dx, dy, self.map, self.items, self, None)
+        player_item.valid_move(self.x, self.y, dx, dy, None)
         
         if self.game_state == FINISHED:
             self.controller.new_level(True)
@@ -338,8 +338,7 @@ class Cyborg:
             slip_item = self.items[pos_x][pos_y]
 
             #try to slip the item
-            valid_move, new_x, new_y = slip_item.valid_move(pos_x, pos_y, dx, dy, self.map,
-                                                            self.items, self, i)
+            valid_move, new_x, new_y = slip_item.valid_move(pos_x, pos_y, dx, dy, i)
 
             #go to the next item in the list
             i += 1

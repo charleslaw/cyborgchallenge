@@ -60,11 +60,11 @@ class Item(GameObject):
 
         return True
 
-    def set_item_pos(self, game_engine, items, old_x, old_y, new_x, new_y):
+    def set_item_pos(self, items, old_x, old_y, new_x, new_y):
         items[new_x][new_y] = items[old_x][old_y]
         items[old_x][old_y] = None
 
-    def valid_move(self, start_x, start_y, dx, dy, map, items, game_engine, slip_ind, test=False):
+    def valid_move(self, start_x, start_y, dx, dy, slip_ind, test=False):
         """
         Move an item from start_x, start_y by dx, dy.
         Note that it does not update the sliplist.  Note that monsters cannot
@@ -80,8 +80,9 @@ class Item(GameObject):
         
         #see what direction the map wants the player to move
         # leavable checks if the new position is enterable
+        map = self.game_engine.map
         curr_floor = map[start_x][start_y]
-        valid_move = curr_floor.leavable(start_x, start_y, dx, dy, map, items)
+        valid_move = curr_floor.leavable(start_x, start_y, dx, dy)
         
         if not valid_move:
             return False, start_x, start_y
@@ -91,37 +92,38 @@ class Item(GameObject):
         for unenterabe_class in self.unenterable:
             if dest_floor instanceof unenterabe_class:
                 return False, start_x, start_y
-        
-        neighbors_ok = self.move_neighbors(new_x, new_y, dx, dy, map, items, game_engine, test=test)
+
+        items = self.game_engine.items
+        neighbors_ok = self.move_neighbors(new_x, new_y, dx, dy, map, items, test=test)
         if neighbors_ok:
             if test:
                 return True, new_x, new_y
             #could raise a PlayerKilled or MonsterKilled
-            self.step_on_item(items[new_x][new_y], new_x, new_y, game_engine)
+            self.step_on_item(items[new_x][new_y], new_x, new_y)
             new_floor = map[new_x][new_y]
 
             #Move the new item onto the box
-            self.set_item_pos(game_engine, items, start_x, start_y, new_x, new_y)
+            self.set_item_pos(items, start_x, start_y, new_x, new_y)
             
             #This is for monsters
             #TODO: How does this work with slips (dest_x, dest_y)?
             if items[new_x][new_y].creature_link:
-                game_engine.creature_links[self.creature_link] = new_x, new_y
+                self.game_engine.creature_links[self.creature_link] = new_x, new_y
 
-            dest_x, dest_y = map[new_x][new_y].enter(game_engine, new_x, new_y, dx, dy, self)
+            dest_x, dest_y = map[new_x][new_y].enter(new_x, new_y, dx, dy, self)
             is_slippery = new_floor.slip_item(self)
             if is_slippery:
                 s_dx, s_dy = new_floor.get_slip_dir(dx, dy)
                 if slip_ind == None:
-                    self.add_to_sliplist(game_engine, slip_ind, dest_x, dest_y, s_dx, s_dy)
+                    self.add_to_sliplist(slip_ind, dest_x, dest_y, s_dx, s_dy)
                 else:
-                    self.update_sliplist(game_engine, slip_ind, dest_x, dest_y, s_dx, s_dy)
+                    self.update_sliplist(slip_ind, dest_x, dest_y, s_dx, s_dy)
             elif slip_ind != None:
-                self.remove_from_sliplist(game_engine, slip_ind)
+                self.remove_from_sliplist(slip_ind)
 
             #Do not use self, item may be deleted (and the value may be None)
             if dest_x != new_x or dest_y != new_y:
-                self.set_item_pos(game_engine, items, new_x, new_y, dest_x, dest_y)
+                self.set_item_pos(items, new_x, new_y, dest_x, dest_y)
 
             return True, dest_x, dest_y
         else:
@@ -129,7 +131,7 @@ class Item(GameObject):
             return False, start_x, start_y
 
 
-    def move_neighbors(self, new_x, new_y, dx, dy, map, items, game_engine, test=False):
+    def move_neighbors(self, new_x, new_y, dx, dy, map, items, test=False):
         #if there are no item in the way, the move is allowed
         if not items[new_x][new_y]:
             return True
@@ -156,12 +158,12 @@ class Item(GameObject):
                 break
 
         if pushable:
-            valid_move = dest_item.valid_move(new_x, new_y, dx, dy, map, items,
-                                              game_engine, slip_ind, test=test)[0]
+            valid_move = dest_item.valid_move(new_x, new_y, dx, dy,
+                                              slip_ind, test=test)[0]
             return valid_move
         return True
     
-    def step_on_item(self, target_item, t_x, t_y, game_engine):
+    def step_on_item(self, target_item, t_x, t_y):
         return None
 
     def add_inventory(self, item_name, item):
@@ -183,14 +185,14 @@ class Item(GameObject):
         console.log('Not Implemented')
         return False
     
-    def burn(self, game_engine, pos_x, pos_y):
+    def burn(self, pos_x, pos_y):
         console.log('Not Implemented')
         return
     
     def set_new_dir(self, dir):
         return
             
-    def drown(self, game_engine, pos_x, pos_y):
+    def drown(self, pos_x, pos_y):
         console.log('Not Implemented')
         return
         
@@ -202,19 +204,19 @@ class Item(GameObject):
         else:
             return False
 
-    def update_sliplist(self, game_engine, index, pos_x, pos_y, dx, dy):
+    def update_sliplist(self, index, pos_x, pos_y, dx, dy):
         self.is_slipping = True
-        game_engine.slip_list[index] = (pos_x, pos_y, dx, dy)
+        self.game_engine.slip_list[index] = (pos_x, pos_y, dx, dy)
 
-    def add_to_sliplist(self, game_engine, index, pos_x, pos_y, dx, dy):
+    def add_to_sliplist(self, index, pos_x, pos_y, dx, dy):
         """
         if index is None, 
         """
         self.is_slipping = True
-        game_engine.slip_list.push((pos_x, pos_y, dx, dy))
+        self.game_engine.slip_list.push((pos_x, pos_y, dx, dy))
 
-    def remove_from_sliplist(self, game_engine, index):
-        game_engine.slip_list.splice(index, 1)
+    def remove_from_sliplist(self, index):
+        self.game_engine.slip_list.splice(index, 1)
         self.is_slipping = False
 
     def kill(self, msg):
@@ -229,22 +231,22 @@ class Block(Item):
         self.avoid_list = [Block]
         self.game_engine = game_engine
 
-    def step_on_item(self, target_item, t_x, t_y, game_engine):
+    def step_on_item(self, target_item, t_x, t_y):
         if (target_item instanceof Player):
             raise PlayerKilled("block crushed player")
         if (target_item instanceof Monster):
-            game_engine.kill_monster(t_x, t_y)
+            self.game_engine.kill_monster(t_x, t_y)
         return None
         
 
-    def burn(self, game_engine, pos_x, pos_y):
+    def burn(self, pos_x, pos_y):
         #do nothing blocks are not affected by fire
         return
     
-    def drown(self, game_engine, pos_x, pos_y):
+    def drown(self, pos_x, pos_y):
         #this drowns the block - makes dirt
-        game_engine.map[pos_x][pos_y] = object_generator(11, game_engine.images)
-        game_engine.items[pos_x][pos_y] = None
+        self.game_engine.map[pos_x][pos_y] = object_generator(11, self.game_engine.images, self.game_engine)
+        self.game_engine.items[pos_x][pos_y] = None
 
 
 class Creature(Item):
@@ -270,15 +272,15 @@ class Creature(Item):
         self.items[item_name] -= 1
     
 
-    def burn(self, game_engine, pos_x, pos_y):
+    def burn(self, pos_x, pos_y):
         if not self.is_safe('FIRE', 'INV_FIREBOOTS'):
             #kill the unit
-            game_engine.items[pos_x][pos_y] = None
+            self.game_engine.items[pos_x][pos_y] = None
             
-    def drown(self, game_engine, pos_x, pos_y):
+    def drown(self, pos_x, pos_y):
         if not self.is_safe('WATER', 'INV_FLIPPERS'):
             #kill the unit
-            game_engine.items[pos_x][pos_y] = None
+            self.game_engine.items[pos_x][pos_y] = None
             raise MonsterKilled('drowned')
 
 class Player(Creature):
@@ -306,18 +308,18 @@ class Player(Creature):
         self.is_slipping = False
         self.game_engine = game_engine
 
-    def set_item_pos(self, game_engine, items, old_x, old_y, new_x, new_y):
+    def set_item_pos(self, items, old_x, old_y, new_x, new_y):
         items[new_x][new_y] = items[old_x][old_y]
         items[old_x][old_y] = None
-        game_engine.x = new_x
-        game_engine.y = new_y
+        self.game_engine.x = new_x
+        self.game_engine.y = new_y
 
-    def valid_move(self, start_x, start_y, dx, dy, map, items, game_engine, slip_ind, test=False):
+    def valid_move(self, start_x, start_y, dx, dy, slip_ind, test=False):
         if slip_ind == None and self.is_slipping:
             #Player is always at slipind 0
             slip_ind = 0
         return Item.valid_move(self, start_x, start_y, dx, dy,
-                               map, items, game_engine, slip_ind, test=test)
+                               slip_ind, test=test)
 
     def set_inventory_icon(self, item_name, item):
         """
@@ -335,14 +337,11 @@ class Player(Creature):
 
     def add_inventory(self, item_name, item):
         Creature.add_inventory(self, item_name, item)
-        
+
         #the UI shows user keys
         #Note: this [0:4] works in JS but not Python
         if item_name[:4] == 'KEY_' or item_name[:4] == 'INV_':
             self.set_inventory_icon(item_name, item)
-        
-        #The UI also shows chips left
-        pass
 
     def clear_boots(self):
         """
@@ -358,28 +357,28 @@ class Player(Creature):
         if item_name[:4] == 'KEY_' or item_name[:4] == 'INV_':
             self.set_inventory_icon(item_name, null)
 
-    def burn(self, game_engine, pos_x, pos_y):
+    def burn(self, pos_x, pos_y):
         if not self.is_safe('FIRE', 'INV_FIREBOOTS'):
             #kill the unit
             raise PlayerKilled('Burned')
             
-    def drown(self, game_engine, pos_x, pos_y):
+    def drown(self, pos_x, pos_y):
         if not self.is_safe('WATER', 'INV_FLIPPERS'):
             #kill the unit
             raise PlayerKilled('Drowned')
 
-    def step_on_item(self, target_item, t_x, t_y, game_engine):
+    def step_on_item(self, target_item, t_x, t_y):
         if (target_item instanceof Monster):
             raise PlayerKilled("player stepped on monster")
         return None
 
-    def add_to_sliplist(self, game_engine, index, pos_x, pos_y, dx, dy):
+    def add_to_sliplist(self, index, pos_x, pos_y, dx, dy):
         """
         if index is None, add to the list
         """
         self.is_slipping = True
         #unshift is like insert(0, item)
-        game_engine.slip_list.unshift((pos_x, pos_y, dx, dy))
+        self.game_engine.slip_list.unshift((pos_x, pos_y, dx, dy))
 
     def kill(self, msg):
         raise PlayerKilled(msg)
@@ -431,24 +430,25 @@ class Monster(Creature):
         self.unenterable = [Dirt, Gravel, Fire, Chip, PassWall]
         self.avoid_list = [Block]
 
-    def valid_move(self, start_x, start_y, dx, dy, map, items, game_engine, slip_ind):
-        valid_move, new_x, new_y = Item.valid_move(self, start_x, start_y, dx, dy, map, items, game_engine, slip_ind)
+    def valid_move(self, start_x, start_y, dx, dy, slip_ind, test=False):
+        valid_move, new_x, new_y = Item.valid_move(self, start_x, start_y, dx,
+                                                   dy, slip_ind, test=test)
         if valid_move:
-            game_engine.creature_links[self.creature_link] = new_x, new_y
+            self.game_engine.creature_links[self.creature_link] = new_x, new_y
         return valid_move, new_x, new_y
 
 
-    def move(self, start_x, start_y, game_engine):
+    def move(self, start_x, start_y):
         if self.is_slipping:
             return start_x, start_y
-        map = game_engine.map
-        items = game_engine.items
+        map = self.game_engine.map
+        items = self.game_engine.items
         turn_dict_current = TURN_DICT[self.dir]
         for turn_dir in self.turn_priority:
             #map the turn direction to a absolute direction
             abs_turn_dir = turn_dict_current[turn_dir]
             dx, dy = DIRDXY[abs_turn_dir]
-            is_valid, new_x, new_y = self.valid_move(start_x, start_y, dx, dy, map, items, game_engine, None)
+            is_valid, new_x, new_y = self.valid_move(start_x, start_y, dx, dy, None)
             if is_valid:
                 self.set_new_dir(abs_turn_dir)
                 return new_x, new_y
@@ -457,7 +457,7 @@ class Monster(Creature):
     def kill(self, msg):
         raise MonsterKilled(msg)
         
-    def step_on_item(self, target_item, t_x, t_y, game_engine):
+    def step_on_item(self, target_item, t_x, t_y):
         if (target_item instanceof Player):
             raise PlayerKilled("Monster killed player")
         return None
@@ -595,7 +595,7 @@ class Tank(Monster):
         self.fin_dir = fin_dir
         self.clicked = True
 
-    def move(self, start_x, start_y, game_engine):
+    def move(self, start_x, start_y):
         if not self.clicked:
             return start_x, start_y
 
@@ -603,12 +603,12 @@ class Tank(Monster):
             self.set_new_dir(self.fin_dir)
         #try to move
         dx, dy = DIRDXY[self.fin_dir]
-        map = game_engine.map
-        items = game_engine.items
+        map = self.game_engine.map
+        items = self.game_engine.items
         
         #Assume click was turned off
         self.clicked = False
-        is_valid, new_x, new_y = self.valid_move(start_x, start_y, dx, dy, map, items, game_engine, None)
+        is_valid, new_x, new_y = self.valid_move(start_x, start_y, dx, dy, None)
         if is_valid:
             #Still valid, so keep the tank moving
             self.clicked = True
