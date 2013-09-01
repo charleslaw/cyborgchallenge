@@ -91,14 +91,14 @@ bg_image = [None, None, None, None, None,
     None, None]    
 
 
-def object_generator(index, loaded_images):
+def object_generator(index, loaded_images, game_model):
     object_class = conversion_map[index]
     if bg_image[index] != None:
         bg_img = loaded_images[bg_image[index]]
     else:
         bg_img = None
     
-    return new object_class(index, loaded_images, bg_img)
+    return new object_class(index, loaded_images, bg_img, game_model)
 
 
 def enum_is_item(itemEnum):

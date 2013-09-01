@@ -125,10 +125,10 @@ class Controller:
                     #item_enum = None
 
                 if item_enum:
-                    items[x][y] = object_generator(item_enum, self.img)
+                    items[x][y] = object_generator(item_enum, self.img, self.game_engine)
                 else:
                     items[x][y] = None
-                map[x][y] = object_generator(floor_enum, self.img)
+                map[x][y] = object_generator(floor_enum, self.img, self.game_engine)
 
                 #save links
                 #TODO: Use dicts here
@@ -137,8 +137,6 @@ class Controller:
                 
                 elif floor_enum == 41:
                     links['TELEPORTS'].push([x, y])
-
-        #items[28][9] = object_generator(110, self.img)
 
         #TODO: Figure out a good palce to filter out creature links that have
         #creatures on clone blocks.  This just makes the game more efficient

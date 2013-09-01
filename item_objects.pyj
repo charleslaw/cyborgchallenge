@@ -81,8 +81,7 @@ class Item(GameObject):
         #see what direction the map wants the player to move
         # leavable checks if the new position is enterable
         curr_floor = map[start_x][start_y]
-        valid_move = curr_floor.leavable(start_x, start_y, dx, dy,
-                                         map, items, game_engine)
+        valid_move = curr_floor.leavable(start_x, start_y, dx, dy, map, items)
         
         if not valid_move:
             return False, start_x, start_y
@@ -223,11 +222,12 @@ class Item(GameObject):
         return
 
 class Block(Item):
-    def __init__(self, type_index, images, bg_img):
+    def __init__(self, type_index, images, bg_img, game_engine):
         self.bg_img = bg_img
         self.img = images[type_index]
         self.is_slipping = False
         self.avoid_list = [Block]
+        self.game_engine = game_engine
 
     def step_on_item(self, target_item, t_x, t_y, game_engine):
         if (target_item instanceof Player):
@@ -296,7 +296,7 @@ class Player(Creature):
     #110    Chip (S) (Always used)            1    1
     #111    Chip (E)                          1    1
     """
-    def __init__(self, type_index, images, bg_img):
+    def __init__(self, type_index, images, bg_img, game_engine):
         self.bg_img = bg_img
         self.img = images[type_index]
         self.push_list = [Block]
@@ -304,6 +304,7 @@ class Player(Creature):
         self.can_push_on_walls = True
         self.items = {}
         self.is_slipping = False
+        self.game_engine = game_engine
 
     def set_item_pos(self, game_engine, items, old_x, old_y, new_x, new_y):
         items[new_x][new_y] = items[old_x][old_y]
@@ -463,9 +464,10 @@ class Monster(Creature):
 
 
 class Bug(Monster):
-    def __init__(self, type_index, images, bg_img):
+    def __init__(self, type_index, images, bg_img, game_engine):
         self.bg_img = bg_img
         self.avoid_list = [Block, Bug]
+        self.game_engine = game_engine
 
         #Make this better (maybe a constant?)
         self.dir_map = {
@@ -492,9 +494,10 @@ class Bug(Monster):
 
 
 class FireBug(Monster):
-    def __init__(self, type_index, images, bg_img):
+    def __init__(self, type_index, images, bg_img, game_engine):
         self.immunities = ['FIRE']
         self.bg_img = bg_img
+        self.game_engine = game_engine
         self.avoid_list = [Block, FireBug]
         self.unenterable = [Dirt, Gravel, Chip]
 
@@ -523,8 +526,9 @@ class FireBug(Monster):
 
 
 class PinkBall(Monster):
-    def __init__(self, type_index, images, bg_img):
+    def __init__(self, type_index, images, bg_img, game_engine):
         self.bg_img = bg_img
+        self.game_engine = game_engine
         self.avoid_list = [Block, PinkBall]
 
         #Make this better (maybe a constant?)
@@ -552,8 +556,9 @@ class PinkBall(Monster):
 
 
 class Tank(Monster):
-    def __init__(self, type_index, images, bg_img):
+    def __init__(self, type_index, images, bg_img, game_engine):
         self.bg_img = bg_img
+        self.game_engine = game_engine
         self.avoid_list = [Block, Tank]
 
         #Make this better (maybe a constant?)
@@ -611,8 +616,9 @@ class Tank(Monster):
 
 
 class Ghost(Monster):
-    def __init__(self, type_index, images, bg_img):
+    def __init__(self, type_index, images, bg_img, game_engine):
         self.bg_img = bg_img
+        self.game_engine = game_engine
         self.avoid_list = [Block, Ghost]
 
         #Make this better (maybe a constant?)
@@ -640,23 +646,27 @@ class Ghost(Monster):
 
 
 class Frog(Monster):
-    def __init__(self, type_index, images, bg_img):
+    def __init__(self, type_index, images, bg_img, game_engine):
         self.bg_img = bg_img
+        self.game_engine = game_engine
         self.img = images[type_index]
 
 class Walker(Monster):
-    def __init__(self, type_index, images, bg_img):
+    def __init__(self, type_index, images, bg_img, game_engine):
         self.bg_img = bg_img
+        self.game_engine = game_engine
         self.img = images[type_index]
 
 class Blob(Monster):
-    def __init__(self, type_index, images, bg_img):
+    def __init__(self, type_index, images, bg_img, game_engine):
         self.bg_img = bg_img
+        self.game_engine = game_engine
         self.img = images[type_index]
 
 class Centipede(Monster):
-    def __init__(self, type_index, images, bg_img):
+    def __init__(self, type_index, images, bg_img, game_engine):
         self.bg_img = bg_img
+        self.game_engine = game_engine
         self.avoid_list = [Block, Centipede]
 
         #Make this better (maybe a constant?)
