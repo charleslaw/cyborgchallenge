@@ -16,7 +16,7 @@
 import model_objects
 import item_objects
 
-direction_dpos_dict = {'UP':    [ 0, -1], 'DOWN':  [ 0,  1], 'LEFT':  [-1,  0], 'RIGHT': [ 1,  0]}
+direction_dpos_dict = {'UP':    'N', 'DOWN':  'S', 'LEFT':  'W', 'RIGHT': 'E'}
 
 
 FRAMES_PER_SLIDE = 2 #20 f/s / 10m/s = 2 frames
@@ -309,21 +309,13 @@ class Cyborg:
         self.set_chips_text()
 
 
-    def calculate_move(self, start_x, start_y, dx, dy):
-        """
-        Try to move in the item in start_x, start_y by dx, dy
-        Return the actual move
-        """
-        pass
-
-
-    def move_player(self, direction):
-        dx, dy = direction_dpos_dict[direction]
+    def move_player(self, key_direction):
+        direction = direction_dpos_dict[key_direction]
         player_item = self.items[self.x][self.y]
 
         #This might raise a PlayerKilled Exception
-        player_item.valid_move(self.x, self.y, dx, dy, None)
-        
+        player_item.valid_move(self.x, self.y, direction, None)
+
         if self.game_state == FINISHED:
             self.controller.new_level(True)
 
@@ -334,11 +326,12 @@ class Cyborg:
 
         while more_items_to_slip:
             #get the item
-            pos_x, pos_y, dx, dy = self.slip_list[i]
+            pos_x, pos_y, direction = self.slip_list[i]
             slip_item = self.items[pos_x][pos_y]
 
             #try to slip the item
-            valid_move, new_x, new_y = slip_item.valid_move(pos_x, pos_y, dx, dy, i)
+            valid_move, new_x, new_y = slip_item.valid_move(pos_x, pos_y,
+                                                            direction, i)
 
             #go to the next item in the list
             i += 1
@@ -373,4 +366,3 @@ class Cyborg:
             
             dispx += BLOCK_DIM
         ctx.restore()
-

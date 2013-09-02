@@ -125,10 +125,12 @@ class Controller:
                     #item_enum = None
 
                 if item_enum:
-                    items[x][y] = object_generator(item_enum, self.img, self.game_engine)
+                    items[x][y] = object_generator(item_enum, self.img,
+                                                   self.game_engine)
                 else:
                     items[x][y] = None
-                map[x][y] = object_generator(floor_enum, self.img, self.game_engine)
+                map[x][y] = object_generator(floor_enum, self.img,
+                                             self.game_engine)
 
                 #save links
                 #TODO: Use dicts here
@@ -291,5 +293,3 @@ class Controller:
         self.game_engine.run_slips()
         self.game_engine.move_monsters()
         self.made_move = None
-
-

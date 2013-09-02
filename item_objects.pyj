@@ -64,13 +64,14 @@ class Item(GameObject):
         items[new_x][new_y] = items[old_x][old_y]
         items[old_x][old_y] = None
 
-    def valid_move(self, start_x, start_y, dx, dy, slip_ind, test=False):
+    def valid_move(self, start_x, start_y, direction, slip_ind, test=False):
         """
         Move an item from start_x, start_y by dx, dy.
         Note that it does not update the sliplist.  Note that monsters cannot
         move themselves when on the sliplist.
         """
         #Check the change is in bounds
+        dx, dy = DIRDXY[direction]
         new_x = start_x + dx
         new_y = start_y + dy
 
@@ -82,7 +83,8 @@ class Item(GameObject):
         # leavable checks if the new position is enterable
         map = self.game_engine.map
         curr_floor = map[start_x][start_y]
-        valid_move = curr_floor.leavable(start_x, start_y, dx, dy)
+        valid_move = curr_floor.leavable(start_x, start_y, new_x, new_y,
+                                         direction)
         
         if not valid_move:
             return False, start_x, start_y
@@ -94,7 +96,8 @@ class Item(GameObject):
                 return False, start_x, start_y
 
         items = self.game_engine.items
-        neighbors_ok = self.move_neighbors(new_x, new_y, dx, dy, map, items, test=test)
+        neighbors_ok = self.move_neighbors(new_x, new_y, direction,
+                                           map, items, test=test)
         if neighbors_ok:
             if test:
                 return True, new_x, new_y
@@ -110,14 +113,15 @@ class Item(GameObject):
             if items[new_x][new_y].creature_link:
                 self.game_engine.creature_links[self.creature_link] = new_x, new_y
 
-            dest_x, dest_y = map[new_x][new_y].enter(new_x, new_y, dx, dy, self)
+            dest_x, dest_y = map[new_x][new_y].enter(new_x, new_y,
+                                                     direction, self)
             is_slippery = new_floor.slip_item(self)
             if is_slippery:
-                s_dx, s_dy = new_floor.get_slip_dir(dx, dy)
+                s_direction = new_floor.get_slip_direction(direction)
                 if slip_ind == None:
-                    self.add_to_sliplist(slip_ind, dest_x, dest_y, s_dx, s_dy)
+                    self.add_to_sliplist(slip_ind, dest_x, dest_y, s_direction)
                 else:
-                    self.update_sliplist(slip_ind, dest_x, dest_y, s_dx, s_dy)
+                    self.update_sliplist(slip_ind, dest_x, dest_y, s_direction)
             elif slip_ind != None:
                 self.remove_from_sliplist(slip_ind)
 
@@ -131,7 +135,7 @@ class Item(GameObject):
             return False, start_x, start_y
 
 
-    def move_neighbors(self, new_x, new_y, dx, dy, map, items, test=False):
+    def move_neighbors(self, new_x, new_y, direction, map, items, test=False):
         #if there are no item in the way, the move is allowed
         if not items[new_x][new_y]:
             return True
@@ -158,7 +162,7 @@ class Item(GameObject):
                 break
 
         if pushable:
-            valid_move = dest_item.valid_move(new_x, new_y, dx, dy,
+            valid_move = dest_item.valid_move(new_x, new_y, direction,
                                               slip_ind, test=test)[0]
             return valid_move
         return True
@@ -189,7 +193,7 @@ class Item(GameObject):
         console.log('Not Implemented')
         return
     
-    def set_new_dir(self, dir):
+    def set_new_direction(self, direction):
         return
             
     def drown(self, pos_x, pos_y):
@@ -204,16 +208,16 @@ class Item(GameObject):
         else:
             return False
 
-    def update_sliplist(self, index, pos_x, pos_y, dx, dy):
+    def update_sliplist(self, index, pos_x, pos_y, direction):
         self.is_slipping = True
-        self.game_engine.slip_list[index] = (pos_x, pos_y, dx, dy)
+        self.game_engine.slip_list[index] = (pos_x, pos_y, direction)
 
-    def add_to_sliplist(self, index, pos_x, pos_y, dx, dy):
+    def add_to_sliplist(self, index, pos_x, pos_y, direction):
         """
         if index is None, 
         """
         self.is_slipping = True
-        self.game_engine.slip_list.push((pos_x, pos_y, dx, dy))
+        self.game_engine.slip_list.push((pos_x, pos_y, direction))
 
     def remove_from_sliplist(self, index):
         self.game_engine.slip_list.splice(index, 1)
@@ -314,11 +318,11 @@ class Player(Creature):
         self.game_engine.x = new_x
         self.game_engine.y = new_y
 
-    def valid_move(self, start_x, start_y, dx, dy, slip_ind, test=False):
+    def valid_move(self, start_x, start_y, direction, slip_ind, test=False):
         if slip_ind == None and self.is_slipping:
             #Player is always at slipind 0
             slip_ind = 0
-        return Item.valid_move(self, start_x, start_y, dx, dy,
+        return Item.valid_move(self, start_x, start_y, direction,
                                slip_ind, test=test)
 
     def set_inventory_icon(self, item_name, item):
@@ -372,13 +376,13 @@ class Player(Creature):
             raise PlayerKilled("player stepped on monster")
         return None
 
-    def add_to_sliplist(self, index, pos_x, pos_y, dx, dy):
+    def add_to_sliplist(self, index, pos_x, pos_y, direction):
         """
         if index is None, add to the list
         """
         self.is_slipping = True
         #unshift is like insert(0, item)
-        self.game_engine.slip_list.unshift((pos_x, pos_y, dx, dy))
+        self.game_engine.slip_list.unshift((pos_x, pos_y, direction))
 
     def kill(self, msg):
         raise PlayerKilled(msg)
@@ -430,9 +434,10 @@ class Monster(Creature):
         self.unenterable = [Dirt, Gravel, Fire, Chip, PassWall]
         self.avoid_list = [Block]
 
-    def valid_move(self, start_x, start_y, dx, dy, slip_ind, test=False):
-        valid_move, new_x, new_y = Item.valid_move(self, start_x, start_y, dx,
-                                                   dy, slip_ind, test=test)
+    def valid_move(self, start_x, start_y, direction, slip_ind, test=False):
+        valid_move, new_x, new_y = Item.valid_move(self, start_x, start_y,
+                                                   direction, slip_ind,
+                                                   test=test)
         if valid_move:
             self.game_engine.creature_links[self.creature_link] = new_x, new_y
         return valid_move, new_x, new_y
@@ -443,14 +448,14 @@ class Monster(Creature):
             return start_x, start_y
         map = self.game_engine.map
         items = self.game_engine.items
-        turn_dict_current = TURN_DICT[self.dir]
-        for turn_dir in self.turn_priority:
+        turn_dict_current = TURN_DICT[self.direction]
+        for turn_direction in self.turn_priority:
             #map the turn direction to a absolute direction
-            abs_turn_dir = turn_dict_current[turn_dir]
-            dx, dy = DIRDXY[abs_turn_dir]
-            is_valid, new_x, new_y = self.valid_move(start_x, start_y, dx, dy, None)
+            abs_turn_direction = turn_dict_current[turn_direction]
+            is_valid, new_x, new_y = self.valid_move(start_x, start_y,
+                                                     abs_turn_direction, None)
             if is_valid:
-                self.set_new_dir(abs_turn_dir)
+                self.set_new_direction(abs_turn_direction)
                 return new_x, new_y
         return start_x, start_y
 
@@ -470,7 +475,7 @@ class Bug(Monster):
         self.game_engine = game_engine
 
         #Make this better (maybe a constant?)
-        self.dir_map = {
+        self.direction_map = {
             'N': 64,
             'W': 65,
             'S': 66,
@@ -478,18 +483,18 @@ class Bug(Monster):
         }
         self.image_set = images
 
-        dir = None
+        direction = None
         #TODO: Something more backwards compatible
-        for key in Object.keys(self.dir_map):
-            if self.dir_map[key] == type_index:
-                dir = key
+        for key in Object.keys(self.direction_map):
+            if self.direction_map[key] == type_index:
+                direction = key
                 break
-        self.set_new_dir(dir)
+        self.set_new_direction(direction)
         self.turn_priority = ['L', 'F', 'R', 'B']
 
-    def set_new_dir(self, dir):
-        type_index = self.dir_map[dir]
-        self.dir = dir
+    def set_new_direction(self, direction):
+        type_index = self.direction_map[direction]
+        self.direction = direction
         self.img = self.image_set[type_index]
 
 
@@ -502,7 +507,7 @@ class FireBug(Monster):
         self.unenterable = [Dirt, Gravel, Chip]
 
         #Make this better (maybe a constant?)
-        self.dir_map = {
+        self.direction_map = {
             'N': 68,
             'W': 69,
             'S': 70,
@@ -510,18 +515,18 @@ class FireBug(Monster):
         }
         self.image_set = images
 
-        dir = None
+        direction = None
         #TODO: Something more backwards compatible
-        for key in Object.keys(self.dir_map):
-            if self.dir_map[key] == type_index:
-                dir = key
+        for key in Object.keys(self.direction_map):
+            if self.direction_map[key] == type_index:
+                direction = key
                 break
-        self.set_new_dir(dir)
+        self.set_new_direction(direction)
         self.turn_priority = ['F', 'L', 'R', 'B']
 
-    def set_new_dir(self, dir):
-        type_index = self.dir_map[dir]
-        self.dir = dir
+    def set_new_direction(self, direction):
+        type_index = self.direction_map[direction]
+        self.direction = direction
         self.img = self.image_set[type_index]
 
 
@@ -532,7 +537,7 @@ class PinkBall(Monster):
         self.avoid_list = [Block, PinkBall]
 
         #Make this better (maybe a constant?)
-        self.dir_map = {
+        self.direction_map = {
             'N': 72,
             'W': 73,
             'S': 74,
@@ -540,18 +545,18 @@ class PinkBall(Monster):
         }
         self.image_set = images
 
-        dir = None
+        direction = None
         #TODO: Something more backwards compatible
-        for key in Object.keys(self.dir_map):
-            if self.dir_map[key] == type_index:
-                dir = key
+        for key in Object.keys(self.direction_map):
+            if self.direction_map[key] == type_index:
+                direction = key
                 break
-        self.set_new_dir(dir)
+        self.set_new_direction(direction)
         self.turn_priority = ['F', 'B']
 
-    def set_new_dir(self, dir):
-        type_index = self.dir_map[dir]
-        self.dir = dir
+    def set_new_direction(self, direction):
+        type_index = self.direction_map[direction]
+        self.direction = direction
         self.img = self.image_set[type_index]
 
 
@@ -562,7 +567,7 @@ class Tank(Monster):
         self.avoid_list = [Block, Tank]
 
         #Make this better (maybe a constant?)
-        self.dir_map = {
+        self.direction_map = {
             'N': 76,
             'W': 77,
             'S': 78,
@@ -572,43 +577,41 @@ class Tank(Monster):
 
         self.state = 0 #0=still, 1=turning, 2=moving
 
-        dir = None
+        direction = None
         #TODO: Something more backwards compatible
-        for key in Object.keys(self.dir_map):
-            if self.dir_map[key] == type_index:
-                dir = key
+        for key in Object.keys(self.direction_map):
+            if self.direction_map[key] == type_index:
+                direction = key
                 break
-        self.set_new_dir(dir)
-        self.fin_dir = dir
+        self.set_new_direction(direction)
+        self.fin_direction = direction
         self.clicked = True
 
-    def set_new_dir(self, dir):
-        type_index = self.dir_map[dir]
-        self.dir = dir
+    def set_new_direction(self, direction):
+        type_index = self.direction_map[direction]
+        self.direction = direction
         self.img = self.image_set[type_index]
 
     def trigger(self):
         #turn the object instantly
-        new_dir = TURN_DICT[self.dir]['L']
-        fin_dir = TURN_DICT[new_dir]['L']
-        self.set_new_dir(new_dir)
-        self.fin_dir = fin_dir
+        new_direction = TURN_DICT[self.direction]['L']
+        fin_direction = TURN_DICT[new_direction]['L']
+        self.set_new_direction(new_direction)
+        self.fin_direction = fin_direction
         self.clicked = True
 
     def move(self, start_x, start_y):
         if not self.clicked:
             return start_x, start_y
 
-        if self.new_dir != self.fin_dir:
-            self.set_new_dir(self.fin_dir)
+        if self.new_direction != self.fin_direction:
+            self.set_new_direction(self.fin_direction)
+
         #try to move
-        dx, dy = DIRDXY[self.fin_dir]
-        map = self.game_engine.map
-        items = self.game_engine.items
-        
         #Assume click was turned off
         self.clicked = False
-        is_valid, new_x, new_y = self.valid_move(start_x, start_y, dx, dy, None)
+        is_valid, new_x, new_y = self.valid_move(start_x, start_y,
+                                                 self.fin_direction, None)
         if is_valid:
             #Still valid, so keep the tank moving
             self.clicked = True
@@ -622,7 +625,7 @@ class Ghost(Monster):
         self.avoid_list = [Block, Ghost]
 
         #Make this better (maybe a constant?)
-        self.dir_map = {
+        self.direction_map = {
             'N': 80,
             'W': 81,
             'S': 82,
@@ -630,18 +633,18 @@ class Ghost(Monster):
         }
         self.image_set = images
 
-        dir = None
+        direction = None
         #TODO: Something more backwards compatible
-        for key in Object.keys(self.dir_map):
-            if self.dir_map[key] == type_index:
-                dir = key
+        for key in Object.keys(self.direction_map):
+            if self.direction_map[key] == type_index:
+                direction = key
                 break
-        self.set_new_dir(dir)
+        self.set_new_direction(direction)
         self.turn_priority = ['F', 'L', 'R', 'B']
 
-    def set_new_dir(self, dir):
-        type_index = self.dir_map[dir]
-        self.dir = dir
+    def set_new_direction(self, direction):
+        type_index = self.direction_map[direction]
+        self.direction = direction
         self.img = self.image_set[type_index]
 
 
@@ -670,7 +673,7 @@ class Centipede(Monster):
         self.avoid_list = [Block, Centipede]
 
         #Make this better (maybe a constant?)
-        self.dir_map = {
+        self.direction_map = {
             'N': 96,
             'W': 97,
             'S': 98,
@@ -678,17 +681,16 @@ class Centipede(Monster):
         }
         self.image_set = images
 
-        dir = None
+        direction = None
         #TODO: Something more backwards compatible
-        for key in Object.keys(self.dir_map):
-            if self.dir_map[key] == type_index:
-                dir = key
+        for key in Object.keys(self.direction_map):
+            if self.direction_map[key] == type_index:
+                direction = key
                 break
-        self.set_new_dir(dir)
+        self.set_new_direction(direction)
         self.turn_priority = ['R', 'F', 'L', 'B']
 
-    def set_new_dir(self, dir):
-        type_index = self.dir_map[dir]
-        self.dir = dir
+    def set_new_direction(self, direction):
+        type_index = self.direction_map[direction]
+        self.direction = direction
         self.img = self.image_set[type_index]
-
