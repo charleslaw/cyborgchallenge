@@ -138,6 +138,9 @@ class BlockedSouth(MapObject):
         self.img = images[type_index]
         self.game_engine = game_engine
 
+    def enterable(self, pos_x, pos_y, direction, creature):
+        return (direction != "N")
+
     def leavable(self, start_x, start_y, new_x, new_y, direction):
         """
         in charge of determinging if a player can move
