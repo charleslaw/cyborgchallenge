@@ -110,7 +110,8 @@ class Item(GameObject):
             
             #This is for monsters
             #TODO: How does this work with slips (dest_x, dest_y)?
-            if items[new_x][new_y].creature_link:
+            #NOTE: creature_link can be 0
+            if self.creature_link is not None:
                 self.game_engine.creature_links[self.creature_link] = new_x, new_y
 
             dest_x, dest_y = map[new_x][new_y].enter(new_x, new_y,
@@ -223,7 +224,7 @@ class Item(GameObject):
         self.game_engine.slip_list.splice(index, 1)
         self.is_slipping = False
 
-    def kill(self, msg):
+    def kill(self, msg, pos_x, pos_y):
         #By default do nothing
         return
 
@@ -384,7 +385,7 @@ class Player(Creature):
         #unshift is like insert(0, item)
         self.game_engine.slip_list.unshift((pos_x, pos_y, direction))
 
-    def kill(self, msg):
+    def kill(self, msg, pos_x, pos_y):
         raise PlayerKilled(msg)
 
 
@@ -446,8 +447,6 @@ class Monster(Creature):
     def move(self, start_x, start_y):
         if self.is_slipping:
             return start_x, start_y
-        map = self.game_engine.map
-        items = self.game_engine.items
         turn_dict_current = TURN_DICT[self.direction]
         for turn_direction in self.turn_priority:
             #map the turn direction to a absolute direction
@@ -459,7 +458,8 @@ class Monster(Creature):
                 return new_x, new_y
         return start_x, start_y
 
-    def kill(self, msg):
+    def kill(self, msg, pos_x, pos_y):
+        # self.game_engine.items[pos_x][pos_y] = None
         raise MonsterKilled(msg)
         
     def step_on_item(self, target_item, t_x, t_y):

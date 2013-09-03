@@ -781,7 +781,7 @@ class Bomb(ClerableMap):
         ClerableMap.enter(self, pos_x, pos_y, direction, creature)
         #bombs shoud also kill the object
         self.game_engine.items[pos_x][pos_y] = None
-        creature.kill('exploded')
+        creature.kill('exploded', pos_x, pos_y)
         return pos_x, pos_y
 
 

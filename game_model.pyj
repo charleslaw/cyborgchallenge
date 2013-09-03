@@ -224,6 +224,7 @@ class Cyborg:
             try:
                 new_x, new_y = self.items[pos_x][pos_y].move(pos_x, pos_y)
             except MonsterKilled as exc:
+                self.items[pos_x][pos_y] = None
                 self.creature_links.splice(i, 1)
                 self._set_creature_links()
             except PlayerKilled as exc:
