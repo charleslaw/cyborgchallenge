@@ -11,25 +11,35 @@
 <br>
 <div id="game">
 	<div id="display">
-        <canvas id="myCanvas" width="800" height="432">
+        <canvas id="myCanvas" width="700" height="432">
         Upgrade your browser.
         </canvas>
     </div>
     <div id="hud">
-        <div class="chips">Chips Left:</div>
-        <div class="chips" id="count">000</div>
-    	<div>
-    		<div class="hud"><div class="item" id="inv_flippers"></div></div>
-    		<div class="hud"><div class="item" id="inv_fireboots"></div></div>
-    		<div class="hud"><div class="item" id="inv_skates"></div></div>
-    		<div class="hud"><div class="item" id="inv_suctionboots"></div></div>
+        <div class="hudelem">
+            <div class="chips">Chips Left:</div>
+            <div class="chips" id="count">000</div>
+        </div>
+        <div class="hudelem">
+    	    <div class="huditems">
+    	    	<div class="hud"><div class="item" id="inv_flippers"></div></div>
+    	    	<div class="hud"><div class="item" id="inv_fireboots"></div></div>
+    	    	<div class="hud"><div class="item" id="inv_skates"></div></div>
+    	    	<div class="hud"><div class="item" id="inv_suctionboots"></div></div>
+    	    </div>
+    	    <div class="huditems">
+    	    	<div class="hud"><div class="item" id="key_green"></div></div>
+    	    	<div class="hud"><div class="item" id="key_yellow"></div></div>
+    	    	<div class="hud"><div class="item" id="key_red"></div></div>
+    	    	<div class="hud"><div class="item" id="key_blue"></div></div>
+    	    </div>
     	</div>
-    	<div>
-    		<div class="hud"><div class="item" id="key_green"></div></div>
-    		<div class="hud"><div class="item" id="key_yellow"></div></div>
-    		<div class="hud"><div class="item" id="key_red"></div></div>
-    		<div class="hud"><div class="item" id="key_blue"></div></div>
-    	</div>
+    	<div class="hudelem">
+    	    <fieldset>
+    	        <legend>Messages</legend>
+    	        <div id="message"></div
+            </fieldset>
+        </div>
     </div>
 </div>
 <hr/>

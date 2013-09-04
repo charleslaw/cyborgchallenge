@@ -114,6 +114,7 @@ class Item(GameObject):
             if self.creature_link is not None:
                 self.game_engine.creature_links[self.creature_link] = new_x, new_y
 
+            map[start_x][start_y].leave(self)
             dest_x, dest_y = map[new_x][new_y].enter(new_x, new_y,
                                                      direction, self)
             is_slippery = new_floor.slip_item(self)

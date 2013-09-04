@@ -128,7 +128,7 @@ def randint(min, max):
 class Cyborg:
     def __init__(self, canvas):
         self.canvas = canvas
-        
+        self.msg_div = document.getElementById('message')
 
     def end_game(self):
         Alertify.dialog.alert(
@@ -140,6 +140,10 @@ class Cyborg:
                 self.controller._start_game()
             )
 
+
+    def set_msg(self, msg):
+        self.msg_div.innerHTML = msg
+
     def start_level(self, controller, start_pos, map, items, level_info, images, links, creature_links, trap_controls, clone_controles):
         self.controller = controller
         self.x = start_pos[0]
@@ -149,6 +153,7 @@ class Cyborg:
         self.images = images
         self.num_chips = level_info[1]
         self.chips_left = level_info[1]
+        self.hint = level_info[2]
         self.game_state = LEVEL_RUNNING
         self.links = links
         self.creature_links = creature_links
@@ -159,6 +164,7 @@ class Cyborg:
         self._set_creature_links()
         self.set_chips_text()
         self.reset_inventory_ui()
+        self.set_msg('Password:<br>'+level_info[3])
         
         #setup controls
         for but_x, but_y, trap_x, trap_y in trap_controls:

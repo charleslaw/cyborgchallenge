@@ -110,6 +110,8 @@ class LevelLoader:
         creature_links = []
         trap_controls = []
         clone_controles = []
+        map_hint = ""
+        map_password = ""
         while left>0:
             field_type = self.string2decByte(text[currPos:currPos+BYTE])
             currPos += BYTE
@@ -157,10 +159,21 @@ class LevelLoader:
                     currPos += WORD
                     left -= WORD
                     clone_controles.push([but_xpos, but_ypos, trap_xpos, trap_ypos])
+            elif field_type == 6:
+                for i in range(currPos, currPos+field_size-2, 2):
+                    map_password += String.fromCharCode(self.string2decByte(text[i:i+2])^153)
+                currPos += field_size
+                left -= field_size
+            elif field_type == 7:
+                num_text = field_size/2
+                for i in range(currPos, currPos+field_size-2, 2):
+                    map_hint += String.fromCharCode(self.string2decByte(text[i:i+2]))
+                currPos += field_size
+                left -= field_size
             else:
                 currPos += field_size
                 left -= field_size
-        return creature_links, trap_controls, clone_controles
+        return creature_links, trap_controls, clone_controles, map_hint, map_password
                 
         
     def parseDataFile(self, text):
@@ -182,7 +195,6 @@ class LevelLoader:
             currPos += WORD
             currLevelChips = self.string2decWord(text[currPos:currPos+WORD])
             currPos += WORD
-            lvlInfo = [currLevelTimeLim, currLevelChips]
         
             levelLeft = (currLevelBytes-6)*BYTE
             
@@ -199,8 +211,9 @@ class LevelLoader:
             levelLeft = self.string2decWord(text[currPos:currPos+WORD])*BYTE
             currPos += WORD
             
-            creature_links, trap_controls, clone_controles = self.read_optional_info(text, currPos, levelLeft)
+            creature_links, trap_controls, clone_controles, map_hint, map_password = self.read_optional_info(text, currPos, levelLeft)
             currPos += levelLeft
+            lvlInfo = [currLevelTimeLim, currLevelChips, map_hint, map_password]
             
             #store the lvl
             levelSet.addLevel(layerOne, layerTwo, lvlInfo, creature_links, trap_controls, clone_controles)

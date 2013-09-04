@@ -203,6 +203,7 @@ class Controller:
             self.hold_delay = 0
 
         if self.state == READY:
+            self.game_engine.set_msg('')
             self.half_speed_marker = False
             self.quarter_speed_marker = False
             self.state = RUNNING

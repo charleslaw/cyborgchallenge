@@ -34,6 +34,9 @@ class MapObject(GameObject):
     def enter(self, pos_x, pos_y, direction, creature):
         return pos_x, pos_y
 
+    def leave(self, creature):
+        pass
+
     def slip_item(self, creature):
         if self.dmg_type != 'FORCE' and self.dmg_type != 'ICE' and self.dmg_type != 'TELEPORT':
             return False
@@ -495,6 +498,13 @@ class Hint(MapObject):
         self.img = images[type_index]
         self.game_engine = game_engine
 
+    def enter(self, pos_x, pos_y, direction, creature):
+        if (creature instanceof Player):
+            self.game_engine.set_msg(self.game_engine.hint)
+        return pos_x, pos_y
+
+    def leave(self, creature):
+        self.game_engine.set_msg('')
 
 class Exit(MapObject):
     def __init__(self, type_index, images, bg_img, game_engine):

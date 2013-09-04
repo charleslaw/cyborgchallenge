@@ -9,19 +9,30 @@ div#display{
 div#hud{
   width: 192px;
   float: left;
-  padding: 2em;
+  padding-left: 2em;
+}
+
+div.hudelem {
+    padding-top: 0em;
+    padding-bottom: 1em;
+}
+
+#message {
+    text-align: justify;
+}
+
+div.huditems{
+    height: 48px;
 }
 
 div.hud{
 	width: 48px;
-	height: 48px;
 	float: left;
 	background-image: url(images/tile1.png)
 }
 
 div#chips{
   width: 192px;
-  padding-bottom: 2em;
 }
 
 div.chips{
@@ -31,7 +42,6 @@ div.chips{
 
 #count{
     padding-left: 1em;
-    padding-bottom: 1em;
 }
 
 .item{
