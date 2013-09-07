@@ -322,8 +322,15 @@ class Player(Creature):
 
     def valid_move(self, start_x, start_y, direction, slip_ind, test=False):
         if slip_ind == None and self.is_slipping:
-            #Player is always at slipind 0
-            slip_ind = 0
+                #Player is always at slipind 0
+                slip_ind = 0
+                #A little bit of a hack, but effective
+                #Note: A player can move while slipping on force floors,
+                # but not on ice. If slipind is none, this is a keyboard input
+                # move
+                if self.game_engine.map[start_x][start_y].dmg_type == 'ICE':
+                    #if slipping on ice, prevent the move
+                    return False, start_x, start_y
         return Item.valid_move(self, start_x, start_y, direction,
                                slip_ind, test=test)
 
