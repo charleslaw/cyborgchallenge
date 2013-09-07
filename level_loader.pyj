@@ -33,6 +33,15 @@ class LevelSet:
     def get_num_levels(self):
         return len(self.levelList)
 
+    def try_password(self, password):
+        """
+        Assume this will not happen very often so just iterate thru levels
+        """
+        for i in range(len(self.levelList)):
+            #This should probably be cleaner than using [3]
+            if self.levelList[i].lvlInfo[3] == password:
+                return i
+        return None
 
 class LevelLoader:
     def __init__(self, controller, filename):

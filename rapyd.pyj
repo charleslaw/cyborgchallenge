@@ -20,24 +20,35 @@ class Interface:
     def __init__(self, controller):
         self.controller = controller
 
-        main = self
         document.addEventListener('keydown', def (event):
-            event.preventDefault()
-            main.setKey(event.keyCode, True)
+            r = self.setKey(event.keyCode, True)
+            if r:
+                event.preventDefault()
         )
         document.addEventListener('keyup', def (event):
-            event.preventDefault()
-            main.setKey(event.keyCode, False)
+            r = self.setKey(event.keyCode, False)
+            if r:
+                event.preventDefault()
         )
 
     def setKey(self, k, set):
+        if self.controller.pw_up:
+            return False
+
         if k == 82:
             #r key
             self.controller.new_level(False)
+            return True
+        elif k == 80:
+            #p key
+            self.controller.password()
+            return True
 
         d_pos = key_delta_pos_dict[String(k)]
         if type(d_pos) is not "undefined":
             self.controller.keyboard_input(d_pos, set)
+            return True
+        return False
 
 
 def runGame():
