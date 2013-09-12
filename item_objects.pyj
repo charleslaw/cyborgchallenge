@@ -36,6 +36,8 @@ TURN_DICT = {
 
 class Item(GameObject):
     def __init__(self):
+        #TODO: Remove
+        GameObject.__init__(self)
         self.avoid_list = []
         self.unenterable = []
         self.push_list = []
@@ -231,6 +233,8 @@ class Item(GameObject):
 
 class Block(Item):
     def __init__(self, type_index, images, bg_img, game_engine):
+        #TODO: Remove
+        Item.__init__(self)
         self.bg_img = bg_img
         self.img = images[type_index]
         self.is_slipping = False
@@ -257,7 +261,8 @@ class Block(Item):
 
 class Creature(Item):
     def __init__(self):
-        pass
+        #TODO: Remove
+        Item.__init__(self)
     
     def add_inventory(self, item_name, item):
         item_count = self.items[item_name]
@@ -305,6 +310,8 @@ class Player(Creature):
     #111    Chip (E)                          1    1
     """
     def __init__(self, type_index, images, bg_img, game_engine):
+        #TODO: Remove
+        Creature.__init__(self)
         self.bg_img = bg_img
         self.img = images[type_index]
         self.push_list = [Block]
@@ -438,6 +445,8 @@ class Monster(Creature):
     #99    Centipede (E)                       1    0
     """
     def __init__(self):
+        #TODO: Remove
+        Creature.__init__(self)
         #TODO: Remove collision_list
         self.collision_list = [Creature]
         self.unenterable = [Dirt, Gravel, Fire, Chip, PassWall]
@@ -478,6 +487,8 @@ class Monster(Creature):
 
 class Bug(Monster):
     def __init__(self, type_index, images, bg_img, game_engine):
+        #TODO: Remove
+        Monster.__init__(self)
         self.bg_img = bg_img
         self.avoid_list = [Block, Bug]
         self.game_engine = game_engine
@@ -508,6 +519,8 @@ class Bug(Monster):
 
 class FireBug(Monster):
     def __init__(self, type_index, images, bg_img, game_engine):
+        #TODO: Remove
+        Monster.__init__(self)
         self.immunities = ['FIRE']
         self.bg_img = bg_img
         self.game_engine = game_engine
@@ -540,6 +553,8 @@ class FireBug(Monster):
 
 class PinkBall(Monster):
     def __init__(self, type_index, images, bg_img, game_engine):
+        #TODO: Remove
+        Monster.__init__(self)
         self.bg_img = bg_img
         self.game_engine = game_engine
         self.avoid_list = [Block, PinkBall]
@@ -570,6 +585,8 @@ class PinkBall(Monster):
 
 class Tank(Monster):
     def __init__(self, type_index, images, bg_img, game_engine):
+        #TODO: Remove
+        Monster.__init__(self)
         self.bg_img = bg_img
         self.game_engine = game_engine
         self.avoid_list = [Block, Tank]
@@ -628,6 +645,8 @@ class Tank(Monster):
 
 class Ghost(Monster):
     def __init__(self, type_index, images, bg_img, game_engine):
+        #TODO: Remove
+        Monster.__init__(self)
         self.bg_img = bg_img
         self.game_engine = game_engine
         self.avoid_list = [Block, Ghost]
@@ -658,24 +677,32 @@ class Ghost(Monster):
 
 class Frog(Monster):
     def __init__(self, type_index, images, bg_img, game_engine):
+        #TODO: Remove
+        Monster.__init__(self)
         self.bg_img = bg_img
         self.game_engine = game_engine
         self.img = images[type_index]
 
 class Walker(Monster):
     def __init__(self, type_index, images, bg_img, game_engine):
+        #TODO: Remove
+        Monster.__init__(self)
         self.bg_img = bg_img
         self.game_engine = game_engine
         self.img = images[type_index]
 
 class Blob(Monster):
     def __init__(self, type_index, images, bg_img, game_engine):
+        #TODO: Remove
+        Monster.__init__(self)
         self.bg_img = bg_img
         self.game_engine = game_engine
         self.img = images[type_index]
 
 class Centipede(Monster):
     def __init__(self, type_index, images, bg_img, game_engine):
+        #TODO: Remove
+        Monster.__init__(self)
         self.bg_img = bg_img
         self.game_engine = game_engine
         self.avoid_list = [Block, Centipede]
@@ -702,3 +729,4 @@ class Centipede(Monster):
         type_index = self.direction_map[direction]
         self.direction = direction
         self.img = self.image_set[type_index]
+

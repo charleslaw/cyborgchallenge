@@ -17,6 +17,8 @@ class MapObject(GameObject):
     Base for objects drawn on the map
     """
     def __init__(self):
+        #TODO: Remove
+        GameObject.__init__(self)
         self.dmg_type = None
         self.item = None
 
@@ -85,16 +87,21 @@ class StaticMapObject(MapObject):
     #59    Exit - end game                     0    0
     """
     def __init__(self):
-        pass
-        
+        #TODO: Remove
+        MapObject.__init__(self)
+
 class Tile(MapObject):
     def __init__(self, type_index, images, bg_img, game_engine):
+        #TODO: Remove
+        MapObject.__init__(self)
         self.bg_img = bg_img
         self.img = images[type_index]
         self.game_engine = game_engine
 
 class Wall(MapObject):
     def __init__(self, type_index, images, bg_img, game_engine):
+        #TODO: Remove
+        MapObject.__init__(self)
         self.bg_img = bg_img
         self.img = images[type_index]
         self.game_engine = game_engine
@@ -105,6 +112,8 @@ class Wall(MapObject):
 
 class Fire(MapObject):
     def __init__(self, type_index, images, bg_img, game_engine):
+        #TODO: Remove
+        MapObject.__init__(self)
         self.bg_img = bg_img
         self.img = images[type_index]
         self.game_engine = game_engine
@@ -115,6 +124,8 @@ class Fire(MapObject):
 
 class HiddenWall(MapObject):
     def __init__(self, type_index, images, bg_img, game_engine):
+        #TODO: Remove
+        MapObject.__init__(self)
         self.bg_img = bg_img
         self.img = images[type_index]
         self.game_engine = game_engine
@@ -125,18 +136,24 @@ class HiddenWall(MapObject):
 
 class BlockedNorth(MapObject):
     def __init__(self, type_index, images, bg_img, game_engine):
+        #TODO: Remove
+        MapObject.__init__(self)
         self.bg_img = bg_img
         self.img = images[type_index]
         self.game_engine = game_engine
 
 class BlockedWest(MapObject):
     def __init__(self, type_index, images, bg_img, game_engine):
+        #TODO: Remove
+        MapObject.__init__(self)
         self.bg_img = bg_img
         self.img = images[type_index]
         self.game_engine = game_engine
 
 class BlockedSouth(MapObject):
     def __init__(self, type_index, images, bg_img, game_engine):
+        #TODO: Remove
+        MapObject.__init__(self)
         self.bg_img = bg_img
         self.img = images[type_index]
         self.game_engine = game_engine
@@ -155,36 +172,48 @@ class BlockedSouth(MapObject):
 
 class BlockedEast(MapObject):
     def __init__(self, type_index, images, bg_img, game_engine):
+        #TODO: Remove
+        MapObject.__init__(self)
         self.bg_img = bg_img
         self.img = images[type_index]
         self.game_engine = game_engine
 
 class CloneNorth(MapObject):
     def __init__(self, type_index, images, bg_img, game_engine):
+        #TODO: Remove
+        MapObject.__init__(self)
         self.bg_img = bg_img
         self.img = images[type_index]
         self.game_engine = game_engine
 
 class CloneWest(MapObject):
     def __init__(self, type_index, images, bg_img, game_engine):
+        #TODO: Remove
+        MapObject.__init__(self)
         self.bg_img = bg_img
         self.img = images[type_index]
         self.game_engine = game_engine
 
 class CloneSouth(MapObject):
     def __init__(self, type_index, images, bg_img, game_engine):
+        #TODO: Remove
+        MapObject.__init__(self)
         self.bg_img = bg_img
         self.img = images[type_index]
         self.game_engine = game_engine
 
 class CloneEast(MapObject):
     def __init__(self, type_index, images, bg_img, game_engine):
+        #TODO: Remove
+        MapObject.__init__(self)
         self.bg_img = bg_img
         self.img = images[type_index]
         self.game_engine = game_engine
 
 class Theif(MapObject):
     def __init__(self, type_index, images, bg_img, game_engine):
+        #TODO: Remove
+        MapObject.__init__(self)
         self.bg_img = bg_img
         self.img = images[type_index]
         self.game_engine = game_engine
@@ -195,6 +224,8 @@ class Theif(MapObject):
 
 class ButtonGreen(MapObject):
     def __init__(self, type_index, images, bg_img, game_engine):
+        #TODO: Remove
+        MapObject.__init__(self)
         self.bg_img = bg_img
         self.img = images[type_index]
         self.game_engine = game_engine
@@ -205,6 +236,8 @@ class ButtonGreen(MapObject):
 
 class ButtonRed(MapObject):
     def __init__(self, type_index, images, bg_img, game_engine):
+        #TODO: Remove
+        MapObject.__init__(self)
         self.bg_img = bg_img
         self.img = images[type_index]
         self.link = None
@@ -225,6 +258,8 @@ class ButtonRed(MapObject):
 
 class ButtonBrown(MapObject):
     def __init__(self, type_index, images, bg_img, game_engine):
+        #TODO: Remove
+        MapObject.__init__(self)
         self.bg_img = bg_img
         self.img = images[type_index]
         self.game_engine = game_engine
@@ -241,6 +276,8 @@ class ButtonBrown(MapObject):
 
 class ButtonBlue(MapObject):
     def __init__(self, type_index, images, bg_img, game_engine):
+        #TODO: Remove
+        MapObject.__init__(self)
         self.bg_img = bg_img
         self.img = images[type_index]
         self.game_engine = game_engine
@@ -251,6 +288,8 @@ class ButtonBlue(MapObject):
 
 class Trap(MapObject):
     def __init__(self, type_index, images, bg_img, game_engine):
+        #TODO: Remove
+        MapObject.__init__(self)
         self.bg_img = bg_img
         self.img = images[type_index]
         self.trapped = True
@@ -273,18 +312,24 @@ class Trap(MapObject):
 
 class Gravel(MapObject):
     def __init__(self, type_index, images, bg_img, game_engine):
+        #TODO: Remove
+        MapObject.__init__(self)
         self.bg_img = bg_img
         self.img = images[type_index]
         self.game_engine = game_engine
 
 class BlockedSE(MapObject):
     def __init__(self, type_index, images, bg_img, game_engine):
+        #TODO: Remove
+        MapObject.__init__(self)
         self.bg_img = bg_img
         self.img = images[type_index]
         self.game_engine = game_engine
 
 class Cloner(MapObject):
     def __init__(self, type_index, images, bg_img, game_engine):
+        #TODO: Remove
+        MapObject.__init__(self)
         self.bg_img = bg_img
         self.img = images[type_index]
         self.game_engine = game_engine
@@ -316,6 +361,8 @@ class Cloner(MapObject):
 
 class Teleport(MapObject):
     def __init__(self, type_index, images, bg_img, game_engine):
+        #TODO: Remove
+        MapObject.__init__(self)
         self.bg_img = bg_img
         self.img = images[type_index]
         self.game_engine = game_engine
@@ -351,21 +398,28 @@ class Teleport(MapObject):
 
 class SlidingFloor(MapObject):
     def __init__(self):
-        pass
+        #TODO: Remove
+        MapObject.__init__(self)
 
 class ForceFloor(SlidingFloor):
     def __init__(self):
+        #TODO: Remove
+        SlidingFloor.__init__(self)
         self.dmg_type = 'FORCE'
         self.item = 'INV_SUCTIONBOOTS'
 
 class ForceAll(ForceFloor):
     def __init__(self, type_index, images, bg_img, game_engine):
+        #TODO: Remove
+        ForceFloor.__init__(self)
         self.bg_img = bg_img
         self.img = images[type_index]
         self.game_engine = game_engine
 
 class ForceNorth(ForceFloor):
     def __init__(self, type_index, images, bg_img, game_engine):
+        #TODO: Remove
+        ForceFloor.__init__(self)
         self.bg_img = bg_img
         self.img = images[type_index]
         self.game_engine = game_engine
@@ -375,6 +429,8 @@ class ForceNorth(ForceFloor):
 
 class ForceEast(ForceFloor):
     def __init__(self, type_index, images, bg_img, game_engine):
+        #TODO: Remove
+        ForceFloor.__init__(self)
         self.bg_img = bg_img
         self.img = images[type_index]
         self.game_engine = game_engine
@@ -384,6 +440,8 @@ class ForceEast(ForceFloor):
 
 class ForstWest(ForceFloor):
     def __init__(self, type_index, images, bg_img, game_engine):
+        #TODO: Remove
+        ForceFloor.__init__(self)
         self.bg_img = bg_img
         self.img = images[type_index]
         self.game_engine = game_engine
@@ -393,6 +451,8 @@ class ForstWest(ForceFloor):
 
 class ForceSouth(ForceFloor):
     def __init__(self, type_index, images, bg_img, game_engine):
+        #TODO: Remove
+        ForceFloor.__init__(self)
         self.bg_img = bg_img
         self.img = images[type_index]
         self.game_engine = game_engine
@@ -402,11 +462,15 @@ class ForceSouth(ForceFloor):
 
 class IceFloor(SlidingFloor):
     def __init__(self):
+        #TODO: Remove
+        SlidingFloor.__init__(self)
         self.dmg_type = 'ICE'
         self.item = 'INV_SKATES'
 
 class Ice(IceFloor):
     def __init__(self, type_index, images, bg_img, game_engine):
+        #TODO: Remove
+        IceFloor.__init__(self)
         self.bg_img = bg_img
         self.img = images[type_index]
         self.game_engine = game_engine
@@ -416,6 +480,8 @@ class Ice(IceFloor):
 
 class IceSE(IceFloor):
     def __init__(self, type_index, images, bg_img, game_engine):
+        #TODO: Remove
+        IceFloor.__init__(self)
         self.bg_img = bg_img
         self.img = images[type_index]
         self.game_engine = game_engine
@@ -435,6 +501,8 @@ class IceSE(IceFloor):
 
 class IceSW(IceFloor):
     def __init__(self, type_index, images, bg_img, game_engine):
+        #TODO: Remove
+        IceFloor.__init__(self)
         self.bg_img = bg_img
         self.img = images[type_index]
         self.game_engine = game_engine
@@ -454,6 +522,8 @@ class IceSW(IceFloor):
 
 class IceNW(IceFloor):
     def __init__(self, type_index, images, bg_img, game_engine):
+        #TODO: Remove
+        IceFloor.__init__(self)
         self.bg_img = bg_img
         self.img = images[type_index]
         self.game_engine = game_engine
@@ -473,6 +543,8 @@ class IceNW(IceFloor):
 
 class IceNE(IceFloor):
     def __init__(self, type_index, images, bg_img, game_engine):
+        #TODO: Remove
+        IceFloor.__init__(self)
         self.bg_img = bg_img
         self.img = images[type_index]
         self.game_engine = game_engine
@@ -494,6 +566,8 @@ class IceNE(IceFloor):
 
 class Hint(MapObject):
     def __init__(self, type_index, images, bg_img, game_engine):
+        #TODO: Remove
+        MapObject.__init__(self)
         self.bg_img = bg_img
         self.img = images[type_index]
         self.game_engine = game_engine
@@ -508,6 +582,8 @@ class Hint(MapObject):
 
 class Exit(MapObject):
     def __init__(self, type_index, images, bg_img, game_engine):
+        #TODO: Remove
+        MapObject.__init__(self)
         self.bg_img = bg_img
         self.img = images[type_index]
         self.game_engine = game_engine
@@ -548,10 +624,15 @@ class DynamicMapObject(MapObject):
     #38    SwitchedWall, Open                  0    0 - draw close
     """
     def __init__(self):
-        pass
+        #TODO: Remove
+        MapObject.__init__(self)
 
 
 class Consumeable(MapObject):
+    def __init__(self):
+        #TODO: Remove
+        MapObject.__init__(self)
+
     def enter(self, pos_x, pos_y, direction, creature):
         #replace the chip with a tile
         new_obj = object_generator(0, self.game_engine.images, self.game_engine)
@@ -561,6 +642,8 @@ class Consumeable(MapObject):
 
 class Chip(Consumeable):
     def __init__(self, type_index, images, bg_img, game_engine):
+        #TODO: Remove
+        Consumeable.__init__(self)
         self.bg_img = bg_img
         self.img = images[type_index]
         self.game_engine = game_engine
@@ -572,10 +655,13 @@ class Chip(Consumeable):
 
 class Key(Consumeable):
     def __init__(self):
-        pass
+        #TODO: Remove
+        Consumeable.__init__(self)
 
 class KeyBlue(Key):
     def __init__(self, type_index, images, bg_img, game_engine):
+        #TODO: Remove
+        Key.__init__(self)
         self.bg_img = bg_img
         self.img = images[type_index]
         self.game_engine = game_engine
@@ -584,6 +670,8 @@ class KeyBlue(Key):
 
 class KeyRed(Key):
     def __init__(self, type_index, images, bg_img, game_engine):
+        #TODO: Remove
+        Key.__init__(self)
         self.bg_img = bg_img
         self.img = images[type_index]
         self.game_engine = game_engine
@@ -592,6 +680,8 @@ class KeyRed(Key):
 
 class KeyGreen(Key):
     def __init__(self, type_index, images, bg_img, game_engine):
+        #TODO: Remove
+        Key.__init__(self)
         self.bg_img = bg_img
         self.img = images[type_index]
         self.game_engine = game_engine
@@ -600,6 +690,8 @@ class KeyGreen(Key):
 
 class KeyYellow(Key):
     def __init__(self, type_index, images, bg_img, game_engine):
+        #TODO: Remove
+        Key.__init__(self)
         self.bg_img = bg_img
         self.img = images[type_index]
         self.game_engine = game_engine
@@ -608,6 +700,8 @@ class KeyYellow(Key):
 
 class Flippers(Consumeable):
     def __init__(self, type_index, images, bg_img, game_engine):
+        #TODO: Remove
+        Consumeable.__init__(self)
         self.bg_img = bg_img
         self.img = images[type_index]
         self.game_engine = game_engine
@@ -615,6 +709,8 @@ class Flippers(Consumeable):
 
 class FireBoots(Consumeable):
     def __init__(self, type_index, images, bg_img, game_engine):
+        #TODO: Remove
+        Consumeable.__init__(self)
         self.bg_img = bg_img
         self.img = images[type_index]
         self.game_engine = game_engine
@@ -622,6 +718,8 @@ class FireBoots(Consumeable):
 
 class Skates(Consumeable):
     def __init__(self, type_index, images, bg_img, game_engine):
+        #TODO: Remove
+        Consumeable.__init__(self)
         self.bg_img = bg_img
         self.img = images[type_index]
         self.game_engine = game_engine
@@ -629,6 +727,8 @@ class Skates(Consumeable):
 
 class SuctionBoots(Consumeable):
     def __init__(self, type_index, images, bg_img, game_engine):
+        #TODO: Remove
+        Consumeable.__init__(self)
         self.bg_img = bg_img
         self.img = images[type_index]
         self.game_engine = game_engine
@@ -637,7 +737,8 @@ class SuctionBoots(Consumeable):
 
 class Door(MapObject):
     def __init__(self):
-        pass
+        #TODO: Remove
+        MapObject.__init__(self)
 
     def enterable(self, pos_x, pos_y, direction, creature):
         return creature.check_inventory(self.key, self.count)
@@ -655,6 +756,8 @@ class Door(MapObject):
 
 class DoorBlue(Door):
     def __init__(self, type_index, images, bg_img, game_engine):
+        #TODO: Remove
+        Door.__init__(self)
         self.bg_img = bg_img
         self.img = images[type_index]
         self.game_engine = game_engine
@@ -664,6 +767,8 @@ class DoorBlue(Door):
 
 class DoorRed(Door):
     def __init__(self, type_index, images, bg_img, game_engine):
+        #TODO: Remove
+        Door.__init__(self)
         self.bg_img = bg_img
         self.img = images[type_index]
         self.game_engine = game_engine
@@ -673,6 +778,8 @@ class DoorRed(Door):
 
 class DoorGreen(Door):
     def __init__(self, type_index, images, bg_img, game_engine):
+        #TODO: Remove
+        Door.__init__(self)
         self.bg_img = bg_img
         self.img = images[type_index]
         self.game_engine = game_engine
@@ -682,6 +789,8 @@ class DoorGreen(Door):
 
 class DoorYellow(Door):
     def __init__(self, type_index, images, bg_img, game_engine):
+        #TODO: Remove
+        Door.__init__(self)
         self.bg_img = bg_img
         self.img = images[type_index]
         self.game_engine = game_engine
@@ -691,9 +800,10 @@ class DoorYellow(Door):
 
 
 
-class ClerableMap(MapObject):
+class ClearableMap(MapObject):
     def __init__(self):
-        pass
+        #TODO: Remove
+        MapObject.__init__(self)
 
     def enter(self, pos_x, pos_y, direction, creature):
         #replace this item with a tile
@@ -702,8 +812,10 @@ class ClerableMap(MapObject):
         return pos_x, pos_y
 
 
-class Socket(ClerableMap):
+class Socket(ClearableMap):
     def __init__(self, type_index, images, bg_img, game_engine):
+        #TODO: Remove
+        ClearableMap.__init__(self)
         self.bg_img = bg_img
         self.img = images[type_index]
         self.game_engine = game_engine
@@ -714,14 +826,18 @@ class Socket(ClerableMap):
         else:
             return False
 
-class Dirt(ClerableMap):
+class Dirt(ClearableMap):
     def __init__(self, type_index, images, bg_img, game_engine):
+        #TODO: Remove
+        ClearableMap.__init__(self)
         self.bg_img = bg_img
         self.img = images[type_index]
         self.game_engine = game_engine
 
-class BlueNone(ClerableMap):
+class BlueNone(ClearableMap):
     def __init__(self, type_index, images, bg_img, game_engine):
+        #TODO: Remove
+        ClearableMap.__init__(self)
         self.bg_img = bg_img
         self.img = images[type_index]
         self.game_engine = game_engine
@@ -730,6 +846,8 @@ class BlueNone(ClerableMap):
 
 class Water(MapObject):
     def __init__(self, type_index, images, bg_img, game_engine):
+        #TODO: Remove
+        MapObject.__init__(self)
         self.bg_img = bg_img
         self.img = images[type_index]
         self.game_engine = game_engine
@@ -741,7 +859,8 @@ class Water(MapObject):
 
 class BecomeWall(MapObject):
     def __init__(self):
-        pass
+        #TODO: Remove
+        MapObject.__init__(self)
 
     def enterable(self, pos_x, pos_y, direction, creature):
         if creature.can_push_on_walls:
@@ -753,12 +872,16 @@ class BecomeWall(MapObject):
 
 class BlueWall(BecomeWall):
     def __init__(self, type_index, images, bg_img, game_engine):
+        #TODO: Remove
+        BecomeWall.__init__(self)
         self.bg_img = bg_img
         self.img = images[type_index]
         self.game_engine = game_engine
 
 class SemiHiddenWall(BecomeWall):
     def __init__(self, type_index, images, bg_img, game_engine):
+        #TODO: Remove
+        BecomeWall.__init__(self)
         self.bg_img = bg_img
         self.img = images[type_index]
         self.game_engine = game_engine
@@ -766,6 +889,8 @@ class SemiHiddenWall(BecomeWall):
 
 class PassWall(MapObject):
     def __init__(self, type_index, images, bg_img, game_engine):
+        #TODO: Remove
+        MapObject.__init__(self)
         self.bg_img = bg_img
         self.img = images[type_index]
         self.game_engine = game_engine
@@ -781,14 +906,16 @@ class PassWall(MapObject):
         return True
 
 
-class Bomb(ClerableMap):
+class Bomb(ClearableMap):
     def __init__(self, type_index, images, bg_img, game_engine):
+        #TODO: Remove
+        ClearableMap.__init__(self)
         self.bg_img = bg_img
         self.img = images[type_index]
         self.game_engine = game_engine
 
     def enter(self, pos_x, pos_y, direction, creature):
-        ClerableMap.enter(self, pos_x, pos_y, direction, creature)
+        ClearableMap.enter(self, pos_x, pos_y, direction, creature)
         #bombs shoud also kill the object
         self.game_engine.items[pos_x][pos_y] = None
         creature.kill('exploded', pos_x, pos_y)
@@ -797,6 +924,8 @@ class Bomb(ClerableMap):
 
 class SwitchedWall(MapObject):
     def __init__(self, type_index, images, bg_img, game_engine):
+        #TODO: Remove
+        MapObject.__init__(self)
         self.bg_img = bg_img
         self.game_engine = game_engine
         self.closed = type_index == 37
@@ -816,3 +945,4 @@ class SwitchedWall(MapObject):
 
     def enterable(self, pos_x, pos_y, direction, creature):
         return not self.closed
+
